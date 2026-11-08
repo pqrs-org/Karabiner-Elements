@@ -292,9 +292,8 @@ public:
 
   /// Move constructor.
   immediate_executor_binder(immediate_executor_binder&& other)
-    : executor_(static_cast<immediate_executor_type&&>(
-          other.get_immediate_executor())),
-      target_(static_cast<T&&>(other.get()))
+    : executor_(static_cast<Executor&&>(other.executor_)),
+      target_(static_cast<T&&>(other.target_))
   {
   }
 

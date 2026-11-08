@@ -842,7 +842,7 @@ public:
    * @code
    * asio::ip::tcp::socket socket(my_context);
    * asio::ip::tcp::endpoint endpoint(
-   *     asio::ip::address::from_string("1.2.3.4"), 12345);
+   *     asio::ip::make_address("1.2.3.4"), 12345);
    * socket.connect(endpoint);
    * @endcode
    */
@@ -878,7 +878,7 @@ public:
    * @code
    * asio::ip::tcp::socket socket(my_context);
    * asio::ip::tcp::endpoint endpoint(
-   *     asio::ip::address::from_string("1.2.3.4"), 12345);
+   *     asio::ip::make_address("1.2.3.4"), 12345);
    * asio::error_code ec;
    * socket.connect(endpoint, ec);
    * if (ec)
@@ -947,7 +947,7 @@ public:
    *
    * asio::ip::tcp::socket socket(my_context);
    * asio::ip::tcp::endpoint endpoint(
-   *     asio::ip::address::from_string("1.2.3.4"), 12345);
+   *     asio::ip::make_address("1.2.3.4"), 12345);
    * socket.async_connect(endpoint, connect_handler);
    * @endcode
    *
@@ -978,7 +978,8 @@ public:
       impl_.get_service().open(impl_.get_implementation(), protocol, open_ec);
     }
 
-    return async_initiate<ConnectToken, void (asio::error_code)>(
+    ASIO_INVOKE_INLINE return async_initiate<ConnectToken,
+      void (asio::error_code)>(
         initiate_async_connect(this), token, peer_endpoint, open_ec);
   }
 
@@ -1819,7 +1820,8 @@ public:
       async_initiate<WaitToken, void (asio::error_code)>(
           declval<initiate_async_wait>(), token, w))
   {
-    return async_initiate<WaitToken, void (asio::error_code)>(
+    ASIO_INVOKE_INLINE return async_initiate<WaitToken,
+      void (asio::error_code)>(
         initiate_async_wait(this), token, w);
   }
 
@@ -1885,7 +1887,7 @@ private:
       else
       {
         detail::non_const_lvalue<ConnectHandler> handler2(handler);
-        self_->impl_.get_service().async_connect(
+        ASIO_INVOKE_INLINE self_->impl_.get_service().async_connect(
             self_->impl_.get_implementation(), peer_endpoint,
             handler2.value, self_->impl_.get_executor());
       }
@@ -1918,7 +1920,7 @@ private:
       ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
 
       detail::non_const_lvalue<WaitHandler> handler2(handler);
-      self_->impl_.get_service().async_wait(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_wait(
           self_->impl_.get_implementation(), w,
           handler2.value, self_->impl_.get_executor());
     }

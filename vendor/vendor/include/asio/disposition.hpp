@@ -183,7 +183,7 @@ struct disposition_traits<std::exception_ptr>
 struct no_error_t
 {
   /// Default constructor.
-  constexpr no_error_t()
+  constexpr no_error_t() noexcept
   {
   }
 

@@ -151,6 +151,9 @@ public:
       address_info = address_info->ai_next;
     }
 
+    if (results.values_->empty())
+      results.values_.reset();
+
     return results;
   }
 
@@ -222,6 +225,8 @@ public:
                   pair->RemoteServiceName)),
               host_name, service_name));
       }
+      if (results.values_->empty())
+        results.values_.reset();
     }
     return results;
   }

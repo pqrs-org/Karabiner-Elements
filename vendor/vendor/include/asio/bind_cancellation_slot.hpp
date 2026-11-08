@@ -292,9 +292,8 @@ public:
 
   /// Move constructor.
   cancellation_slot_binder(cancellation_slot_binder&& other)
-    : slot_(static_cast<cancellation_slot_type&&>(
-          other.get_cancellation_slot())),
-      target_(static_cast<T&&>(other.get()))
+    : slot_(static_cast<CancellationSlot&&>(other.slot_)),
+      target_(static_cast<T&&>(other.target_))
   {
   }
 

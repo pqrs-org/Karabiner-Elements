@@ -1,6 +1,6 @@
 //
 // detail/win_iocp_socket_connect_op.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -75,16 +75,14 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& result_ec,
-      std::size_t /*bytes_transferred*/)
+      int error_value, std::size_t /*bytes_transferred*/)
   {
-    asio::error_code ec(result_ec);
-
     // Take ownership of the operation object.
     ASIO_ASSUME(base != 0);
     win_iocp_socket_connect_op* o(
         static_cast<win_iocp_socket_connect_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
+    asio::error_code ec(o->make_error_code(error_value));
 
     if (owner)
     {

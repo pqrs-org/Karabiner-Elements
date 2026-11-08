@@ -15,6 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/detail/config.hpp"
 #include "asio/detail/noncopyable.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -75,11 +76,8 @@ public:
   // Destructor destroys all operations.
   ~op_queue()
   {
-    while (Operation* op = front_)
-    {
-      pop();
-      op_queue_access::destroy(op);
-    }
+    if (front_)
+      destroy_all();
   }
 
   // Get the operation at the front of the queue.
@@ -146,6 +144,16 @@ public:
   }
 
 private:
+  // Destroy all operations remaining in the queue.
+  ASIO_NEVER_INLINE void destroy_all()
+  {
+    while (Operation* op = front_)
+    {
+      pop();
+      op_queue_access::destroy(op);
+    }
+  }
+
   friend class op_queue_access;
 
   // The front of the queue.

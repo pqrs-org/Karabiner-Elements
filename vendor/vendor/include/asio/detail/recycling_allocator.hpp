@@ -93,6 +93,20 @@ public:
   }
 };
 
+template <typename T, typename U, typename Purpose>
+inline bool operator==(const recycling_allocator<T, Purpose>&,
+    const recycling_allocator<U, Purpose>&) noexcept
+{
+  return true;
+}
+
+template <typename T, typename U, typename Purpose>
+inline bool operator!=(const recycling_allocator<T, Purpose>&,
+    const recycling_allocator<U, Purpose>&) noexcept
+{
+  return false;
+}
+
 template <typename Allocator, typename Purpose>
 struct get_recycling_allocator
 {

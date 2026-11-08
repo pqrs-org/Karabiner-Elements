@@ -16,8 +16,11 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/executor_op.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/memory.hpp"
+#include "asio/detail/operation.hpp"
+#include "asio/detail/type_traits.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -31,90 +34,69 @@ class executor_function
 public:
   template <typename F, typename Alloc>
   explicit executor_function(F f, const Alloc& a)
+    : op_(executor_function::make_operation(static_cast<F&&>(f), a))
   {
-    // Allocate and construct an object to wrap the function.
-    typedef impl<F, Alloc> impl_type;
-    typename impl_type::ptr p = {
-      detail::addressof(a), impl_type::ptr::allocate(a), 0 };
-    impl_ = new (p.v) impl_type(static_cast<F&&>(f), a);
-    p.v = 0;
+  }
+
+  // Adopts an operation that already holds the function.
+  explicit executor_function(operation* op) noexcept
+    : op_(op)
+  {
   }
 
   executor_function(executor_function&& other) noexcept
-    : impl_(other.impl_)
+    : op_(other.op_)
   {
-    other.impl_ = 0;
+    other.op_ = 0;
   }
 
   ~executor_function()
   {
-    if (impl_)
-      impl_->complete_(impl_, false);
+    if (op_)
+      op_->destroy();
   }
 
   void operator()()
   {
-    if (impl_)
+    if (operation* o = op_)
     {
-      impl_base* i = impl_;
-      impl_ = 0;
-      i->complete_(i, true);
+      op_ = 0;
+      o->complete(o, 0, 0);
     }
+  }
+
+  // Obtains the operation that holds the function, retaining ownership.
+  operation* get() const noexcept
+  {
+    return op_;
+  }
+
+  // Relinquishes ownership of the operation that holds the function.
+  operation* release() noexcept
+  {
+    operation* o = op_;
+    op_ = 0;
+    return o;
+  }
+
+  // Allocates an operation to hold the function.
+  template <typename F, typename Alloc>
+  static operation* make_operation(F&& f, const Alloc& a)
+  {
+    typedef executor_op<decay_t<F>, Alloc,
+        thread_info_base::executor_function_tag> op_type;
+    typename op_type::ptr p = {
+      detail::addressof(a), op_type::ptr::allocate(a), 0 };
+    op_type* op = new (p.v) op_type(static_cast<F&&>(f), a);
+    p.v = 0;
+    return op;
   }
 
 private:
-  // Base class for polymorphic function implementations.
-  struct impl_base
-  {
-    void (*complete_)(impl_base*, bool);
-  };
+  executor_function(const executor_function&);
+  executor_function& operator=(const executor_function&);
 
-  // Polymorphic function implementation.
-  template <typename Function, typename Alloc>
-  struct impl : impl_base
-  {
-    ASIO_DEFINE_TAGGED_HANDLER_ALLOCATOR_PTR(
-        thread_info_base::executor_function_tag, impl);
-
-    template <typename F>
-    impl(F&& f, const Alloc& a)
-      : function_(static_cast<F&&>(f)),
-        allocator_(a)
-    {
-      complete_ = &executor_function::complete<Function, Alloc>;
-    }
-
-    Function function_;
-    Alloc allocator_;
-  };
-
-  // Helper to complete function invocation.
-  template <typename Function, typename Alloc>
-  static void complete(impl_base* base, bool call)
-  {
-    // Take ownership of the function object.
-    impl<Function, Alloc>* i(static_cast<impl<Function, Alloc>*>(base));
-    Alloc allocator(i->allocator_);
-    typename impl<Function, Alloc>::ptr p = {
-      detail::addressof(allocator), i, i };
-
-    // Make a copy of the function so that the memory can be deallocated before
-    // the upcall is made. Even if we're not about to make an upcall, a
-    // sub-object of the function may be the true owner of the memory
-    // associated with the function. Consequently, a local copy of the function
-    // is required to ensure that any owning sub-object remains valid until
-    // after we have deallocated the memory here.
-    Function function(static_cast<Function&&>(i->function_));
-    p.reset();
-
-    // Make the upcall if required.
-    if (call)
-    {
-      static_cast<Function&&>(function)();
-    }
-  }
-
-  impl_base* impl_;
+  operation* op_;
 };
 
 // Lightweight, non-owning, copyable function object wrapper.

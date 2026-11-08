@@ -23,6 +23,7 @@
 #include "asio/detail/conditionally_enabled_event.hpp"
 #include "asio/detail/conditionally_enabled_mutex.hpp"
 #include "asio/detail/op_queue.hpp"
+#include "asio/detail/operation.hpp"
 #include "asio/detail/scheduler_operation.hpp"
 #include "asio/detail/scheduler_task.hpp"
 #include "asio/detail/thread.hpp"
@@ -41,7 +42,7 @@ class scheduler
     public thread_context
 {
 public:
-  typedef scheduler_operation operation;
+  typedef asio::detail::operation operation;
 
   // Tag type used for constructing as an internal scheduler.
   struct internal {};
@@ -68,20 +69,19 @@ public:
   ASIO_DECL void init_task();
 
   // Run the event loop until interrupted or no more work.
-  ASIO_DECL std::size_t run(asio::error_code& ec);
+  ASIO_DECL std::size_t run();
 
   // Run until interrupted or one operation is performed.
-  ASIO_DECL std::size_t run_one(asio::error_code& ec);
+  ASIO_DECL std::size_t run_one();
 
   // Run until timeout, interrupted, or one operation is performed.
-  ASIO_DECL std::size_t wait_one(
-      long usec, asio::error_code& ec);
+  ASIO_DECL std::size_t wait_one(long usec);
 
   // Poll for operations without blocking.
-  ASIO_DECL std::size_t poll(asio::error_code& ec);
+  ASIO_DECL std::size_t poll();
 
   // Poll for one operation without blocking.
-  ASIO_DECL std::size_t poll_one(asio::error_code& ec);
+  ASIO_DECL std::size_t poll_one();
 
   // Interrupt the event processing loop.
   ASIO_DECL void stop();
@@ -151,24 +151,78 @@ private:
   // Structure containing thread-specific data.
   typedef scheduler_thread_info thread_info;
 
-  // Run at most one operation. May block.
-  ASIO_DECL std::size_t do_run_one(mutex::scoped_lock& lock,
-      thread_info& this_thread, const asio::error_code& ec);
+  // Request invocation of the given operation and return immediately. Assumes
+  // that work_started() has not yet been called for the operation.
+  ASIO_DECL ASIO_NEVER_INLINE void do_post_immediate_completion(
+      operation* op);
+
+  // Request invocation of the given operations and return immediately. Assumes
+  // that work_started() has not yet been called for the operations.
+  ASIO_DECL ASIO_NEVER_INLINE void do_post_immediate_completions(
+      std::size_t n, op_queue<operation>& ops);
+
+  // The tail of post_deferred_completion(), as above.
+  ASIO_DECL ASIO_NEVER_INLINE void do_post_deferred_completion(
+      operation* op);
+
+  // The tail of post_deferred_completions(), as above.
+  ASIO_DECL ASIO_NEVER_INLINE void do_post_deferred_completions(
+      op_queue<operation>& ops);
+
+  // Run at most one operation. May block. Always inlined into the run
+  // functions, as leaving it out of line costs them a stack frame.
+  ASIO_ALWAYS_INLINE std::size_t do_run_one(mutex::scoped_lock& lock,
+      thread_info& this_thread, bool may_wake);
+
+  // Sleep until woken to run an operation. May block.
+  ASIO_DECL ASIO_NEVER_INLINE void do_sleep(
+      mutex::scoped_lock& lock);
 
   // Run at most one operation with a timeout. May block.
   ASIO_DECL std::size_t do_wait_one(mutex::scoped_lock& lock,
-      thread_info& this_thread, long usec, const asio::error_code& ec);
+      thread_info& this_thread, long usec);
 
   // Poll for at most one operation.
   ASIO_DECL std::size_t do_poll_one(mutex::scoped_lock& lock,
-      thread_info& this_thread, const asio::error_code& ec);
+      thread_info& this_thread, bool may_wake, bool& task_has_run);
 
   // Stop the task and all idle threads.
   ASIO_DECL void stop_all_threads(mutex::scoped_lock& lock);
 
+  // True if the configuration means that other threads may need to be woken.
+  bool wake_possible() const
+  {
+    return !one_thread_ && (wait_usec_ != 0 || task_usec_ != 0);
+  }
+
+  // True if there is no reason to wake any other thread.
+  bool can_skip_wake(mutex::scoped_lock& lock)
+  {
+    return ASIO_LIKELY(wait_usec_ != 0)
+      && ASIO_LIKELY(!wakeup_event_.has_waiters(lock))
+      && ASIO_LIKELY(task_interrupted_ || !task_);
+  }
+
+  // True if another thread must be woken.
+  bool must_wake(mutex::scoped_lock& lock)
+  {
+    return !(ASIO_LIKELY(!wakeup_event_.has_waiters(lock))
+        && ASIO_LIKELY(task_interrupted_ || !task_));
+  }
+
   // Wake a single idle thread, or the task, and always unlock the mutex.
-  ASIO_DECL void wake_one_thread_and_unlock(
+  ASIO_DECL ASIO_NEVER_INLINE void wake_one_thread_and_unlock(
       mutex::scoped_lock& lock);
+
+  // Wake a single idle thread, or the task, if waking is required. Always
+  // unlock the mutex.
+  void wake_if_needed_and_unlock(mutex::scoped_lock& lock)
+  {
+    if (can_skip_wake(lock))
+      lock.unlock();
+    else
+      wake_one_thread_and_unlock(lock);
+  }
 
   // Get the default task.
   ASIO_DECL static scheduler_task* get_default_task(

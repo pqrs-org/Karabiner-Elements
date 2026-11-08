@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/op_queue.hpp"
+#include "asio/detail/operation.hpp"
 #include "asio/detail/thread_info_base.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -25,11 +26,10 @@ ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 class scheduler;
-class scheduler_operation;
 
 struct scheduler_thread_info : public thread_info_base
 {
-  op_queue<scheduler_operation> private_op_queue;
+  op_queue<operation> private_op_queue;
   long private_outstanding_work;
 };
 

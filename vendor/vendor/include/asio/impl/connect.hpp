@@ -177,7 +177,7 @@ Iterator connect(basic_socket<Protocol, Executor>& s, Iterator begin,
       is_connect_condition<ConnectCondition, Iterator>::value
     >)
 {
-  ec = asio::error_code();
+  asio::error::clear(ec);
 
   for (Iterator iter = begin; iter != end; ++iter)
   {
@@ -261,16 +261,7 @@ namespace detail
     {
     }
 
-    range_connect_op(const range_connect_op& other)
-      : base_from_cancellation_state<RangeConnectHandler>(other),
-        base_from_connect_condition<ConnectCondition>(other),
-        socket_(other.socket_),
-        endpoints_(other.endpoints_),
-        index_(other.index_),
-        start_(other.start_),
-        handler_(other.handler_)
-    {
-    }
+    range_connect_op(const range_connect_op& other) = default;
 
     range_connect_op(range_connect_op&& other)
       : base_from_cancellation_state<RangeConnectHandler>(
@@ -284,6 +275,9 @@ namespace detail
         handler_(static_cast<RangeConnectHandler&&>(other.handler_))
     {
     }
+
+    range_connect_op& operator=(const range_connect_op&) = delete;
+    range_connect_op& operator=(range_connect_op&&) = delete;
 
     void operator()(asio::error_code ec, int start = 0)
     {
@@ -371,8 +365,9 @@ namespace detail
       range_connect_op<Protocol, Executor, EndpointSequence,
         ConnectCondition, RangeConnectHandler>* this_handler)
   {
-    return ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(
-        this_handler->handler_);
+    return this_handler->start_ == 0 ? true
+      : ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(
+          this_handler->handler_);
   }
 
   template <typename Protocol, typename Executor>
@@ -435,16 +430,7 @@ namespace detail
     {
     }
 
-    iterator_connect_op(const iterator_connect_op& other)
-      : base_from_cancellation_state<IteratorConnectHandler>(other),
-        base_from_connect_condition<ConnectCondition>(other),
-        socket_(other.socket_),
-        iter_(other.iter_),
-        end_(other.end_),
-        start_(other.start_),
-        handler_(other.handler_)
-    {
-    }
+    iterator_connect_op(const iterator_connect_op& other) = default;
 
     iterator_connect_op(iterator_connect_op&& other)
       : base_from_cancellation_state<IteratorConnectHandler>(
@@ -458,6 +444,9 @@ namespace detail
         handler_(static_cast<IteratorConnectHandler&&>(other.handler_))
     {
     }
+
+    iterator_connect_op& operator=(const iterator_connect_op&) = delete;
+    iterator_connect_op& operator=(iterator_connect_op&&) = delete;
 
     void operator()(asio::error_code ec, int start = 0)
     {
@@ -530,8 +519,9 @@ namespace detail
       iterator_connect_op<Protocol, Executor, Iterator,
         ConnectCondition, IteratorConnectHandler>* this_handler)
   {
-    return ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(
-        this_handler->handler_);
+    return this_handler->start_ == 0 ? true
+      : ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(
+          this_handler->handler_);
   }
 
   template <typename Protocol, typename Executor>

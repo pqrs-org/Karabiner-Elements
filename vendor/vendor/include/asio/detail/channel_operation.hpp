@@ -1,6 +1,6 @@
 //
-// experimental/detail/channel_operation.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// detail/channel_operation.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_EXPERIMENTAL_DETAIL_CHANNEL_OPERATION_HPP
-#define ASIO_EXPERIMENTAL_DETAIL_CHANNEL_OPERATION_HPP
+#ifndef ASIO_DETAIL_CHANNEL_OPERATION_HPP
+#define ASIO_DETAIL_CHANNEL_OPERATION_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -32,7 +32,6 @@
 
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
-namespace experimental {
 namespace detail {
 
 // Base class for all channel operations. A function pointer is used instead of
@@ -76,7 +75,7 @@ protected:
   {
   }
 
-  friend class asio::detail::op_queue_access;
+  friend class op_queue_access;
   channel_operation* next_;
   func_type func_;
 
@@ -108,9 +107,9 @@ public:
   template <typename IoExecutor, typename Function, typename Handler>
   void post(const IoExecutor& io_exec, Function& function, Handler&)
   {
-    (asio::detail::initiate_post_with_executor<IoExecutor>(io_exec))(
+    (initiate_post_with_executor<const IoExecutor&>(io_exec))(
         static_cast<Function&&>(function),
-        asio::detail::empty_work_function());
+        empty_work_function());
   }
 
   template <typename Function, typename Handler>
@@ -270,29 +269,25 @@ public:
     immediate_ex_type immediate_ex = (get_associated_immediate_executor)(
         handler, base1_type::get_executor());
 
-    (asio::detail::initiate_dispatch_with_executor<
-          immediate_ex_type>(immediate_ex))(
+    (initiate_dispatch_with_executor<
+          const immediate_ex_type&>(immediate_ex))(
         static_cast<Function&&>(function),
-        asio::detail::empty_work_function());
+        empty_work_function());
   }
 
   template <typename Function>
   void immediate(Function& function, Handler&,
       enable_if_t<
-        is_same<
-          typename associated_immediate_executor<
-            conditional_t<false, Function, Handler>,
-            typename base1_type::executor_type>::
-              asio_associated_immediate_executor_is_unspecialised,
-          void
-        >::value
+        !has_associated_immediate_executor<
+          conditional_t<false, Function, Handler>,
+          typename base1_type::executor_type>::value
       >*)
   {
-    (asio::detail::initiate_post_with_executor<
-        typename base1_type::executor_type>(
+    (initiate_post_with_executor<
+        const typename base1_type::executor_type&>(
           base1_type::get_executor()))(
         static_cast<Function&&>(function),
-        asio::detail::empty_work_function());
+        empty_work_function());
   }
 };
 
@@ -300,11 +295,7 @@ template <typename Handler, typename IoExecutor>
 class channel_operation::handler_work<
     Handler, IoExecutor,
     enable_if_t<
-      is_same<
-        typename associated_executor<Handler,
-          IoExecutor>::asio_associated_executor_is_unspecialised,
-        void
-      >::value
+      !has_associated_executor<Handler, IoExecutor>::value
     >
   > : handler_work_base<IoExecutor>
 {
@@ -337,22 +328,18 @@ public:
     immediate_ex_type immediate_ex = (get_associated_immediate_executor)(
         handler, base1_type::get_executor());
 
-    (asio::detail::initiate_dispatch_with_executor<
-          immediate_ex_type>(immediate_ex))(
+    (initiate_dispatch_with_executor<
+          const immediate_ex_type&>(immediate_ex))(
         static_cast<Function&&>(function),
-        asio::detail::empty_work_function());
+        empty_work_function());
   }
 
   template <typename Function>
   void immediate(Function& function, Handler& handler,
       enable_if_t<
-        is_same<
-          typename associated_immediate_executor<
-            conditional_t<false, Function, Handler>,
-            typename base1_type::executor_type>::
-              asio_associated_immediate_executor_is_unspecialised,
-          void
-        >::value
+        !has_associated_immediate_executor<
+          conditional_t<false, Function, Handler>,
+          typename base1_type::executor_type>::value
       >*)
   {
     base1_type::post(base1_type::get_executor(), function, handler);
@@ -360,10 +347,9 @@ public:
 };
 
 } // namespace detail
-} // namespace experimental
 ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_EXPERIMENTAL_DETAIL_CHANNEL_OPERATION_HPP
+#endif // ASIO_DETAIL_CHANNEL_OPERATION_HPP

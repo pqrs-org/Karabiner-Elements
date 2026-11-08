@@ -70,7 +70,7 @@ private:
 public:
   enum op_types { read_op = 0, write_op = 1, except_op = 2, max_ops = 3 };
 
-  class io_object;
+  struct io_object;
 
   // An I/O queue stores operations that must run serially.
   class io_queue : operation
@@ -86,7 +86,7 @@ public:
     void set_result(int r) { task_result_ = static_cast<unsigned>(r); }
     ASIO_DECL operation* perform_io(int result);
     ASIO_DECL static void do_complete(void* owner, operation* base,
-        const asio::error_code& ec, std::size_t bytes_transferred);
+        int error_value, std::size_t bytes_transferred);
   };
 
   // Per I/O object state.
@@ -285,7 +285,7 @@ private:
 
     ASIO_DECL submit_sqes_op(io_uring_service* s, std::size_t ring_index);
     ASIO_DECL static void do_complete(void* owner, operation* base,
-        const asio::error_code& ec, std::size_t bytes_transferred);
+        int error_value, std::size_t bytes_transferred);
   };
 
   // The scheduler implementation used to post completions.

@@ -35,8 +35,7 @@ struct thread_pool::thread_function
     try
     {
 #endif// !defined(ASIO_NO_EXCEPTIONS)
-      asio::error_code ec;
-      scheduler_->run(ec);
+      scheduler_->run();
 #if !defined(ASIO_NO_EXCEPTIONS)
     }
     catch (...)

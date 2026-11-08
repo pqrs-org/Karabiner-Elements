@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/native_executors.hpp"
 #include "asio/detail/strand_executor_service.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution/blocking.hpp"
@@ -462,6 +463,22 @@ make_strand(ExecutionContext& ctx,
 
 #if !defined(GENERATING_DOCUMENTATION)
 
+namespace detail {
+
+template <typename Executor>
+struct native_outstanding_work_kind<strand<Executor>>
+{
+  using type = conditional_t<
+      is_same<
+        native_outstanding_work_kind_t<Executor>,
+        native_outstanding_work_kinds::native
+      >::value,
+      native_outstanding_work_kinds::native,
+      native_outstanding_work_kinds::none
+    >;
+};
+
+} // namespace detail
 namespace traits {
 
 #if !defined(ASIO_HAS_DEDUCED_EQUALITY_COMPARABLE_TRAIT)

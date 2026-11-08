@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include <exception>
+#include "asio/detail/native_executors.hpp"
 #include "asio/detail/non_const_lvalue.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution/blocking.hpp"
@@ -335,6 +336,9 @@ private:
         can_prefer<const Executor&, Property>::value
       > = 0,
       constraint_t<
+        !is_identity_prefer<const Executor&, Property>::value
+      > = 0,
+      constraint_t<
         !is_convertible<Property, execution::blocking_t>::value
       > = 0,
       constraint_t<
@@ -605,6 +609,39 @@ inline_or(ExecutionContext& ctx,
 
 #if !defined(GENERATING_DOCUMENTATION)
 
+namespace detail {
+
+template <typename Executor, typename Blocking,
+    typename InlineExceptionHandling>
+struct native_execute_kind<
+    inline_or_executor<Executor, Blocking, InlineExceptionHandling>>
+{
+  using type = conditional_t<
+      (is_same<Blocking, execution::blocking_t::always_t>::value
+          || is_same<Blocking, execution::blocking_t::possibly_t>::value)
+        && is_same<InlineExceptionHandling,
+          execution::inline_exception_handling_t::propagate_t>::value,
+      native_execute_kinds::native,
+      native_execute_kinds::none
+    >;
+};
+
+template <typename Executor, typename Blocking,
+    typename InlineExceptionHandling>
+struct native_outstanding_work_kind<
+    inline_or_executor<Executor, Blocking, InlineExceptionHandling>>
+{
+  using type = conditional_t<
+      is_same<
+        native_outstanding_work_kind_t<Executor>,
+        native_outstanding_work_kinds::native
+      >::value,
+      native_outstanding_work_kinds::native,
+      native_outstanding_work_kinds::none
+    >;
+};
+
+} // namespace detail
 namespace traits {
 
 #if !defined(ASIO_HAS_DEDUCED_EQUALITY_COMPARABLE_TRAIT)
@@ -809,6 +846,7 @@ struct prefer_member<
     inline_or_executor<Executor, Blocking, InlineExceptionHandling>, Property,
     enable_if_t<
       can_prefer<const Executor&, Property>::value
+        && !is_identity_prefer<const Executor&, Property>::value
         && !is_convertible<Property, execution::blocking_t::always_t>::value
     >
   >

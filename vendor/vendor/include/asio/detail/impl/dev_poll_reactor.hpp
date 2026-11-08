@@ -33,6 +33,29 @@ inline void dev_poll_reactor::post_immediate_completion(
   scheduler_.post_immediate_completion(op, is_continuation);
 }
 
+template <int OpType, reactor_op::perform_func_type Perform>
+inline bool dev_poll_reactor::start_op(socket_type descriptor,
+    dev_poll_reactor::per_descriptor_data&, reactor_op* op)
+{
+  asio::detail::mutex::scoped_lock lock(mutex_);
+
+  if (Perform != nullptr
+      && (OpType != read_op
+        || !op_queue_[except_op].has_operation(descriptor)))
+  {
+    if (!op_queue_[OpType].has_operation(descriptor))
+    {
+      if (Perform(op))
+      {
+        lock.unlock();
+        return true;
+      }
+    }
+  }
+
+  return start_unready_op(OpType, descriptor, lock, op);
+}
+
 template <typename TimeTraits, typename Allocator>
 void dev_poll_reactor::add_timer_queue(
     timer_queue<TimeTraits, Allocator>& queue)

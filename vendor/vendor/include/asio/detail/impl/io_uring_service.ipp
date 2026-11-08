@@ -29,7 +29,12 @@
 #include "asio/error.hpp"
 
 #if defined(ASIO_HAS_THREAD_SANITIZER)
-# include <sanitizer/tsan_interface.h>
+# if defined(ASIO_HAS_SANITIZER_TSAN_INTERFACE)
+#  include <sanitizer/tsan_interface.h>
+# else // defined(ASIO_HAS_SANITIZER_TSAN_INTERFACE)
+extern "C" void __tsan_acquire(void* addr);
+extern "C" void __tsan_release(void* addr);
+# endif // defined(ASIO_HAS_SANITIZER_TSAN_INTERFACE)
 #endif // defined(ASIO_HAS_THREAD_SANITIZER)
 
 #include "asio/detail/push_options.hpp"
@@ -889,8 +894,7 @@ public:
   }
 
   static void do_complete(void* /*owner*/, operation* base,
-      const asio::error_code& /*ec*/,
-      std::size_t /*bytes_transferred*/)
+      int /*error_value*/, std::size_t /*bytes_transferred*/)
   {
     event_fd_read_op* o(static_cast<event_fd_read_op*>(base));
     delete o;
@@ -1089,7 +1093,7 @@ io_uring_service::submit_sqes_op::submit_sqes_op(
 }
 
 void io_uring_service::submit_sqes_op::do_complete(void* owner, operation* base,
-    const asio::error_code& /*ec*/, std::size_t /*bytes_transferred*/)
+    int /*error_value*/, std::size_t /*bytes_transferred*/)
 {
   if (owner)
   {
@@ -1233,7 +1237,7 @@ operation* io_uring_service::io_queue::perform_io(int result)
 }
 
 void io_uring_service::io_queue::do_complete(void* owner, operation* base,
-    const asio::error_code& ec, std::size_t bytes_transferred)
+    int /*error_value*/, std::size_t bytes_transferred)
 {
   if (owner)
   {
@@ -1241,7 +1245,7 @@ void io_uring_service::io_queue::do_complete(void* owner, operation* base,
     int result = static_cast<int>(bytes_transferred);
     if (operation* op = io_q->perform_io(result))
     {
-      op->complete(owner, ec, 0);
+      op->complete(owner, 0, 0);
     }
   }
 }

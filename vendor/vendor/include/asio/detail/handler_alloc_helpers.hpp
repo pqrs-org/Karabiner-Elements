@@ -28,7 +28,7 @@
     Handler* h; \
     op* v; \
     op* p; \
-    ~ptr() \
+    ASIO_ALWAYS_INLINE ~ptr() \
     { \
       reset(); \
     } \
@@ -44,7 +44,7 @@
                 ::asio::get_associated_allocator(handler))); \
       return a.allocate(1); \
     } \
-    void reset() \
+    ASIO_ALWAYS_INLINE void reset() \
     { \
       if (p) \
       { \
@@ -79,7 +79,7 @@
     const Alloc* a; \
     void* v; \
     op* p; \
-    ~ptr() \
+    ASIO_ALWAYS_INLINE ~ptr() \
     { \
       reset(); \
     } \
@@ -92,7 +92,7 @@
               Alloc, purpose>::get(a)); \
       return a1.allocate(1); \
     } \
-    void reset() \
+    ASIO_ALWAYS_INLINE void reset() \
     { \
       if (p) \
       { \

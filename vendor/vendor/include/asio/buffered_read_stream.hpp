@@ -233,7 +233,7 @@ public:
   /// Determine the amount of data that may be read without blocking.
   std::size_t in_avail(asio::error_code& ec)
   {
-    ec = asio::error_code();
+    asio::error::clear(ec);
     return storage_.size();
   }
 

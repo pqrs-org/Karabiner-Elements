@@ -16,11 +16,13 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/config.hpp"
+#include "asio/detail/throw_exception.hpp"
 #include "asio/detail/concurrency_hint.hpp"
 #include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <stdexcept>
 #include <vector>
 #include <utility>
 
@@ -42,6 +44,24 @@ const char* config_service::get_value(const char* /*section*/,
     const char* /*key_name*/, char* /*value*/, std::size_t /*value_len*/) const
 {
   return nullptr;
+}
+
+const char* config::get(const char* section, const char* key_name,
+    const char* default_value, char* value, std::size_t value_len) const
+{
+  if (const char* str = service_.get_value(
+        section, key_name, value, value_len))
+  {
+    if (str != value)
+    {
+      std::size_t len = std::strlen(str);
+      if (len >= value_len)
+        detail::throw_exception(std::out_of_range("config value too long"));
+      std::memcpy(value, str, len + 1);
+    }
+    return value;
+  }
+  return default_value;
 }
 
 namespace detail {

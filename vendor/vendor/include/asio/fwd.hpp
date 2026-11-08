@@ -82,6 +82,16 @@ class any_completion_executor;
 
 #endif // defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 
+#if defined(ASIO_HAS_CO_AWAIT)
+#if !defined(ASIO_AWAITABLE_FWD_DECL)
+#define ASIO_AWAITABLE_FWD_DECL
+
+template <typename T, typename Executor = any_io_executor>
+class awaitable;
+
+#endif // !defined(ASIO_AWAITABLE_FWD_DECL)
+#endif // defined(ASIO_HAS_CO_AWAIT)
+
 template <typename... Signatures>
 class any_completion_handler;
 
@@ -95,6 +105,12 @@ class system_context;
 class thread_pool;
 
 class thread;
+
+template <typename Executor, typename Traits, typename... Signatures>
+class basic_channel;
+
+template <typename Executor, typename Traits, typename... Signatures>
+class basic_concurrent_channel;
 
 #if !defined(ASIO_BASIC_SOCKET_FWD_DECL)
 #define ASIO_BASIC_SOCKET_FWD_DECL

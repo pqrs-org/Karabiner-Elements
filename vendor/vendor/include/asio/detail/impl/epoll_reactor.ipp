@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <sys/epoll.h>
 #include "asio/config.hpp"
+#include "asio/detail/assert.hpp"
 #include "asio/detail/epoll_reactor.hpp"
 #include "asio/detail/scheduler.hpp"
 #include "asio/detail/throw_error.hpp"
@@ -255,53 +256,48 @@ void epoll_reactor::call_post_immediate_completion(
       op, is_continuation);
 }
 
-void epoll_reactor::start_op(int op_type, socket_type descriptor,
-    epoll_reactor::per_descriptor_data& descriptor_data, reactor_op* op,
-    bool is_continuation, bool allow_speculative,
-    void (*on_immediate)(operation*, bool, const void*),
-    const void* immediate_arg)
+bool epoll_reactor::start_bad_descriptor_op(reactor_op* op)
 {
-  if (!descriptor_data)
-  {
-    op->ec_ = asio::error::bad_descriptor;
-    on_immediate(op, is_continuation, immediate_arg);
-    return;
-  }
+  op->ec_ = asio::error::bad_descriptor;
+  return true;
+}
 
-  mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
+void epoll_reactor::record_done_and_exhausted(int op_type,
+    epoll_reactor::per_descriptor_data& descriptor_data)
+{
+  if (descriptor_data->registered_events_ != 0)
+    descriptor_data->try_speculative_[op_type] = false;
+}
 
-  if (descriptor_data->shutdown_)
-  {
-    on_immediate(op, is_continuation, immediate_arg);
-    return;
-  }
+bool epoll_reactor::start_unready_op(int op_type,
+    epoll_reactor::per_descriptor_data& descriptor_data,
+    mutex::scoped_lock& descriptor_lock, reactor_op* op,
+    reactor_op::perform_func_type perform_func)
+{
+  ASIO_ASSERT(descriptor_lock.locked()
+      || !descriptor_data->mutex_.enabled());
 
   if (descriptor_data->op_queue_[op_type].empty())
   {
-    if (allow_speculative
-        && (op_type != read_op
-          || descriptor_data->op_queue_[except_op].empty()))
+    if (ASIO_UNLIKELY(descriptor_data->shutdown_))
     {
-      if (descriptor_data->try_speculative_[op_type])
-      {
-        if (reactor_op::status status = op->perform())
-        {
-          if (status == reactor_op::done_and_exhausted)
-            if (descriptor_data->registered_events_ != 0)
-              descriptor_data->try_speculative_[op_type] = false;
-          descriptor_lock.unlock();
-          on_immediate(op, is_continuation, immediate_arg);
-          return;
-        }
-      }
+      descriptor_lock.unlock();
+      return true;
+    }
 
-      if (descriptor_data->registered_events_ == 0)
-      {
-        op->ec_ = asio::error::operation_not_supported;
-        on_immediate(op, is_continuation, immediate_arg);
-        return;
-      }
+    if (descriptor_data->registered_events_ == 0)
+    {
+      op->ec_ = asio::error::operation_not_supported;
+      descriptor_lock.unlock();
+      return true;
+    }
 
+    const bool speculative = perform_func
+      && (op_type != read_op
+        || descriptor_data->op_queue_[except_op].empty());
+
+    if (speculative)
+    {
       if (op_type == write_op)
       {
         if ((descriptor_data->registered_events_ & EPOLLOUT) == 0)
@@ -309,7 +305,8 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
           epoll_event ev = { 0, { 0 } };
           ev.events = descriptor_data->registered_events_ | EPOLLOUT;
           ev.data.ptr = descriptor_data;
-          if (epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, descriptor, &ev) == 0)
+          if (epoll_ctl(epoll_fd_, EPOLL_CTL_MOD,
+                descriptor_data->descriptor_, &ev) == 0)
           {
             descriptor_data->registered_events_ |= ev.events;
           }
@@ -317,17 +314,11 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
           {
             op->ec_ = asio::error_code(errno,
                 asio::error::get_system_category());
-            on_immediate(op, is_continuation, immediate_arg);
-            return;
+            descriptor_lock.unlock();
+            return true;
           }
         }
       }
-    }
-    else if (descriptor_data->registered_events_ == 0)
-    {
-      op->ec_ = asio::error::operation_not_supported;
-      on_immediate(op, is_continuation, immediate_arg);
-      return;
     }
     else
     {
@@ -339,12 +330,14 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
       epoll_event ev = { 0, { 0 } };
       ev.events = descriptor_data->registered_events_;
       ev.data.ptr = descriptor_data;
-      epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, descriptor, &ev);
+      epoll_ctl(epoll_fd_, EPOLL_CTL_MOD,
+          descriptor_data->descriptor_, &ev);
     }
   }
 
   descriptor_data->op_queue_[op_type].push(op);
   scheduler_.work_started();
+  return false;
 }
 
 void epoll_reactor::cancel_ops(socket_type,
@@ -821,7 +814,7 @@ operation* epoll_reactor::descriptor_state::perform_io(uint32_t events)
 
 void epoll_reactor::descriptor_state::do_complete(
     void* owner, operation* base,
-    const asio::error_code& ec, std::size_t bytes_transferred)
+    int /*error_value*/, std::size_t bytes_transferred)
 {
   if (owner)
   {
@@ -829,7 +822,7 @@ void epoll_reactor::descriptor_state::do_complete(
     uint32_t events = static_cast<uint32_t>(bytes_transferred);
     if (operation* op = descriptor_data->perform_io(events))
     {
-      op->complete(owner, ec, 0);
+      op->complete(owner, 0, 0);
     }
   }
 }

@@ -15,6 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/detail/executor_function.hpp"
 #include "asio/detail/executor_op.hpp"
 #include "asio/detail/global.hpp"
 #include "asio/detail/type_traits.hpp"
@@ -116,6 +117,29 @@ void basic_system_executor<Blocking, Relationship, Allocator>::do_execute(
   ctx.scheduler_.post_immediate_completion(p.p,
       is_same<Relationship, execution::relationship_t::continuation_t>::value);
   p.v = p.p = 0;
+}
+
+template <typename Blocking, typename Relationship, typename Allocator>
+void basic_system_executor<Blocking, Relationship, Allocator>::do_execute(
+    detail::executor_function&& f, execution::blocking_t::never_t) const
+{
+  system_context& ctx = detail::global<system_context>();
+
+  bool is_continuation =
+    is_same<Relationship, execution::relationship_t::continuation_t>::value;
+
+  if (is_continuation)
+  {
+    ASIO_HANDLER_CREATION((ctx, *f.get(),
+          "system_executor", &ctx, 0, "execute(blk=never,rel=cont)"));
+  }
+  else
+  {
+    ASIO_HANDLER_CREATION((ctx, *f.get(),
+          "system_executor", &ctx, 0, "execute(blk=never,rel=fork)"));
+  }
+
+  ctx.scheduler_.post_immediate_completion(f.release(), is_continuation);
 }
 
 #if !defined(ASIO_NO_TS_EXECUTORS)

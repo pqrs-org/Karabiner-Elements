@@ -88,7 +88,7 @@ private:
   friend class conditionally_enabled_mutex<futex_slim_mutex>;
 
   // Block until the value stored at state_ is no longer equal to val.
-  void futex_wait(int val)
+  ASIO_NEVER_INLINE void futex_wait(int val)
   {
     int result = ::syscall(SYS_futex, futex_addr(), FUTEX_WAIT_PRIVATE,
         val, static_cast<const struct timespec*>(0), 0, 0);
@@ -97,7 +97,7 @@ private:
   }
 
   // Wake at most one thread blocked in futex_wait() on state_.
-  void futex_wake()
+  ASIO_NEVER_INLINE void futex_wake()
   {
     ::syscall(SYS_futex, futex_addr(), FUTEX_WAKE_PRIVATE, 1, 0, 0, 0);
   }

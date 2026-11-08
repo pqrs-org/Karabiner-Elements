@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include "asio/detail/win_iocp_serial_port_service.hpp"
+#include "asio/error.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -165,7 +166,7 @@ asio::error_code win_iocp_serial_port_service::do_set_option(
     return ec;
   }
 
-  ec = asio::error_code();
+  asio::error::clear(ec);
   return ec;
 }
 

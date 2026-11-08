@@ -17,11 +17,12 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/atomic_count.hpp"
+#include "asio/detail/call_stack.hpp"
 #include "asio/detail/executor_op.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/mutex.hpp"
 #include "asio/detail/op_queue.hpp"
-#include "asio/detail/scheduler_operation.hpp"
+#include "asio/detail/operation.hpp"
 #include "asio/detail/slim_mutex.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution.hpp"
@@ -32,6 +33,8 @@
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
+
+class executor_function;
 
 // Default service implementation for a strand.
 class strand_executor_service
@@ -89,12 +92,12 @@ public:
     // The handlers that are waiting on the strand but should not be run until
     // after the next time the strand is scheduled. This queue must only be
     // modified while the mutex is locked.
-    op_queue<scheduler_operation> waiting_queue_;
+    op_queue<operation> waiting_queue_;
 
     // The handlers that are ready to be run. Logically speaking, these are the
     // handlers that hold the strand's lock. The ready queue is only modified
     // from within the strand and so may be accessed without locking the mutex.
-    op_queue<scheduler_operation> ready_queue_;
+    op_queue<operation> ready_queue_;
 
     // Pointers to adjacent handle implementations in linked list.
     strand_impl* next_;
@@ -157,7 +160,7 @@ private:
 
   // Adds a function to the strand. Returns true if it acquires the lock.
   ASIO_DECL static bool enqueue(const implementation_type& impl,
-      scheduler_operation* op);
+      operation* op);
 
   // Transfers waiting handlers to the ready queue. Returns true if one or more
   // handlers were transferred.
@@ -170,6 +173,11 @@ private:
   template <typename Executor, typename Function, typename Allocator>
   static void do_execute(const implementation_type& impl, Executor& ex,
       Function&& function, const Allocator& a);
+
+  // Helper function to request invocation of a type-erased function.
+  template <typename Executor, typename Allocator>
+  static void do_execute(const implementation_type& impl, Executor& ex,
+      executor_function&& function, const Allocator& a);
 
   // Mutex to protect access to the service-wide state.
   mutex mutex_;
@@ -190,9 +198,6 @@ private:
 
   // The head of a linked list of all implementations.
   strand_impl* impl_list_;
-
-  // Cached success value to avoid accessing category singleton.
-  const asio::error_code success_ec_;
 };
 
 } // namespace detail

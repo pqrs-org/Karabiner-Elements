@@ -1,6 +1,6 @@
 //
-// experimental/detail/channel_send_op.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// detail/channel_send_op.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_EXPERIMENTAL_DETAIL_CHANNEL_SEND_OP_HPP
-#define ASIO_EXPERIMENTAL_DETAIL_CHANNEL_SEND_OP_HPP
+#ifndef ASIO_DETAIL_CHANNEL_SEND_OP_HPP
+#define ASIO_DETAIL_CHANNEL_SEND_OP_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -19,20 +19,24 @@
 #include "asio/detail/bind_handler.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/error.hpp"
-#include "asio/experimental/channel_error.hpp"
-#include "asio/experimental/detail/channel_operation.hpp"
+#include "asio/channel_error.hpp"
+#include "asio/detail/channel_operation.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
-namespace experimental {
 namespace detail {
 
 template <typename Payload>
 class channel_send : public channel_operation
 {
 public:
+  const Payload& peek_payload() const
+  {
+    return payload_;
+  }
+
   Payload get_payload()
   {
     return static_cast<Payload&&>(payload_);
@@ -89,7 +93,7 @@ public:
   {
     // Take ownership of the operation object.
     channel_send_op* o(static_cast<channel_send_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { addressof(o->handler_), o, o };
 
     ASIO_HANDLER_COMPLETION((*o));
 
@@ -102,10 +106,10 @@ public:
     switch (a)
     {
     case channel_operation::cancel_op:
-      ec = error::channel_cancelled;
+      ec = asio::channel_errc::channel_cancelled;
       break;
     case channel_operation::close_op:
-      ec = error::channel_closed;
+      ec = asio::channel_errc::channel_closed;
       break;
     default:
       break;
@@ -117,9 +121,9 @@ public:
     // with the handler. Consequently, a local copy of the handler is required
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
-    asio::detail::binder1<Handler, asio::error_code>
+    binder1<Handler, asio::error_code>
       handler(o->handler_, ec);
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = addressof(handler.handler_);
     p.reset();
 
     // Post the completion if required.
@@ -140,10 +144,9 @@ private:
 };
 
 } // namespace detail
-} // namespace experimental
 ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_EXPERIMENTAL_DETAIL_CHANNEL_SEND_OP_HPP
+#endif // ASIO_DETAIL_CHANNEL_SEND_OP_HPP

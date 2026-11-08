@@ -36,7 +36,7 @@ namespace multicast {
  * asio::ip::udp::socket socket(my_context);
  * ...
  * asio::ip::address multicast_address =
- *   asio::ip::address::from_string("225.0.0.1");
+ *   asio::ip::make_address("225.0.0.1");
  * asio::ip::multicast::join_group option(multicast_address);
  * socket.set_option(option);
  * @endcode
@@ -64,7 +64,7 @@ typedef asio::ip::detail::socket_option::multicast_request<
  * asio::ip::udp::socket socket(my_context);
  * ...
  * asio::ip::address multicast_address =
- *   asio::ip::address::from_string("225.0.0.1");
+ *   asio::ip::make_address("225.0.0.1");
  * asio::ip::multicast::leave_group option(multicast_address);
  * socket.set_option(option);
  * @endcode
@@ -96,7 +96,7 @@ typedef asio::ip::detail::socket_option::multicast_request<
  * asio::ip::udp::socket socket(my_context);
  * ...
  * asio::ip::address_v4 local_interface =
- *   asio::ip::address_v4::from_string("1.2.3.4");
+ *   asio::ip::make_address_v4("1.2.3.4");
  * asio::ip::multicast::outbound_interface option(local_interface);
  * socket.set_option(option);
  * @endcode

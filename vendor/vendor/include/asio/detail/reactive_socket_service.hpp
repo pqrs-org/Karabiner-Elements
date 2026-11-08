@@ -31,6 +31,8 @@
 #include "asio/detail/reactive_socket_accept_op.hpp"
 #include "asio/detail/reactive_socket_connect_op.hpp"
 #include "asio/detail/reactive_socket_recvfrom_op.hpp"
+#include "asio/detail/reactive_socket_recvmmsg_op.hpp"
+#include "asio/detail/reactive_socket_sendmmsg_op.hpp"
 #include "asio/detail/reactive_socket_sendto_op.hpp"
 #include "asio/detail/reactive_socket_service_base.hpp"
 #include "asio/detail/reactor.hpp"
@@ -280,72 +282,13 @@ public:
   void async_send_to(implementation_type& impl,
       const ConstBufferSequence& buffers,
       const endpoint_type& destination, socket_base::message_flags flags,
-      Handler& handler, const IoExecutor& io_ex)
-  {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
-
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
-
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_socket_sendto_op<ConstBufferSequence,
-        endpoint_type, Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, impl.socket_,
-        buffers, destination, flags, handler, io_ex);
-
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::write_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_send_to"));
-
-    start_op(impl, reactor::write_op, p.p,
-        is_continuation, true, false,
-        ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
-    p.v = p.p = 0;
-  }
+      Handler& handler, const IoExecutor& io_ex);
 
   // Start an asynchronous wait until data can be sent without blocking.
   template <typename Handler, typename IoExecutor>
   void async_send_to(implementation_type& impl, const null_buffers&,
       const endpoint_type&, socket_base::message_flags,
-      Handler& handler, const IoExecutor& io_ex)
-  {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
-
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
-
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_null_buffers_op<Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, handler, io_ex);
-
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::write_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_send_to(null_buffers)"));
-
-    start_op(impl, reactor::write_op, p.p,
-        is_continuation, false, false, false, &io_ex, 0);
-    p.v = p.p = 0;
-  }
+      Handler& handler, const IoExecutor& io_ex);
 
   // Receive a datagram with the endpoint of the sender. Returns the number of
   // bytes received.
@@ -403,79 +346,74 @@ public:
   void async_receive_from(implementation_type& impl,
       const MutableBufferSequence& buffers, endpoint_type& sender_endpoint,
       socket_base::message_flags flags, Handler& handler,
-      const IoExecutor& io_ex)
-  {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
-
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
-
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_socket_recvfrom_op<MutableBufferSequence,
-        endpoint_type, Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    int protocol = impl.protocol_.type();
-    p.p = new (p.v) op(success_ec_, impl.socket_, protocol,
-        buffers, sender_endpoint, flags, handler, io_ex);
-
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::read_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_receive_from"));
-
-    start_op(impl,
-        (flags & socket_base::message_out_of_band)
-          ? reactor::except_op : reactor::read_op,
-        p.p, is_continuation, true, false,
-        ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
-    p.v = p.p = 0;
-  }
+      const IoExecutor& io_ex);
 
   // Wait until data can be received without blocking.
   template <typename Handler, typename IoExecutor>
   void async_receive_from(implementation_type& impl, const null_buffers&,
       endpoint_type& sender_endpoint, socket_base::message_flags flags,
-      Handler& handler, const IoExecutor& io_ex)
+      Handler& handler, const IoExecutor& io_ex);
+
+  // Send multiple datagrams to the specified endpoints. Returns the number of
+  // datagrams sent.
+  template <typename BufferSequences, typename EndpointSequence>
+  size_t send_to_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, asio::error_code& ec)
   {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
+    size_t n = detail::send_multiple<endpoint_type>(impl.socket_,
+        impl.state_, buffer_sequences, endpoints, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
 
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
+  // Receive multiple datagrams with the endpoints of the senders. Returns the
+  // number of datagrams received.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence>
+  size_t receive_from_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    size_t n = detail::receive_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, sizes, out_flags, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
 
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_null_buffers_op<Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, handler, io_ex);
+  // Start an asynchronous send of multiple datagrams to the specified
+  // endpoints.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename Handler, typename IoExecutor>
+  void async_send_to_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex)
+  {
+    this->template start_send_multiple_op<endpoint_type>(impl,
+        static_cast<BufferSequences&&>(buffer_sequences),
+        static_cast<EndpointSequence&&>(endpoints), flags, handler, io_ex,
+        "async_send_to_multiple");
+  }
 
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::read_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_receive_from(null_buffers)"));
-
-    // Reset endpoint since it can be given no sensible value at this time.
-    sender_endpoint = endpoint_type();
-
-    start_op(impl,
-        (flags & socket_base::message_out_of_band)
-          ? reactor::except_op : reactor::read_op,
-        p.p, is_continuation, false, false, false, &io_ex, 0);
-    p.v = p.p = 0;
+  // Start an asynchronous receive of multiple datagrams with the endpoints of
+  // the senders.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence,
+      typename Handler, typename IoExecutor>
+  void async_receive_from_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex)
+  {
+    this->start_receive_multiple_op(impl,
+        static_cast<BufferSequences&&>(buffer_sequences),
+        static_cast<EndpointSequence&&>(endpoints),
+        static_cast<SizeSequence&&>(sizes),
+        static_cast<FlagsSequence&&>(out_flags), flags, handler, io_ex,
+        "async_receive_from_multiple");
   }
 
   // Accept a new connection.
@@ -514,71 +452,14 @@ public:
   // valid until the accept's handler is invoked.
   template <typename Socket, typename Handler, typename IoExecutor>
   void async_accept(implementation_type& impl, Socket& peer,
-      endpoint_type* peer_endpoint, Handler& handler, const IoExecutor& io_ex)
-  {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
-
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
-
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_socket_accept_op<Socket, Protocol, Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, impl.socket_, impl.state_,
-        peer, impl.protocol_, peer_endpoint, handler, io_ex);
-
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected() && !peer.is_open())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::read_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_accept"));
-
-    start_accept_op(impl, p.p, is_continuation, peer.is_open(), &io_ex, 0);
-    p.v = p.p = 0;
-  }
+      endpoint_type* peer_endpoint, Handler& handler, const IoExecutor& io_ex);
 
   // Start an asynchronous accept. The peer_endpoint object must be valid until
   // the accept's handler is invoked.
   template <typename PeerIoExecutor, typename Handler, typename IoExecutor>
   void async_move_accept(implementation_type& impl,
       const PeerIoExecutor& peer_io_ex, endpoint_type* peer_endpoint,
-      Handler& handler, const IoExecutor& io_ex)
-  {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
-
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
-
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_socket_move_accept_op<Protocol,
-        PeerIoExecutor, Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, peer_io_ex, impl.socket_,
-        impl.state_, impl.protocol_, peer_endpoint, handler, io_ex);
-
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::read_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_accept"));
-
-    start_accept_op(impl, p.p, is_continuation, false, &io_ex, 0);
-    p.v = p.p = 0;
-  }
+      Handler& handler, const IoExecutor& io_ex);
 
   // Connect the socket to the specified endpoint.
   asio::error_code connect(implementation_type& impl,
@@ -594,35 +475,7 @@ public:
   template <typename Handler, typename IoExecutor>
   void async_connect(implementation_type& impl,
       const endpoint_type& peer_endpoint,
-      Handler& handler, const IoExecutor& io_ex)
-  {
-    bool is_continuation =
-      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
-
-    associated_cancellation_slot_t<Handler> slot
-      = asio::get_associated_cancellation_slot(handler);
-
-    // Allocate and construct an operation to wrap the handler.
-    typedef reactive_socket_connect_op<Handler, IoExecutor> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, impl.socket_, handler, io_ex);
-
-    // Optionally register for per-operation cancellation.
-    if (slot.is_connected())
-    {
-      p.p->cancellation_key_ =
-        &slot.template emplace<reactor_op_cancellation>(
-            &reactor_, &impl.reactor_data_, impl.socket_, reactor::connect_op);
-    }
-
-    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
-          &impl, impl.socket_, "async_connect"));
-
-    start_connect_op(impl, p.p, is_continuation,
-        peer_endpoint.data(), peer_endpoint.size(), &io_ex, 0);
-    p.v = p.p = 0;
-  }
+      Handler& handler, const IoExecutor& io_ex);
 };
 
 } // namespace detail
@@ -630,6 +483,8 @@ ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#include "asio/detail/impl/reactive_socket_service.hpp"
 
 #endif // !defined(ASIO_HAS_IOCP)
        //   && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)

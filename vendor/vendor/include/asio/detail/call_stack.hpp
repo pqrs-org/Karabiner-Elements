@@ -25,98 +25,122 @@ namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
-// Helper class to determine whether or not the current thread is inside an
-// invocation of io_context::run() for a specified io_context object.
-template <typename Key, typename Value = unsigned char>
+template <typename T> class call_stack;
+
+// Intrusive link node. T derives from call_frame<T> and provides key_type
+// and key() (see thread_info_base). The linked object is the value, so
+// top() needs no pointer chase to reach it, just a static_cast<T*>.
+template <typename T>
+class call_frame
+  : private noncopyable
+{
+protected:
+  call_frame() : key_(0), next_(0) {}
+  ~call_frame() {}
+
+  void* key_;
+  call_frame* next_;
+
+private:
+  friend class call_stack<T>;
+};
+
+// Helper to determine whether or not the current thread is inside an
+// invocation of io_context::run() for a specified owner, and to retrieve
+// the T pushed for it.
+template <typename T>
 class call_stack
 {
 public:
-  // Context class automatically pushes the key/value pair on to the stack.
+  typedef typename T::key_type key_type;
+
+  // Context class automatically links a T on to the stack, tagged with a
+  // key, for the context object's lifetime.
   class context
     : private noncopyable
   {
   public:
-    // Push the key on to the stack.
-    explicit context(Key* k)
-      : key_(k),
-        next_(call_stack<Key, Value>::top_)
+    // Push t on to the stack under key k.
+    context(key_type* k, T& t)
+      : linked_(&t)
     {
-      value_ = reinterpret_cast<unsigned char*>(this);
-      call_stack<Key, Value>::top_ = this;
+      call_frame<T>* node = &t;
+      node->key_ = k;
+      node->next_ = call_stack<T>::top_;
+      call_stack<T>::top_ = node;
     }
 
-    // Push the key/value pair on to the stack.
-    context(Key* k, Value& v)
-      : key_(k),
-        value_(&v),
-        next_(call_stack<Key, Value>::top_)
-    {
-      call_stack<Key, Value>::top_ = this;
-    }
-
-    // Pop the key/value pair from the stack.
+    // Pop t from the stack.
     ~context()
     {
-      call_stack<Key, Value>::top_ = next_;
+      call_stack<T>::top_ = static_cast<call_frame<T>*>(linked_)->next_;
     }
 
-    // Find the next context with the same key.
-    Value* next_by_key() const
+    // Find the next linked T with the same key.
+    T* next_by_key() const
     {
-      context* elem = next_;
+      call_frame<T>* self = linked_;
+      call_frame<T>* elem = self->next_;
       while (elem)
       {
-        if (elem->key_ == key_)
-          return elem->value_;
+        if (elem->key_ == self->key_)
+          return static_cast<T*>(elem);
         elem = elem->next_;
       }
       return 0;
     }
 
   private:
-    friend class call_stack<Key, Value>;
-
-    // The key associated with the context.
-    Key* key_;
-
-    // The value associated with the context.
-    Value* value_;
-
-    // The next element in the stack.
-    context* next_;
+    T* linked_;
   };
 
-  friend class context;
-
-  // Determine whether the specified owner is on the stack. Returns address of
-  // key if present, 0 otherwise.
-  static Value* contains(Key* k)
+  // Determine whether the specified owner is on the stack. Returns the
+  // linked T if present, 0 otherwise.
+  static T* contains(key_type* k)
   {
-    context* elem = top_;
+    call_frame<T>* elem = top_;
     while (elem)
     {
-      if (elem->key_ == k)
-        return elem->value_;
+      T* t = static_cast<T*>(elem);
+      if (t->key() == k)
+        return t;
       elem = elem->next_;
     }
     return 0;
   }
 
-  // Obtain the value at the top of the stack.
-  static Value* top()
+  // Obtain the T at the top of the stack.
+  static T* top()
   {
-    context* elem = top_;
-    return elem ? elem->value_ : 0;
+    call_frame<T>* elem = top_;
+    return elem ? static_cast<T*>(elem) : 0;
   }
 
 private:
+  friend class context;
+
   // The top of the stack of calls for the current thread.
-  static tss_ptr<context> top_;
+  static tss_ptr<call_frame<T> > top_;
 };
 
-template <typename Key, typename Value>
-tss_ptr<typename call_stack<Key, Value>::context>
-call_stack<Key, Value>::top_;
+template <typename T>
+tss_ptr<call_frame<T> >
+call_stack<T>::top_;
+
+// A minimal T for stacks with no value beyond presence. contains() returns
+// a non-null pointer, which is all such callers (e.g. strand) ever test.
+template <typename Key>
+class call_stack_key_only
+  : public call_frame<call_stack_key_only<Key> >
+{
+public:
+  typedef Key key_type;
+
+  key_type* key() const
+  {
+    return static_cast<key_type*>(this->key_);
+  }
+};
 
 } // namespace detail
 ASIO_INLINE_NAMESPACE_END

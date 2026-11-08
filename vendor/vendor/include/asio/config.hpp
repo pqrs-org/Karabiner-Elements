@@ -80,6 +80,36 @@ public:
   constraint_t<is_integral<T>::value, T>
   get(const char* section, const char* key_name, T default_value) const;
 
+  /// Retrieve a string configuration value.
+  /**
+   * The returned pointer may be:
+   * @li a pointer that is valid for the lifetime of the execution context, or
+   * @li a pointer to the supplied @c value buffer, or
+   * @li @c default_value, if no value is configured.
+   *
+   * @throws std::out_of_range Thrown if the configured value is too long for
+   * the supplied buffer.
+   */
+  ASIO_DECL const char* get(const char* section, const char* key_name,
+      const char* default_value, char* value, std::size_t value_len) const;
+
+  /// Retrieve a string configuration value into a character array.
+  /**
+   * The returned pointer may be:
+   * @li a pointer that is valid for the lifetime of the execution context, or
+   * @li a pointer to the supplied @c value buffer, or
+   * @li @c default_value, if no value is configured.
+   *
+   * @throws std::out_of_range Thrown if the configured value is too long for
+   * the supplied buffer.
+   */
+  template <std::size_t N>
+  const char* get(const char* section, const char* key_name,
+      const char* default_value, char (&value)[N]) const
+  {
+    return get(section, key_name, default_value, value, N);
+  }
+
 private:
   config_service& service_;
 };

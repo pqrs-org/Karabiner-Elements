@@ -24,6 +24,7 @@
 #include "asio/execution_context.hpp"
 #include "asio/socket_base.hpp"
 #include "asio/detail/buffer_sequence_adapter.hpp"
+#include "asio/detail/buffer_sequences_adapter.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/io_uring_null_buffers_op.hpp"
@@ -31,11 +32,14 @@
 #include "asio/detail/io_uring_socket_accept_op.hpp"
 #include "asio/detail/io_uring_socket_connect_op.hpp"
 #include "asio/detail/io_uring_socket_recvfrom_op.hpp"
+#include "asio/detail/io_uring_socket_recvmmsg_op.hpp"
+#include "asio/detail/io_uring_socket_sendmmsg_op.hpp"
 #include "asio/detail/io_uring_socket_sendto_op.hpp"
 #include "asio/detail/io_uring_socket_service_base.hpp"
 #include "asio/detail/socket_holder.hpp"
 #include "asio/detail/socket_ops.hpp"
 #include "asio/detail/socket_types.hpp"
+#include "asio/detail/unwrap_ref.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -474,6 +478,123 @@ public:
     p.v = p.p = 0;
   }
 
+  // Send multiple datagrams to the peer. Returns the number of datagrams sent.
+  template <typename BufferSequences>
+  size_t send_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    empty_range endpoints;
+    size_t n = detail::send_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
+
+  // Send multiple datagrams to the specified endpoints. Returns the number of
+  // datagrams sent.
+  template <typename BufferSequences, typename EndpointSequence>
+  size_t send_to_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    size_t n = detail::send_multiple<endpoint_type>(impl.socket_,
+        impl.state_, buffer_sequences, endpoints, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
+
+  // Receive multiple datagrams from the peer. Returns the number of datagrams
+  // received.
+  template <typename BufferSequences,
+      typename SizeSequence, typename FlagsSequence>
+  size_t receive_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, SizeSequence&& sizes,
+      FlagsSequence&& out_flags, socket_base::message_flags flags,
+      asio::error_code& ec)
+  {
+    empty_range endpoints;
+    size_t n = detail::receive_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, sizes, out_flags, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
+
+  // Receive multiple datagrams with the endpoints of the senders. Returns the
+  // number of datagrams received.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence>
+  size_t receive_from_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    size_t n = detail::receive_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, sizes, out_flags, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
+
+  // Start an asynchronous send of multiple datagrams.
+  template <typename BufferSequences, typename Handler, typename IoExecutor>
+  void async_send_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, socket_base::message_flags flags,
+      Handler& handler, const IoExecutor& io_ex)
+  {
+    start_send_multiple_op<void>(impl,
+        static_cast<BufferSequences&&>(buffer_sequences), empty_range(),
+        flags, handler, io_ex, "async_send_multiple");
+  }
+
+  // Start an asynchronous send of multiple datagrams to the specified
+  // endpoints.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename Handler, typename IoExecutor>
+  void async_send_to_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex)
+  {
+    start_send_multiple_op<endpoint_type>(impl,
+        static_cast<BufferSequences&&>(buffer_sequences),
+        static_cast<EndpointSequence&&>(endpoints), flags, handler, io_ex,
+        "async_send_to_multiple");
+  }
+
+  // Start an asynchronous receive of multiple datagrams.
+  template <typename BufferSequences, typename SizeSequence,
+      typename FlagsSequence, typename Handler, typename IoExecutor>
+  void async_receive_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, SizeSequence&& sizes,
+      FlagsSequence&& out_flags, socket_base::message_flags flags,
+      Handler& handler, const IoExecutor& io_ex)
+  {
+    start_receive_multiple_op(impl,
+        static_cast<BufferSequences&&>(buffer_sequences), empty_range(),
+        static_cast<SizeSequence&&>(sizes),
+        static_cast<FlagsSequence&&>(out_flags), flags, handler, io_ex,
+        "async_receive_multiple");
+  }
+
+  // Start an asynchronous receive of multiple datagrams with the endpoints of
+  // the senders.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence,
+      typename Handler, typename IoExecutor>
+  void async_receive_from_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex)
+  {
+    start_receive_multiple_op(impl,
+        static_cast<BufferSequences&&>(buffer_sequences),
+        static_cast<EndpointSequence&&>(endpoints),
+        static_cast<SizeSequence&&>(sizes),
+        static_cast<FlagsSequence&&>(out_flags), flags, handler, io_ex,
+        "async_receive_from_multiple");
+  }
+
   // Accept a new connection.
   template <typename Socket>
   asio::error_code accept(implementation_type& impl,
@@ -616,6 +737,86 @@ public:
           "socket", &impl, impl.socket_, "async_connect"));
 
     start_op(impl, io_uring_service::write_op, p.p, is_continuation, false);
+    p.v = p.p = 0;
+  }
+
+private:
+  // Start the asynchronous send of multiple datagrams.
+  template <typename Endpoint, typename BufferSequences,
+      typename EndpointSequence, typename Handler, typename IoExecutor>
+  void start_send_multiple_op(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex, const char* op_name)
+  {
+    bool is_continuation =
+      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
+
+    associated_cancellation_slot_t<Handler> slot
+      = asio::get_associated_cancellation_slot(handler);
+
+    typedef io_uring_socket_sendmmsg_op<decay_t<BufferSequences>,
+        decay_t<EndpointSequence>, Endpoint, Handler, IoExecutor> op;
+    typename op::ptr p = { asio::detail::addressof(handler),
+      op::ptr::allocate(handler), 0 };
+    p.p = new (p.v) op(success_ec_, impl.socket_,
+        buffer_sequences, endpoints, flags, handler, io_ex);
+
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<io_uring_op_cancellation>(&io_uring_service_,
+            &impl.io_object_data_, io_uring_service::write_op);
+    }
+
+    ASIO_HANDLER_CREATION((io_uring_service_.context(), *p.p,
+          "socket", &impl, impl.socket_, op_name));
+    (void)op_name;
+
+    start_op(impl, io_uring_service::write_op, p.p, is_continuation,
+        unwrap_ref(buffer_sequences).begin()
+          == unwrap_ref(buffer_sequences).end());
+    p.v = p.p = 0;
+  }
+
+  // Start the asynchronous receive of multiple datagrams.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence,
+      typename Handler, typename IoExecutor>
+  void start_receive_multiple_op(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex, const char* op_name)
+  {
+    bool is_continuation =
+      ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(handler);
+
+    associated_cancellation_slot_t<Handler> slot
+      = asio::get_associated_cancellation_slot(handler);
+
+    typedef io_uring_socket_recvmmsg_op<decay_t<BufferSequences>,
+        decay_t<EndpointSequence>, decay_t<SizeSequence>,
+        decay_t<FlagsSequence>, Handler, IoExecutor> op;
+    typename op::ptr p = { asio::detail::addressof(handler),
+      op::ptr::allocate(handler), 0 };
+    p.p = new (p.v) op(success_ec_, impl.socket_, buffer_sequences,
+        endpoints, sizes, out_flags, flags, handler, io_ex);
+
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<io_uring_op_cancellation>(&io_uring_service_,
+            &impl.io_object_data_, io_uring_service::read_op);
+    }
+
+    ASIO_HANDLER_CREATION((io_uring_service_.context(), *p.p,
+          "socket", &impl, impl.socket_, op_name));
+    (void)op_name;
+
+    start_op(impl, io_uring_service::read_op, p.p, is_continuation,
+        unwrap_ref(buffer_sequences).begin()
+          == unwrap_ref(buffer_sequences).end());
     p.v = p.p = 0;
   }
 };

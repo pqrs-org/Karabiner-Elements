@@ -21,6 +21,7 @@
 #include "asio/async_result.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/utility.hpp"
+#include "asio/piping.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -32,6 +33,13 @@ template <typename T>
 struct is_deferred : false_type
 {
 };
+
+#if !defined(GENERATING_DOCUMENTATION)
+template <typename T>
+struct supports_piping<T, enable_if_t<is_deferred<T>::value>> : true_type
+{
+};
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 /// Helper type to wrap multiple completion signatures.
 template <typename... Signatures>
@@ -316,7 +324,7 @@ private:
         static_cast<initiation_t&&>(initiation_), token,
         std::get<I>(static_cast<init_args_t&&>(init_args_))...))
   {
-    return async_initiate<CompletionToken, Signature>(
+    ASIO_INVOKE_INLINE return async_initiate<CompletionToken, Signature>(
         static_cast<initiation_t&&>(initiation_), token,
         std::get<I>(static_cast<init_args_t&&>(init_args_))...);
   }
@@ -352,7 +360,7 @@ public:
         static_cast<CompletionToken&&>(token),
         detail::index_sequence_for<InitArgs...>()))
   {
-    return this->invoke_helper(
+    ASIO_INVOKE_INLINE return this->invoke_helper(
         static_cast<CompletionToken&&>(token),
         detail::index_sequence_for<InitArgs...>());
   }
@@ -625,6 +633,9 @@ public:
     /// Specify @c deferred_t as the default completion token type.
     typedef deferred_t default_completion_token_type;
 
+    /// The adapted executor type, without the default completion token.
+    typedef InnerExecutor executor_without_default;
+
     /// Construct the adapted executor from the inner executor type.
     template <typename InnerExecutor1>
     executor_with_default(const InnerExecutor1& ex,
@@ -694,17 +705,6 @@ public:
     return deferred_conditional<>(b);
   }
 };
-
-/// Pipe operator used to chain deferred operations.
-template <typename Head, typename Tail>
-inline auto operator|(Head head, Tail&& tail)
-  -> constraint_t<
-      is_deferred<Head>::value,
-      decltype(static_cast<Head&&>(head)(static_cast<Tail&&>(tail)))
-    >
-{
-  return static_cast<Head&&>(head)(static_cast<Tail&&>(tail));
-}
 
 /// A @ref completion_token object used to specify that an asynchronous
 /// operation should return a function object to lazily launch the operation.

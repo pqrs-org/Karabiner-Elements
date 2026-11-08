@@ -23,6 +23,10 @@
 
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
+namespace detail
+{
+  class executor_function;
+}
 
 class system_context;
 
@@ -419,19 +423,24 @@ private:
   {
   }
 
-  /// Execution helper implementation for the possibly blocking property.
+  // Execution helper implementation for the possibly blocking property.
   template <typename Function>
   void do_execute(Function&& f,
       execution::blocking_t::possibly_t) const;
 
-  /// Execution helper implementation for the always blocking property.
+  // Execution helper implementation for the always blocking property.
   template <typename Function>
   void do_execute(Function&& f,
       execution::blocking_t::always_t) const;
 
-  /// Execution helper implementation for the never blocking property.
+  // Execution helper implementation for the never blocking property.
   template <typename Function>
   void do_execute(Function&& f,
+      execution::blocking_t::never_t) const;
+
+  // Execution helper implementation for the never blocking property, for when
+  // a type-erased function is passed.
+  void do_execute(detail::executor_function&& f,
       execution::blocking_t::never_t) const;
 
   // The allocator used for execution functions.

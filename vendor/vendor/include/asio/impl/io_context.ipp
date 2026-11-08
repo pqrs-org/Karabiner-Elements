@@ -21,7 +21,6 @@
 #include "asio/detail/concurrency_hint.hpp"
 #include "asio/detail/limits.hpp"
 #include "asio/detail/service_registry.hpp"
-#include "asio/detail/throw_error.hpp"
 
 #if defined(ASIO_HAS_IOCP)
 # include "asio/detail/win_iocp_io_context.hpp"
@@ -59,34 +58,22 @@ io_context::~io_context()
 
 io_context::count_type io_context::run()
 {
-  asio::error_code ec;
-  count_type s = impl_.run(ec);
-  asio::detail::throw_error(ec);
-  return s;
+  return impl_.run();
 }
 
 io_context::count_type io_context::run_one()
 {
-  asio::error_code ec;
-  count_type s = impl_.run_one(ec);
-  asio::detail::throw_error(ec);
-  return s;
+  return impl_.run_one();
 }
 
 io_context::count_type io_context::poll()
 {
-  asio::error_code ec;
-  count_type s = impl_.poll(ec);
-  asio::detail::throw_error(ec);
-  return s;
+  return impl_.poll();
 }
 
 io_context::count_type io_context::poll_one()
 {
-  asio::error_code ec;
-  count_type s = impl_.poll_one(ec);
-  asio::detail::throw_error(ec);
-  return s;
+  return impl_.poll_one();
 }
 
 void io_context::stop()

@@ -30,13 +30,16 @@ namespace detail {
 
 void awaitable_launch_context::launch(void (*pump_fn)(void*), void* arg)
 {
-  call_stack<awaitable_launch_context>::context ctx(this);
+  call_stack_key_only<awaitable_launch_context> call_stack_key;
+  call_stack<call_stack_key_only<awaitable_launch_context> >::context
+    ctx(this, call_stack_key);
   pump_fn(arg);
 }
 
 bool awaitable_launch_context::is_launching()
 {
-  return !!call_stack<awaitable_launch_context>::contains(this);
+  return !!call_stack<call_stack_key_only<awaitable_launch_context> >
+    ::contains(this);
 }
 
 } // namespace detail

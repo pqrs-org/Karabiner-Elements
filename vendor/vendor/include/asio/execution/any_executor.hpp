@@ -21,15 +21,19 @@
 #include "asio/detail/assert.hpp"
 #include "asio/detail/atomic_count.hpp"
 #include "asio/detail/cstddef.hpp"
+#include "asio/detail/cstdint.hpp"
 #include "asio/detail/executor_function.hpp"
 #include "asio/detail/memory.hpp"
+#include "asio/detail/native_executors.hpp"
 #include "asio/detail/non_const_lvalue.hpp"
 #include "asio/detail/scoped_ptr.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/throw_exception.hpp"
+#include "asio/detail/utility.hpp"
 #include "asio/execution/bad_executor.hpp"
 #include "asio/execution/blocking.hpp"
 #include "asio/execution/executor.hpp"
+#include "asio/execution/relationship.hpp"
 #include "asio/prefer.hpp"
 #include "asio/query.hpp"
 #include "asio/require.hpp"
@@ -396,6 +400,15 @@ struct supportable_properties<I, void(Head, Tail...)>
       > {};
 };
 
+template <std::size_t I>
+struct supportable_properties<I, void()>
+{
+  template <typename T>
+  struct is_valid_target : true_type
+  {
+  };
+};
+
 template <typename T, typename Props>
 struct is_valid_target_executor :
   conditional_t<
@@ -408,6 +421,48 @@ struct is_valid_target_executor :
 
 template <typename Props>
 struct is_valid_target_executor<int, Props> : false_type
+{
+};
+
+// Helper templates to determine whether one property list appears as a
+// contiguous subset of another.
+
+template <typename Sub, typename Props>
+struct is_prop_list_prefix : false_type
+{
+};
+
+template <typename... Props>
+struct is_prop_list_prefix<void(), void(Props...)> : true_type
+{
+};
+
+template <typename Head, typename... SubTail, typename... Tail>
+struct is_prop_list_prefix<void(Head, SubTail...), void(Head, Tail...)> :
+  is_prop_list_prefix<void(SubTail...), void(Tail...)>
+{
+};
+
+template <std::size_t Offset>
+struct prop_sublist_found
+{
+  static constexpr bool value = true;
+  static constexpr std::size_t offset = Offset;
+};
+
+template <typename Sub, typename Props, std::size_t Offset = 0>
+struct find_prop_sublist
+{
+  static constexpr bool value = false;
+};
+
+template <typename Sub, std::size_t Offset, typename Head, typename... Tail>
+struct find_prop_sublist<Sub, void(Head, Tail...), Offset> :
+  conditional_t<
+    is_prop_list_prefix<Sub, void(Head, Tail...)>::value,
+    prop_sublist_found<Offset>,
+    find_prop_sublist<Sub, void(Tail...), Offset + 1>
+  >
 {
 };
 
@@ -483,6 +538,14 @@ private:
   impl_base* impl_;
 };
 
+enum class staged_execution_kind
+{
+  none,
+  never,
+  never_fork,
+  never_continuation
+};
+
 class any_executor_base
 {
 public:
@@ -501,10 +564,7 @@ public:
           == execution::blocking.always))
   {
     any_executor_base::construct_object(ex,
-        integral_constant<bool,
-          sizeof(Executor) <= sizeof(object_type)
-            && alignment_of<Executor>::value <= alignment_of<object_type>::value
-        >());
+        integral_constant<bool, object_fits<Executor>::value>());
   }
 
   template <ASIO_EXECUTION_EXECUTOR Executor>
@@ -515,10 +575,7 @@ public:
           == execution::blocking.always))
   {
     any_executor_base::construct_object(std::nothrow, ex,
-        integral_constant<bool,
-          sizeof(Executor) <= sizeof(object_type)
-            && alignment_of<Executor>::value <= alignment_of<object_type>::value
-        >());
+        integral_constant<bool, object_fits<Executor>::value>());
     if (target_ == 0)
     {
       object_fns_ = 0;
@@ -689,6 +746,46 @@ public:
     }
   }
 
+  void execute(asio::detail::executor_function&& f) const
+  {
+    if (target_)
+    {
+      if (target_fns_->blocking_execute != 0)
+      {
+        target_fns_->blocking_execute(*this, function_view(f));
+      }
+      else
+      {
+        target_fns_->execute(*this,
+            static_cast<asio::detail::executor_function&&>(f));
+      }
+    }
+    else
+    {
+      bad_executor ex;
+      asio::detail::throw_exception(ex);
+    }
+  }
+
+  // Determines whether execute_staged() may be used. It may not when there is
+  // no target, or when the target is always blocking, in which case execute()
+  // would not construct a function object.
+  bool can_execute_staged() const noexcept
+  {
+    return target_ != 0 && target_fns_->has_execute_staged;
+  }
+
+  bool execute_staged(asio::detail::executor_function& f,
+      staged_execution_kind kind) const
+  {
+    (kind == staged_execution_kind::never_fork
+      ? target_fns_->execute_staged_never_fork
+      : kind == staged_execution_kind::never_continuation
+        ? target_fns_->execute_staged_never_continuation
+        : target_fns_->execute_staged_never)(*this, f);
+    return true;
+  }
+
   template <typename Executor>
   Executor* target()
   {
@@ -717,6 +814,30 @@ public:
   }
 #endif // !defined(ASIO_NO_TYPEID)
 
+  friend bool target_has_native_execute( const any_executor_base& ex) noexcept
+  {
+    return ex.target_ && ex.target_fns_->has_native_execute;
+  }
+
+  friend bool target_has_native_outstanding_work(
+      const any_executor_base& ex) noexcept
+  {
+    return ex.target_ && ex.target_fns_->has_native_outstanding_work;
+  }
+
+  // Whether two polymorphic executors designate the same target object of
+  // the same target type. Unlike any_executor<...>'s own operator==, this
+  // compares across differing SupportableProperties lists (e.g.
+  // any_completion_executor against any_io_executor). It operates purely
+  // on the common any_executor_base layer, so it never hits the
+  // hidden-friend operator== ambiguity that a direct == between two
+  // different any_executor<...> instantiations has today.
+  friend bool equals_polymorphic_target(const any_executor_base& a,
+      const any_executor_base& b) noexcept
+  {
+    return a.equality_helper(b);
+  }
+
   struct unspecified_bool_type_t {};
   typedef void (*unspecified_bool_type)(unspecified_bool_type_t);
   static void unspecified_bool_true(unspecified_bool_type_t) {}
@@ -734,27 +855,34 @@ public:
 protected:
   bool equality_helper(const any_executor_base& other) const noexcept
   {
-    if (target_ == other.target_)
-      return true;
-    if (target_ && !other.target_)
-      return false;
-    if (!target_ && other.target_)
-      return false;
     if (target_fns_ != other.target_fns_)
       return false;
+    if (target_ == other.target_)
+      return true;
     return target_fns_->equal(*this, other);
+  }
+
+  template <typename Ex>
+  void* object_address() const noexcept
+  {
+    return alignment_of<Ex>::value <= object_align
+      ? const_cast<object_type*>(&object_)
+      : reinterpret_cast<void*>(
+          (reinterpret_cast<std::uintptr_t>(&object_)
+            + alignment_of<Ex>::value - 1)
+          & ~static_cast<std::uintptr_t>(alignment_of<Ex>::value - 1));
   }
 
   template <typename Ex>
   Ex& object()
   {
-    return *static_cast<Ex*>(static_cast<void*>(&object_));
+    return *static_cast<Ex*>(object_address<Ex>());
   }
 
   template <typename Ex>
   const Ex& object() const
   {
-    return *static_cast<const Ex*>(static_cast<const void*>(&object_));
+    return *static_cast<const Ex*>(object_address<Ex>());
   }
 
   struct object_fns
@@ -817,14 +945,15 @@ protected:
   template <typename Obj>
   static void copy_object(any_executor_base& ex1, const any_executor_base& ex2)
   {
-    new (&ex1.object_) Obj(ex2.object<Obj>());
+    new (ex1.object_address<Obj>()) Obj(ex2.object<Obj>());
     ex1.target_ = &ex1.object<Obj>();
   }
 
   template <typename Obj>
   static void move_object(any_executor_base& ex1, any_executor_base& ex2)
   {
-    new (&ex1.object_) Obj(static_cast<Obj&&>(ex2.object<Obj>()));
+    new (ex1.object_address<Obj>())
+      Obj(static_cast<Obj&&>(ex2.object<Obj>()));
     ex1.target_ = &ex1.object<Obj>();
     ex2.object<Obj>().~Obj();
   }
@@ -865,6 +994,14 @@ protected:
     bool (*equal)(const any_executor_base&, const any_executor_base&);
     void (*execute)(const any_executor_base&, function&&);
     void (*blocking_execute)(const any_executor_base&, function_view);
+    void (*execute_staged_never)(const any_executor_base&, function&);
+    void (*execute_staged_never_fork)(const any_executor_base&, function&);
+    void (*execute_staged_never_continuation)(
+        const any_executor_base&, function&);
+
+    bool has_execute_staged;
+    bool has_native_execute;
+    bool has_native_outstanding_work;
   };
 
 #if !defined(ASIO_NO_TYPEID)
@@ -886,8 +1023,8 @@ protected:
   static bool equal_ex(const any_executor_base& ex1,
       const any_executor_base& ex2)
   {
-    const Ex* p1 = ex1.target<Ex>();
-    const Ex* p2 = ex2.target<Ex>();
+    const Ex* p1 = static_cast<const Ex*>(ex1.target_);
+    const Ex* p2 = static_cast<const Ex*>(ex2.target_);
     ASIO_ASSUME(p1 != 0 && p2 != 0);
     return *p1 == *p2;
   }
@@ -895,7 +1032,7 @@ protected:
   template <typename Ex>
   static void execute_ex(const any_executor_base& ex, function&& f)
   {
-    const Ex* p = ex.target<Ex>();
+    const Ex* p = static_cast<const Ex*>(ex.target_);
     ASIO_ASSUME(p != 0);
     p->execute(static_cast<function&&>(f));
   }
@@ -903,9 +1040,66 @@ protected:
   template <typename Ex>
   static void blocking_execute_ex(const any_executor_base& ex, function_view f)
   {
-    const Ex* p = ex.target<Ex>();
+    const Ex* p = static_cast<const Ex*>(ex.target_);
     ASIO_ASSUME(p != 0);
     p->execute(f);
+  }
+
+  // Staged execution applies blocking.never to the target, and then, for the
+  // fork and continuation variants, prefers that relationship. Each variant is
+  // a separate table entry so that the call site, which knows its variant at
+  // compile time, needs no run-time choice within the target function.
+  template <typename Ex>
+  static void execute_staged_never_ex(const any_executor_base& ex, function& f)
+  {
+    any_executor_base::execute_staged_impl<Ex>(ex, f,
+        execution::relationship_t(), can_require<const Ex&,
+          const execution::blocking_t::never_t&>());
+  }
+
+  template <typename Ex>
+  static void execute_staged_never_fork_ex(
+      const any_executor_base& ex, function& f)
+  {
+    any_executor_base::execute_staged_impl<Ex>(ex, f,
+        execution::relationship.fork, can_require<const Ex&,
+          const execution::blocking_t::never_t&>());
+  }
+
+  template <typename Ex>
+  static void execute_staged_never_continuation_ex(
+      const any_executor_base& ex, function& f)
+  {
+    any_executor_base::execute_staged_impl<Ex>(ex, f,
+        execution::relationship.continuation, can_require<const Ex&,
+          const execution::blocking_t::never_t&>());
+  }
+
+  template <typename Ex>
+  static void execute_staged_impl(const any_executor_base& ex, function& f,
+      execution::relationship_t, true_type)
+  {
+    const Ex* p = static_cast<const Ex*>(ex.target_);
+    ASIO_ASSUME(p != 0);
+    asio::require(*p, execution::blocking.never).execute(
+        static_cast<function&&>(f));
+  }
+
+  template <typename Ex, typename Relationship>
+  static void execute_staged_impl(const any_executor_base& ex, function& f,
+      const Relationship& r, true_type)
+  {
+    const Ex* p = static_cast<const Ex*>(ex.target_);
+    ASIO_ASSUME(p != 0);
+    asio::prefer(
+        asio::require(*p, execution::blocking.never),
+        r).execute(static_cast<function&&>(f));
+  }
+
+  template <typename Ex, typename Relationship>
+  static void execute_staged_impl(const any_executor_base&, function&,
+      const Relationship&, false_type)
+  {
   }
 
   template <typename Ex>
@@ -919,7 +1113,19 @@ protected:
       &any_executor_base::target_type_ex<Ex>,
       &any_executor_base::equal_ex<Ex>,
       &any_executor_base::execute_ex<Ex>,
-      0
+      0,
+      &any_executor_base::execute_staged_never_ex<Ex>,
+      &any_executor_base::execute_staged_never_fork_ex<Ex>,
+      &any_executor_base::execute_staged_never_continuation_ex<Ex>,
+      can_require<const Ex&, const execution::blocking_t::never_t&>::value,
+      is_same<
+        asio::detail::native_execute_kind_t<Ex>,
+        asio::detail::native_execute_kinds::native
+      >::value,
+      is_same<
+        asio::detail::native_outstanding_work_kind_t<Ex>,
+        asio::detail::native_outstanding_work_kinds::native
+      >::value
     };
 
     static const target_fns fns_with_blocking_execute =
@@ -927,7 +1133,19 @@ protected:
       &any_executor_base::target_type_ex<Ex>,
       &any_executor_base::equal_ex<Ex>,
       0,
-      &any_executor_base::blocking_execute_ex<Ex>
+      &any_executor_base::blocking_execute_ex<Ex>,
+      0,
+      0,
+      0,
+      false,
+      is_same<
+        asio::detail::native_execute_kind_t<Ex>,
+        asio::detail::native_execute_kinds::native
+      >::value,
+      is_same<
+        asio::detail::native_outstanding_work_kind_t<Ex>,
+        asio::detail::native_outstanding_work_kinds::native
+      >::value
     };
 
     return is_always_blocking ? &fns_with_blocking_execute : &fns_with_execute;
@@ -937,6 +1155,13 @@ protected:
 # pragma warning (push)
 # pragma warning (disable:4702)
 #endif // defined(ASIO_MSVC)
+
+  struct prop_fns
+  {
+    void (*query)(void*, const void*, const void*);
+    const prop_fns* (*require)(any_executor_base&, const void*, const void*);
+    const prop_fns* (*prefer)(any_executor_base&, const void*, const void*);
+  };
 
   static void query_fn_void(void*, const void*, const void*)
   {
@@ -1062,79 +1287,81 @@ protected:
     query_fn_impl<Ex, Prop>(result, ex, prop, 0);
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly require_fn_impl(const void*, const void*,
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* require_fn_impl(any_executor_base&,
+      const void*, const void*,
       enable_if_t<
         is_same<Ex, void>::value
       >*)
   {
     bad_executor ex;
     asio::detail::throw_exception(ex);
-    return Poly();
+    return Poly::template prop_fns_table<void>() + I;
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly require_fn_impl(const void* ex, const void* prop,
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* require_fn_impl(any_executor_base& result,
+      const void* ex, const void* prop,
       enable_if_t<
         !is_same<Ex, void>::value && Prop::is_requirable
       >*)
   {
-    return asio::require(*static_cast<const Ex*>(ex),
-        *static_cast<const Prop*>(prop));
+    return Poly::adopt(result,
+        asio::require(*static_cast<const Ex*>(ex),
+          *static_cast<const Prop*>(prop))) + I;
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly require_fn_impl(const void*, const void*, ...)
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* require_fn_impl(any_executor_base&,
+      const void*, const void*, ...)
   {
-    return Poly();
+    return Poly::template prop_fns_table<void>() + I;
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly require_fn(const void* ex, const void* prop)
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* require_fn(any_executor_base& result,
+      const void* ex, const void* prop)
   {
-    return require_fn_impl<Poly, Ex, Prop>(ex, prop, 0);
+    return require_fn_impl<Poly, Ex, Prop, I>(result, ex, prop, 0);
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly prefer_fn_impl(const void*, const void*,
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* prefer_fn_impl(any_executor_base&,
+      const void*, const void*,
       enable_if_t<
         is_same<Ex, void>::value
       >*)
   {
     bad_executor ex;
     asio::detail::throw_exception(ex);
-    return Poly();
+    return Poly::template prop_fns_table<void>() + I;
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly prefer_fn_impl(const void* ex, const void* prop,
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* prefer_fn_impl(any_executor_base& result,
+      const void* ex, const void* prop,
       enable_if_t<
         !is_same<Ex, void>::value && Prop::is_preferable
       >*)
   {
-    return asio::prefer(*static_cast<const Ex*>(ex),
-        *static_cast<const Prop*>(prop));
+    return Poly::adopt(result,
+        asio::prefer(*static_cast<const Ex*>(ex),
+          *static_cast<const Prop*>(prop))) + I;
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly prefer_fn_impl(const void*, const void*, ...)
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* prefer_fn_impl(any_executor_base&,
+      const void*, const void*, ...)
   {
-    return Poly();
+    return Poly::template prop_fns_table<void>() + I;
   }
 
-  template <typename Poly, typename Ex, class Prop>
-  static Poly prefer_fn(const void* ex, const void* prop)
+  template <typename Poly, typename Ex, class Prop, std::size_t I>
+  static const prop_fns* prefer_fn(any_executor_base& result,
+      const void* ex, const void* prop)
   {
-    return prefer_fn_impl<Poly, Ex, Prop>(ex, prop, 0);
+    return prefer_fn_impl<Poly, Ex, Prop, I>(result, ex, prop, 0);
   }
-
-  template <typename Poly>
-  struct prop_fns
-  {
-    void (*query)(void*, const void*, const void*);
-    Poly (*require)(const void*, const void*);
-    Poly (*prefer)(const void*, const void*);
-  };
 
 #if defined(ASIO_MSVC)
 # pragma warning (pop)
@@ -1157,7 +1384,8 @@ private:
   void construct_object(Executor& ex, true_type)
   {
     object_fns_ = object_fns_table<Executor>();
-    target_ = new (&object_) Executor(static_cast<Executor&&>(ex));
+    target_ = new (object_address<Executor>())
+      Executor(static_cast<Executor&&>(ex));
   }
 
   template <typename Executor>
@@ -1175,7 +1403,8 @@ private:
       Executor& ex, true_type) noexcept
   {
     object_fns_ = object_fns_table<Executor>();
-    target_ = new (&object_) Executor(static_cast<Executor&&>(ex));
+    target_ = new (object_address<Executor>())
+      Executor(static_cast<Executor&&>(ex));
   }
 
   template <typename Executor>
@@ -1192,16 +1421,138 @@ private:
 /*private:*/public:
 //  template <typename...> friend class any_executor;
 
-  typedef aligned_storage<
-      sizeof(asio::detail::shared_ptr<void>) + sizeof(void*),
-      alignment_of<asio::detail::shared_ptr<void>>::value
-    >::type object_type;
+  template <typename Executor>
+  void construct_target(Executor& ex)
+  {
+    const target_fns* fns = target_fns_table<Executor>(
+        any_executor_base::query_blocking(ex,
+          can_query<const Executor&, const execution::blocking_t&>())
+        == execution::blocking.always);
+    any_executor_base::construct_object(ex,
+        integral_constant<bool, object_fits<Executor>::value>());
+    target_fns_ = fns;
+  }
+
+#if defined(ASIO_MSVC) && (_MSC_VER < 1920) && !defined(_WIN64)
+  // Older 32-bit MSVC cannot pass an over-aligned object by value, so
+  // over-aligned targets are placed at an aligned address within the storage.
+  static constexpr std::size_t object_align =
+    alignment_of<asio::detail::shared_ptr<void>>::value;
+#else // defined(ASIO_MSVC) && (_MSC_VER < 1920) && !defined(_WIN64)
+  static constexpr std::size_t object_align =
+    alignment_of<asio::detail::shared_ptr<void>>::value
+      > alignment_of<std::uint64_t>::value
+    ? alignment_of<asio::detail::shared_ptr<void>>::value
+    : alignment_of<std::uint64_t>::value;
+#endif // defined(ASIO_MSVC) && (_MSC_VER < 1920) && !defined(_WIN64)
+
+  static constexpr std::size_t uint64_padding =
+    alignment_of<std::uint64_t>::value > object_align
+    ? alignment_of<std::uint64_t>::value - object_align : 0;
+
+  static constexpr std::size_t object_size =
+    sizeof(asio::detail::shared_ptr<void>) + sizeof(void*)
+      > 2 * sizeof(void*) + sizeof(std::uint64_t) + uint64_padding
+    ? sizeof(asio::detail::shared_ptr<void>) + sizeof(void*)
+    : 2 * sizeof(void*) + sizeof(std::uint64_t) + uint64_padding;
+
+  typedef aligned_storage<object_size, object_align>::type object_type;
+
+  template <typename Ex>
+  struct object_fits : integral_constant<bool,
+      sizeof(Ex) + (alignment_of<Ex>::value > object_align
+        ? alignment_of<Ex>::value - object_align : 0)
+          <= sizeof(object_type)>
+  {
+  };
 
   object_type object_;
   const object_fns* object_fns_;
   void* target_;
   const target_fns* target_fns_;
 };
+
+// A drop-in replacement for a == b usable at a call site that may see
+// EITHER the same executor type on both sides (any executor type, not
+// just a polymorphic one, and plain == is unambiguous and already correct
+// there, so it is used as-is) OR two differing any_executor<...>
+// instantiations (where an erasure-safe comparison by target identity
+// is required instead, per below). Only the exact-same-type case reaches
+// operator==, so a concrete executor whose == is not itself callable with
+// two different types is unaffected. A differing pair of non-polymorphic
+// types (which a fast-path call site should not be comparing in the first
+// place) conservatively compares unequal.
+template <typename Executor1, typename Executor2>
+enable_if_t<is_same<Executor1, Executor2>::value, bool>
+executor_targets_equal(const Executor1& a, const Executor2& b) noexcept
+{
+  return a == b;
+}
+
+// Both sides polymorphic, of differing any_executor<...> instantiations
+// (e.g. an any_completion_executor and an any_io_executor): they designate
+// the same executor exactly when they hold the same target object of the
+// same target type, which the any_executor_base subobjects answer between
+// themselves. A plain == cannot be used here even though both sides have
+// one, since each any_executor<...> instantiation injects its own
+// hidden-friend ==, and where the two sides' types differ both of those
+// become viable candidates and the call is ambiguous.
+template <typename Executor1, typename Executor2>
+enable_if_t<
+  !is_same<Executor1, Executor2>::value
+    && is_base_of<any_executor_base, Executor1>::value
+    && is_base_of<any_executor_base, Executor2>::value,
+  bool
+> executor_targets_equal(const Executor1& a, const Executor2& b) noexcept
+{
+  return equals_polymorphic_target(
+      static_cast<const any_executor_base&>(a),
+      static_cast<const any_executor_base&>(b));
+}
+
+// One side polymorphic and the other concrete: the polymorphic executor
+// designates the same executor exactly when its target is of that concrete
+// type and compares equal to it. target<Executor>() answers the first
+// question, yielding null for any other target type, and for an executor
+// with no target at all. The concrete type's own operator== answers
+// the second, so an executor that merely shares a type, such as another
+// io_context's, is correctly unequal. A target that carries a property, such
+// as tracked outstanding work, is a distinct target type and so does not
+// match a plain one either.
+template <typename Executor1, typename Executor2>
+enable_if_t<
+  !is_same<Executor1, Executor2>::value
+    && is_base_of<any_executor_base, Executor1>::value
+    && !is_base_of<any_executor_base, Executor2>::value,
+  bool
+> executor_targets_equal(const Executor1& a, const Executor2& b) noexcept
+{
+  const Executor2* target = a.template target<Executor2>();
+  return target != 0 && *target == b;
+}
+
+template <typename Executor1, typename Executor2>
+enable_if_t<
+  !is_same<Executor1, Executor2>::value
+    && !is_base_of<any_executor_base, Executor1>::value
+    && is_base_of<any_executor_base, Executor2>::value,
+  bool
+> executor_targets_equal(const Executor1& a, const Executor2& b) noexcept
+{
+  return executor_targets_equal(b, a);
+}
+
+// Two differing concrete types designate different executors.
+template <typename Executor1, typename Executor2>
+enable_if_t<
+  !is_same<Executor1, Executor2>::value
+    && !is_base_of<any_executor_base, Executor1>::value
+    && !is_base_of<any_executor_base, Executor2>::value,
+  bool
+> executor_targets_equal(const Executor1&, const Executor2&) noexcept
+{
+  return false;
+}
 
 template <typename Derived, typename Property, typename = void>
 struct any_executor_context
@@ -1243,7 +1594,7 @@ public:
         conditional_t<
           !is_same<Executor, any_executor>::value
             && !is_base_of<detail::any_executor_base, Executor>::value,
-          is_executor<Executor>,
+          detail::is_valid_target_executor<Executor, void()>,
           false_type
         >::value
       >* = 0)
@@ -1258,7 +1609,7 @@ public:
         conditional_t<
           !is_same<Executor, any_executor>::value
             && !is_base_of<detail::any_executor_base, Executor>::value,
-          is_executor<Executor>,
+          detail::is_valid_target_executor<Executor, void()>,
           false_type
         >::value
       >* = 0) noexcept
@@ -1474,13 +1825,107 @@ public:
   }
 
   template <typename... OtherSupportableProperties>
-  any_executor(any_executor<OtherSupportableProperties...> other,
+  any_executor(const any_executor<OtherSupportableProperties...>& other,
       enable_if_t<
         conditional_t<
           !is_same<
             any_executor<OtherSupportableProperties...>,
             any_executor
           >::value,
+          detail::find_prop_sublist<
+            void(SupportableProperties...),
+            void(OtherSupportableProperties...)>,
+          false_type
+        >::value
+      >* = 0) noexcept
+    : detail::any_executor_base(
+        static_cast<const detail::any_executor_base&>(other)),
+      prop_fns_(other.prop_fns_
+          + detail::find_prop_sublist<void(SupportableProperties...),
+            void(OtherSupportableProperties...)>::offset)
+  {
+  }
+
+  template <typename... OtherSupportableProperties>
+  any_executor(any_executor<OtherSupportableProperties...>&& other,
+      enable_if_t<
+        conditional_t<
+          !is_same<
+            any_executor<OtherSupportableProperties...>,
+            any_executor
+          >::value,
+          detail::find_prop_sublist<
+            void(SupportableProperties...),
+            void(OtherSupportableProperties...)>,
+          false_type
+        >::value
+      >* = 0) noexcept
+    : detail::any_executor_base(
+        static_cast<detail::any_executor_base&&>(
+          static_cast<detail::any_executor_base&>(other))),
+      prop_fns_(other.prop_fns_
+          + detail::find_prop_sublist<void(SupportableProperties...),
+            void(OtherSupportableProperties...)>::offset)
+  {
+  }
+
+  template <typename... OtherSupportableProperties>
+  any_executor(std::nothrow_t,
+      const any_executor<OtherSupportableProperties...>& other,
+      enable_if_t<
+        conditional_t<
+          !is_same<
+            any_executor<OtherSupportableProperties...>,
+            any_executor
+          >::value,
+          detail::find_prop_sublist<
+            void(SupportableProperties...),
+            void(OtherSupportableProperties...)>,
+          false_type
+        >::value
+      >* = 0) noexcept
+    : detail::any_executor_base(
+        static_cast<const detail::any_executor_base&>(other)),
+      prop_fns_(other.prop_fns_
+          + detail::find_prop_sublist<void(SupportableProperties...),
+            void(OtherSupportableProperties...)>::offset)
+  {
+  }
+
+  template <typename... OtherSupportableProperties>
+  any_executor(std::nothrow_t,
+      any_executor<OtherSupportableProperties...>&& other,
+      enable_if_t<
+        conditional_t<
+          !is_same<
+            any_executor<OtherSupportableProperties...>,
+            any_executor
+          >::value,
+          detail::find_prop_sublist<
+            void(SupportableProperties...),
+            void(OtherSupportableProperties...)>,
+          false_type
+        >::value
+      >* = 0) noexcept
+    : detail::any_executor_base(
+        static_cast<detail::any_executor_base&&>(
+          static_cast<detail::any_executor_base&>(other))),
+      prop_fns_(other.prop_fns_
+          + detail::find_prop_sublist<void(SupportableProperties...),
+            void(OtherSupportableProperties...)>::offset)
+  {
+  }
+
+  template <typename... OtherSupportableProperties>
+  any_executor(any_executor<OtherSupportableProperties...> other,
+      enable_if_t<
+        conditional_t<
+          !is_same<
+            any_executor<OtherSupportableProperties...>,
+            any_executor
+          >::value
+          && !detail::find_prop_sublist<void(SupportableProperties...),
+            void(OtherSupportableProperties...)>::value,
           typename detail::supportable_properties<
             0, void(SupportableProperties...)>::template is_valid_target<
               any_executor<OtherSupportableProperties...>>,
@@ -1502,6 +1947,10 @@ public:
           !is_same<
             any_executor<OtherSupportableProperties...>,
             any_executor
+          >::value
+          && !detail::find_prop_sublist<
+            void(SupportableProperties...),
+            void(OtherSupportableProperties...)
           >::value,
           typename detail::supportable_properties<
             0, void(SupportableProperties...)>::template is_valid_target<
@@ -1586,7 +2035,7 @@ public:
     {
       detail::any_executor_base::swap(
           static_cast<detail::any_executor_base&>(other));
-      const prop_fns<any_executor>* tmp_prop_fns = other.prop_fns_;
+      const prop_fns* tmp_prop_fns = other.prop_fns_;
       other.prop_fns_ = prop_fns_;
       prop_fns_ = tmp_prop_fns;
     }
@@ -1787,8 +2236,11 @@ public:
       asio::detail::throw_exception(ex);
     }
     typedef find_convertible_requirable_property<Property> found;
-    return prop_fns_[found::index].require(object_fns_->target(*this),
-        &static_cast<const typename found::type&>(p));
+    any_executor result;
+    result.prop_fns_ = prop_fns_[found::index].require(result,
+        object_fns_->target(*this),
+        &static_cast<const typename found::type&>(p)) - found::index;
+    return result;
   }
 
   template <typename T>
@@ -1809,29 +2261,65 @@ public:
       asio::detail::throw_exception(ex);
     }
     typedef find_convertible_preferable_property<Property> found;
-    return prop_fns_[found::index].prefer(object_fns_->target(*this),
-        &static_cast<const typename found::type&>(p));
+    any_executor result;
+    result.prop_fns_ = prop_fns_[found::index].prefer(result,
+        object_fns_->target(*this),
+        &static_cast<const typename found::type&>(p)) - found::index;
+    return result;
   }
 
 //private:
   template <typename Ex>
-  static const prop_fns<any_executor>* prop_fns_table()
+  static const prop_fns* prop_fns_table()
   {
-    static const prop_fns<any_executor> fns[] =
+    return any_executor::prop_fns_table_impl<Ex>(
+        asio::detail::index_sequence_for<SupportableProperties...>());
+  }
+
+  template <typename Ex, std::size_t... I>
+  static const prop_fns* prop_fns_table_impl(
+      asio::detail::index_sequence<I...>)
+  {
+    static const prop_fns fns[] =
     {
       {
         &detail::any_executor_base::query_fn<
             Ex, SupportableProperties>,
         &detail::any_executor_base::require_fn<
-            any_executor, Ex, SupportableProperties>,
+            any_executor, Ex, SupportableProperties, I>,
         &detail::any_executor_base::prefer_fn<
-            any_executor, Ex, SupportableProperties>
+            any_executor, Ex, SupportableProperties, I>
       }...
     };
     return fns;
   }
 
-  const prop_fns<any_executor>* prop_fns_;
+  template <typename Executor>
+  static const prop_fns* adopt(detail::any_executor_base& result, Executor ex)
+  {
+    return any_executor::adopt_impl(result, ex,
+        is_base_of<detail::any_executor_base, Executor>());
+  }
+
+  template <typename Executor>
+  static const prop_fns* adopt_impl(detail::any_executor_base& result,
+      Executor& ex, false_type)
+  {
+    result.construct_target(ex);
+    return prop_fns_table<Executor>();
+  }
+
+  template <typename Executor>
+  static const prop_fns* adopt_impl(detail::any_executor_base& result,
+      Executor& ex, true_type)
+  {
+    any_executor tmp(static_cast<Executor&&>(ex));
+    result = static_cast<detail::any_executor_base&&>(
+        static_cast<detail::any_executor_base&>(tmp));
+    return tmp.prop_fns_;
+  }
+
+  const prop_fns* prop_fns_;
 };
 
 template <typename... SupportableProperties>

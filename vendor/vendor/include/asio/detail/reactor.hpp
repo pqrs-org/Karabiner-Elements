@@ -21,6 +21,8 @@
 # include "asio/detail/null_reactor.hpp"
 #elif defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 # include "asio/detail/null_reactor.hpp"
+#elif defined(ASIO_ENABLE_SPIN_REACTOR)
+# include "asio/detail/spin_reactor.hpp"
 #elif defined(ASIO_HAS_EPOLL)
 # include "asio/detail/epoll_reactor.hpp"
 #elif defined(ASIO_HAS_KQUEUE)
@@ -39,6 +41,8 @@ namespace detail {
 typedef null_reactor reactor;
 #elif defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 typedef null_reactor reactor;
+#elif defined(ASIO_ENABLE_SPIN_REACTOR)
+typedef spin_reactor reactor;
 #elif defined(ASIO_HAS_EPOLL)
 typedef epoll_reactor reactor;
 #elif defined(ASIO_HAS_KQUEUE)

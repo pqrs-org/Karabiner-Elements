@@ -20,6 +20,7 @@
 #include "asio/async_result.hpp"
 #include "asio/detail/initiation_base.hpp"
 #include "asio/detail/timed_cancel_op.hpp"
+#include "asio/detail/triggered_cancel_op.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -125,6 +126,49 @@ struct initiate_cancel_after_timer : initiation_base<Initiation>
   }
 };
 
+template <typename Initiation, typename... Signatures>
+struct initiate_cancel_after_trigger : initiation_base<Initiation>
+{
+  using initiation_base<Initiation>::initiation_base;
+
+  template <typename Handler, typename Trigger, typename... Args>
+  void operator()(Handler&& handler, Trigger&& trigger,
+      cancellation_type_t cancel_type, Args&&... args) &&
+  {
+    using op = detail::triggered_cancel_op<decay_t<Handler>,
+        decay_t<Trigger>, Signatures...>;
+
+    non_const_lvalue<Handler> handler2(handler);
+    typename op::ptr p = { asio::detail::addressof(handler2.value),
+        op::ptr::allocate(handler2.value), 0 };
+    p.p = new (p.v) op(handler2.value,
+        static_cast<Trigger&&>(trigger), cancel_type);
+
+    op* o = p.p;
+    p.v = p.p = 0;
+    o->start(static_cast<Initiation&&>(*this), static_cast<Args&&>(args)...);
+  }
+
+  template <typename Handler, typename Trigger, typename... Args>
+  void operator()(Handler&& handler, Trigger&& trigger,
+      cancellation_type_t cancel_type, Args&&... args) const &
+  {
+    using op = detail::triggered_cancel_op<decay_t<Handler>,
+        decay_t<Trigger>, Signatures...>;
+
+    non_const_lvalue<Handler> handler2(handler);
+    typename op::ptr p = { asio::detail::addressof(handler2.value),
+        op::ptr::allocate(handler2.value), 0 };
+    p.p = new (p.v) op(handler2.value,
+        static_cast<Trigger&&>(trigger), cancel_type);
+
+    op* o = p.p;
+    p.v = p.p = 0;
+    o->start(static_cast<const Initiation&>(*this),
+        static_cast<Args&&>(args)...);
+  }
+};
+
 } // namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
@@ -196,6 +240,49 @@ struct async_result<
   }
 };
 
+template <typename CompletionToken, typename Trigger, typename... Signatures>
+struct async_result<
+    cancel_after_trigger<CompletionToken, Trigger>,
+    Signatures...>
+  : async_result<CompletionToken, Signatures...>
+{
+  template <typename Initiation, typename RawCompletionToken, typename... Args>
+  static auto initiate(Initiation&& initiation,
+      RawCompletionToken&& token, Args&&... args)
+    -> decltype(
+      async_initiate<
+        conditional_t<
+          is_const<remove_reference_t<RawCompletionToken>>::value,
+            const CompletionToken, CompletionToken>,
+        Signatures...>(
+          declval<detail::initiate_cancel_after_trigger<
+            decay_t<Initiation>, Signatures...>>(),
+          token.token_,
+          static_cast<
+            conditional_t<
+              is_const<remove_reference_t<RawCompletionToken>>::value
+                  || is_lvalue_reference<RawCompletionToken>::value,
+              const Trigger&, Trigger&&>>(token.trigger_),
+          token.cancel_type_, static_cast<Args&&>(args)...))
+  {
+    return async_initiate<
+      conditional_t<
+        is_const<remove_reference_t<RawCompletionToken>>::value,
+          const CompletionToken, CompletionToken>,
+      Signatures...>(
+        detail::initiate_cancel_after_trigger<
+          decay_t<Initiation>, Signatures...>(
+            static_cast<Initiation&&>(initiation)),
+        token.token_,
+        static_cast<
+          conditional_t<
+            is_const<remove_reference_t<RawCompletionToken>>::value
+                || is_lvalue_reference<RawCompletionToken>::value,
+            const Trigger&, Trigger&&>>(token.trigger_),
+        token.cancel_type_, static_cast<Args&&>(args)...);
+  }
+};
+
 template <typename Clock, typename WaitTraits, typename... Signatures>
 struct async_result<partial_cancel_after<Clock, WaitTraits>, Signatures...>
 {
@@ -256,6 +343,43 @@ struct async_result<
           Clock, WaitTraits, Executor>(
             default_completion_token_t<associated_executor_t<Initiation>>{},
             token.timer_, token.timeout_, token.cancel_type_),
+        static_cast<Args&&>(args)...);
+  }
+};
+
+template <typename Trigger, typename... Signatures>
+struct async_result<partial_cancel_after_trigger<Trigger>, Signatures...>
+{
+  template <typename Initiation, typename RawCompletionToken, typename... Args>
+  static auto initiate(Initiation&& initiation,
+      RawCompletionToken&& token, Args&&... args)
+    -> decltype(
+      async_initiate<Signatures...>(
+        static_cast<Initiation&&>(initiation),
+        cancel_after_trigger<
+          default_completion_token_t<associated_executor_t<Initiation>>,
+          Trigger>(
+            default_completion_token_t<associated_executor_t<Initiation>>{},
+            static_cast<
+              conditional_t<
+                is_const<remove_reference_t<RawCompletionToken>>::value
+                    || is_lvalue_reference<RawCompletionToken>::value,
+                const Trigger&, Trigger&&>>(token.trigger_),
+            token.cancel_type_),
+        static_cast<Args&&>(args)...))
+  {
+    return async_initiate<Signatures...>(
+        static_cast<Initiation&&>(initiation),
+        cancel_after_trigger<
+          default_completion_token_t<associated_executor_t<Initiation>>,
+          Trigger>(
+            default_completion_token_t<associated_executor_t<Initiation>>{},
+            static_cast<
+              conditional_t<
+                is_const<remove_reference_t<RawCompletionToken>>::value
+                    || is_lvalue_reference<RawCompletionToken>::value,
+                const Trigger&, Trigger&&>>(token.trigger_),
+            token.cancel_type_),
         static_cast<Args&&>(args)...);
   }
 };

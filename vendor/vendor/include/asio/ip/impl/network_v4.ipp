@@ -128,7 +128,7 @@ std::string network_v4::to_string() const
 std::string network_v4::to_string(asio::error_code& ec) const
 {
   using namespace std; // For sprintf.
-  ec = asio::error_code();
+  asio::error::clear(ec);
   char prefix_len[16];
 #if defined(ASIO_HAS_SNPRINTF)
   snprintf(prefix_len, sizeof(prefix_len), "/%u", prefix_length_);

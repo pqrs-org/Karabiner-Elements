@@ -156,34 +156,15 @@ void dev_poll_reactor::call_post_immediate_completion(
       op, is_continuation);
 }
 
-void dev_poll_reactor::start_op(int op_type, socket_type descriptor,
-    dev_poll_reactor::per_descriptor_data&, reactor_op* op,
-    bool is_continuation, bool allow_speculative,
-    void (*on_immediate)(operation*, bool, const void*),
-    const void* immediate_arg)
+bool dev_poll_reactor::start_unready_op(int op_type, socket_type descriptor,
+    asio::detail::mutex::scoped_lock& lock, reactor_op* op)
 {
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  ASIO_ASSERT(lock.locked());
 
   if (shutdown_)
   {
-    on_immediate(op, is_continuation, immediate_arg);
-    return;
-  }
-
-  if (allow_speculative)
-  {
-    if (op_type != read_op || !op_queue_[except_op].has_operation(descriptor))
-    {
-      if (!op_queue_[op_type].has_operation(descriptor))
-      {
-        if (op->perform())
-        {
-          lock.unlock();
-          on_immediate(op, is_continuation, immediate_arg);
-          return;
-        }
-      }
-    }
+    lock.unlock();
+    return true;
   }
 
   bool first = op_queue_[op_type].enqueue_operation(descriptor, op);
@@ -203,6 +184,8 @@ void dev_poll_reactor::start_op(int op_type, socket_type descriptor,
       ev.events |= POLLPRI;
     interrupter_.interrupt();
   }
+
+  return false;
 }
 
 void dev_poll_reactor::cancel_ops(socket_type descriptor,
@@ -309,7 +292,7 @@ void dev_poll_reactor::run(long usec, op_queue<operation>& ops)
 
   // Block on the /dev/poll descriptor.
   ::pollfd events[128] = { { 0, 0, 0 } };
-  ::dvpoll dp = { 0, 0, 0 };
+  ::dvpoll dp = {};
   dp.dp_fds = events;
   dp.dp_nfds = 128;
   dp.dp_timeout = timeout;

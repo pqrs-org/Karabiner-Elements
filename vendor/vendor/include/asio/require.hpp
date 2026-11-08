@@ -407,6 +407,23 @@ constexpr bool can_require_v
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename... Properties>
+struct is_identity_require :
+  integral_constant<bool,
+    ASIO_VERSIONED_NAME(require_fn)::call_traits<
+      require_t, T, void(Properties...)>::overload
+        == ASIO_VERSIONED_NAME(require_fn)::identity>
+{
+};
+
+#if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename... Properties>
+constexpr bool is_identity_require_v
+  = is_identity_require<T, Properties...>::value;
+
+#endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename... Properties>
 struct is_nothrow_require :
   integral_constant<bool,
     ASIO_VERSIONED_NAME(require_fn)::call_traits<

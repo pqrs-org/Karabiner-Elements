@@ -67,7 +67,7 @@ public:
 
 const asio::error_category& get_ssl_category()
 {
-  static detail::ssl_category instance;
+  ASIO_NO_DESTROY static detail::ssl_category instance;
   return instance;
 }
 
@@ -110,7 +110,7 @@ public:
 
 const asio::error_category& get_stream_category()
 {
-  static detail::stream_category instance;
+  ASIO_NO_DESTROY static detail::stream_category instance;
   return instance;
 }
 

@@ -23,6 +23,7 @@
 #include "asio/detail/winrt_ssocket_service_base.hpp"
 #include "asio/detail/winrt_async_op.hpp"
 #include "asio/detail/winrt_utils.hpp"
+#include "asio/error.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -142,7 +143,7 @@ asio::error_code winrt_ssocket_service_base::close(
 {
   delete impl.socket_;
   impl.socket_ = nullptr;
-  ec = asio::error_code();
+  asio::error::clear(ec);
   return ec;
 }
 
@@ -197,7 +198,7 @@ std::size_t winrt_ssocket_service_base::do_get_endpoint(
             &reinterpret_cast<sockaddr_in4_type*>(addr)->sin_addr, &scope, ec);
         reinterpret_cast<sockaddr_in4_type*>(addr)->sin_port
           = socket_ops::host_to_network_short(port);
-        ec = asio::error_code();
+        asio::error::clear(ec);
         return sizeof(sockaddr_in4_type);
       }
     case ASIO_OS_DEF(AF_INET6):
@@ -212,7 +213,7 @@ std::size_t winrt_ssocket_service_base::do_get_endpoint(
             &reinterpret_cast<sockaddr_in6_type*>(addr)->sin6_addr, &scope, ec);
         reinterpret_cast<sockaddr_in6_type*>(addr)->sin6_port
           = socket_ops::host_to_network_short(port);
-        ec = asio::error_code();
+        asio::error::clear(ec);
         return sizeof(sockaddr_in6_type);
       }
     default:
@@ -249,7 +250,7 @@ asio::error_code winrt_ssocket_service_base::do_set_option(
         int value = 0;
         std::memcpy(&value, optval, optlen);
         impl.socket_->Control->KeepAlive = !!value;
-        ec = asio::error_code();
+        asio::error::clear(ec);
       }
       else
       {
@@ -264,7 +265,7 @@ asio::error_code winrt_ssocket_service_base::do_set_option(
         int value = 0;
         std::memcpy(&value, optval, optlen);
         impl.socket_->Control->NoDelay = !!value;
-        ec = asio::error_code();
+        asio::error::clear(ec);
       }
       else
       {
@@ -306,7 +307,7 @@ void winrt_ssocket_service_base::do_get_option(
         int value = impl.socket_->Control->KeepAlive ? 1 : 0;
         std::memcpy(optval, &value, sizeof(int));
         *optlen = sizeof(int);
-        ec = asio::error_code();
+        asio::error::clear(ec);
       }
       else
       {
@@ -321,7 +322,7 @@ void winrt_ssocket_service_base::do_get_option(
         int value = impl.socket_->Control->NoDelay ? 1 : 0;
         std::memcpy(optval, &value, sizeof(int));
         *optlen = sizeof(int);
-        ec = asio::error_code();
+        asio::error::clear(ec);
       }
       else
       {
@@ -468,7 +469,7 @@ std::size_t winrt_ssocket_service_base::do_send(
 
     if (bufs.all_empty())
     {
-      ec = asio::error_code();
+      asio::error::clear(ec);
       return 0;
     }
 
@@ -548,7 +549,7 @@ std::size_t winrt_ssocket_service_base::do_receive(
 
     if (bufs.all_empty())
     {
-      ec = asio::error_code();
+      asio::error::clear(ec);
       return 0;
     }
 

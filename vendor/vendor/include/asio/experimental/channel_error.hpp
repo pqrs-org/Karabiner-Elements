@@ -15,8 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/detail/config.hpp"
-#include "asio/error_code.hpp"
+#include "asio/channel_error.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -24,63 +23,23 @@ namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 namespace error {
-
-enum channel_errors
-{
-  /// The channel was closed.
-  channel_closed = 1,
-
-  /// The channel was cancelled.
-  channel_cancelled = 2
-};
-
-extern ASIO_DECL
-const asio::error_category& get_channel_category();
-
-ASIO_INLINE_OR_STATIC_VARIABLE const asio::error_category&
-  channel_category ASIO_UNUSED_VARIABLE
-  = asio::experimental::error::get_channel_category();
-
+  using asio::channel_errc::channel_errors;
+  using asio::channel_errc::channel_closed;
+  using asio::channel_errc::channel_cancelled;
+  using asio::channel_errc::get_channel_category;
+  ASIO_INLINE_OR_STATIC_VARIABLE const asio::error_category&
+    channel_category ASIO_UNUSED_VARIABLE
+    = asio::channel_errc::get_channel_category();
+  using asio::channel_errc::make_error_code;
 } // namespace error
 namespace channel_errc {
-  // Simulates a scoped enum.
-  using error::channel_closed;
-  using error::channel_cancelled;
+  using asio::channel_errc::channel_closed;
+  using asio::channel_errc::channel_cancelled;
 } // namespace channel_errc
 } // namespace experimental
 ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
-namespace std {
-
-template<> struct is_error_code_enum<
-    asio::experimental::error::channel_errors>
-{
-  static const bool value = true;
-};
-
-} // namespace std
-
-namespace asio {
-ASIO_INLINE_NAMESPACE_BEGIN
-namespace experimental {
-namespace error {
-
-inline asio::error_code make_error_code(channel_errors e)
-{
-  return asio::error_code(
-      static_cast<int>(e), get_channel_category());
-}
-
-} // namespace error
-} // namespace experimental
-ASIO_INLINE_NAMESPACE_END
-} // namespace asio
-
 #include "asio/detail/pop_options.hpp"
-
-#if defined(ASIO_HEADER_ONLY)
-# include "asio/experimental/impl/channel_error.ipp"
-#endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_EXPERIMENTAL_CHANNEL_ERROR_HPP

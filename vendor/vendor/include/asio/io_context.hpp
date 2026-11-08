@@ -47,6 +47,8 @@ namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 
 namespace detail {
+  class executor_function;
+
 #if defined(ASIO_HAS_IOCP)
   typedef win_iocp_io_context io_context_impl;
   class win_iocp_overlapped_ptr;
@@ -200,7 +202,7 @@ private:
 
 public:
   template <typename Allocator, uintptr_t Bits>
-  class basic_executor_type;
+  class ASIO_EMPTY_BASES basic_executor_type;
 
   template <typename Allocator, uintptr_t Bits>
   friend class basic_executor_type;
@@ -512,6 +514,11 @@ private:
   io_context(const io_context&) = delete;
   io_context& operator=(const io_context&) = delete;
 
+  // Helper function to invoke a function immediately, on the calling thread.
+  template <typename Function>
+  ASIO_NEVER_INLINE static void execute_immediately(
+      io_context* ctx, Function&& f);
+
   // Backwards compatible overload for use with services derived from
   // io_context::service.
   template <typename Service>
@@ -530,13 +537,13 @@ private:
 
 /// Executor implementation type used to submit functions to an io_context.
 template <typename Allocator, uintptr_t Bits>
-class io_context::basic_executor_type :
-  detail::io_context_bits, Allocator
+class ASIO_EMPTY_BASES io_context::basic_executor_type :
+  detail::io_context_bits, detail::allocator_base<Allocator>
 {
 public:
   /// Copy constructor.
   basic_executor_type(const basic_executor_type& other) noexcept
-    : Allocator(static_cast<const Allocator&>(other)),
+    : detail::allocator_base<Allocator>(other.allocator_ref()),
       target_(other.target_)
   {
     if (Bits & outstanding_work_tracked)
@@ -546,7 +553,8 @@ public:
 
   /// Move constructor.
   basic_executor_type(basic_executor_type&& other) noexcept
-    : Allocator(static_cast<Allocator&&>(other)),
+    : detail::allocator_base<Allocator>(
+        static_cast<Allocator&&>(other.allocator_ref())),
       target_(other.target_)
   {
     if (Bits & outstanding_work_tracked)
@@ -586,7 +594,7 @@ private:
   constexpr basic_executor_type require(execution::blocking_t::possibly_t) const
   {
     return basic_executor_type(context_ptr(),
-        *this, bits() & ~blocking_never);
+        this->allocator_ref(), bits() & ~blocking_never);
   }
 
   /// Obtain an executor with the @c blocking.never property.
@@ -602,7 +610,7 @@ private:
   constexpr basic_executor_type require(execution::blocking_t::never_t) const
   {
     return basic_executor_type(context_ptr(),
-        *this, bits() | blocking_never);
+        this->allocator_ref(), bits() | blocking_never);
   }
 
   /// Obtain an executor with the @c relationship.fork property.
@@ -618,7 +626,7 @@ private:
   constexpr basic_executor_type require(execution::relationship_t::fork_t) const
   {
     return basic_executor_type(context_ptr(),
-        *this, bits() & ~relationship_continuation);
+        this->allocator_ref(), bits() & ~relationship_continuation);
   }
 
   /// Obtain an executor with the @c relationship.continuation property.
@@ -635,7 +643,7 @@ private:
       execution::relationship_t::continuation_t) const
   {
     return basic_executor_type(context_ptr(),
-        *this, bits() | relationship_continuation);
+        this->allocator_ref(), bits() | relationship_continuation);
   }
 
   /// Obtain an executor with the @c outstanding_work.tracked property.
@@ -653,7 +661,7 @@ private:
   require(execution::outstanding_work_t::tracked_t) const
   {
     return basic_executor_type<Allocator, Bits | outstanding_work_tracked>(
-        context_ptr(), *this, bits());
+        context_ptr(), this->allocator_ref(), bits());
   }
 
   /// Obtain an executor with the @c outstanding_work.untracked property.
@@ -671,7 +679,7 @@ private:
   require(execution::outstanding_work_t::untracked_t) const
   {
     return basic_executor_type<Allocator, Bits & ~outstanding_work_tracked>(
-        context_ptr(), *this, bits());
+        context_ptr(), this->allocator_ref(), bits());
   }
 
   /// Obtain an executor with the specified @c allocator property.
@@ -836,7 +844,7 @@ private:
   constexpr Allocator query(
       execution::allocator_t<OtherAllocator>) const noexcept
   {
-    return static_cast<const Allocator&>(*this);
+    return this->allocator_ref();
   }
 
   /// Query the current value of the @c allocator property.
@@ -851,7 +859,7 @@ private:
    */
   constexpr Allocator query(execution::allocator_t<void>) const noexcept
   {
-    return static_cast<const Allocator&>(*this);
+    return this->allocator_ref();
   }
 
 public:
@@ -870,7 +878,7 @@ public:
       const basic_executor_type& b) noexcept
   {
     return a.target_ == b.target_
-      && static_cast<const Allocator&>(a) == static_cast<const Allocator&>(b);
+      && a.allocator_ref() == b.allocator_ref();
   }
 
   /// Compare two executors for inequality.
@@ -881,12 +889,15 @@ public:
       const basic_executor_type& b) noexcept
   {
     return a.target_ != b.target_
-      || static_cast<const Allocator&>(a) != static_cast<const Allocator&>(b);
+      || a.allocator_ref() != b.allocator_ref();
   }
 
   /// Execution function.
   template <typename Function>
-  void execute(Function&& f) const;
+  void execute(Function&& f) const
+  {
+    this->do_execute(static_cast<Function&&>(f));
+  }
 
 #if !defined(ASIO_NO_TS_EXECUTORS)
 public:
@@ -969,7 +980,7 @@ private:
 
   // Constructor used by io_context::get_executor().
   explicit basic_executor_type(io_context& i) noexcept
-    : Allocator(),
+    : detail::allocator_base<Allocator>(),
       target_(reinterpret_cast<uintptr_t>(&i))
   {
     if (Bits & outstanding_work_tracked)
@@ -979,13 +990,20 @@ private:
   // Constructor used by require().
   basic_executor_type(io_context* i,
       const Allocator& a, uintptr_t bits) noexcept
-    : Allocator(a),
+    : detail::allocator_base<Allocator>(a),
       target_(reinterpret_cast<uintptr_t>(i) | bits)
   {
     if (Bits & outstanding_work_tracked)
       if (context_ptr())
         context_ptr()->impl_.work_started();
   }
+
+  /// Execution helper implementation.
+  template <typename Function>
+  void do_execute(Function&& f) const;
+
+  /// Execution helper implementation, when passed a type-erased function.
+  void do_execute(detail::executor_function&& f) const;
 
   io_context* context_ptr() const noexcept
   {

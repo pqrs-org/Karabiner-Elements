@@ -39,6 +39,12 @@ unspecified error;
 unspecified bytes_transferred;
 
 /// An argument placeholder, for use with std::bind() or boost::bind(), that
+/// corresponds to the messages_transferred argument of a handler for
+/// asynchronous functions such as
+/// asio::basic_datagram_socket::async_send_multiple.
+unspecified messages_transferred;
+
+/// An argument placeholder, for use with std::bind() or boost::bind(), that
 /// corresponds to the iterator argument of a handler for asynchronous functions
 /// such as asio::async_connect.
 unspecified iterator;
@@ -63,6 +69,7 @@ unspecified signal_number;
 #if defined(ASIO_HAS_INLINE_VARIABLES)
 inline constexpr decay_t<decltype(std::placeholders::_1)> error;
 inline constexpr decay_t<decltype(std::placeholders::_2)> bytes_transferred;
+inline constexpr decay_t<decltype(std::placeholders::_2)> messages_transferred;
 inline constexpr decay_t<decltype(std::placeholders::_2)> iterator;
 inline constexpr decay_t<decltype(std::placeholders::_2)> results;
 inline constexpr decay_t<decltype(std::placeholders::_2)> endpoint;
@@ -70,6 +77,7 @@ inline constexpr decay_t<decltype(std::placeholders::_2)> signal_number;
 #else // defined(ASIO_HAS_INLINE_VARIABLES)
 static constexpr auto& error = std::placeholders::_1;
 static constexpr auto& bytes_transferred = std::placeholders::_2;
+static constexpr auto& messages_transferred = std::placeholders::_2;
 static constexpr auto& iterator = std::placeholders::_2;
 static constexpr auto& results = std::placeholders::_2;
 static constexpr auto& endpoint = std::placeholders::_2;

@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/io_control.hpp"
 
 #if defined(ASIO_WINDOWS_RUNTIME)
 
@@ -134,9 +135,18 @@ public:
 
   // Perform an IO control command on the socket.
   template <typename IO_Control_Command>
-  asio::error_code io_control(base_implementation_type&,
-      IO_Control_Command&, asio::error_code& ec)
+  asio::error_code io_control(base_implementation_type& impl,
+      IO_Control_Command& command, asio::error_code& ec)
   {
+    // Nothing here chooses the order or the frequency of its work, so the
+    // command succeeds and has no effect.
+    const char* descriptor_name = 0;
+    if (get_descriptor_name(command, descriptor_name, ec))
+    {
+      // Descriptor name is unused.
+      return ec;
+    }
+
     ec = asio::error::operation_not_supported;
     return ec;
   }

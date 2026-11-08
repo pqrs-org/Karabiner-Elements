@@ -388,11 +388,8 @@ private:
 };
 
 template <typename Executors, typename Handler, typename Return>
-  requires is_same<
-    typename associated_cancellation_slot<
-      Handler, cancellation_slot
-    >::asio_associated_cancellation_slot_is_unspecialised,
-    void>::value
+  requires (!has_associated_cancellation_slot<
+      Handler, cancellation_slot>::value)
 class co_composed_state_cancellation<Executors, Handler, Return>
 {
 public:
@@ -528,11 +525,8 @@ public:
 };
 
 template <typename Executors, typename Handler, typename Return>
-  requires is_same<
-    typename associated_cancellation_slot<
-      Handler, cancellation_slot
-    >::asio_associated_cancellation_slot_is_unspecialised,
-    void>::value
+  requires (!has_associated_cancellation_slot<
+      Handler, cancellation_slot>::value)
 class co_composed_handler_cancellation<Executors, Handler, Return>
 {
 };

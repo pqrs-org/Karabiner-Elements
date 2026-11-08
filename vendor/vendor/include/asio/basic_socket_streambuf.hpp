@@ -26,6 +26,7 @@
 #include "asio/detail/buffer_sequence_adapter.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/throw_error.hpp"
+#include "asio/error.hpp"
 #include "asio/io_context.hpp"
 #include "asio/steady_timer.hpp"
 
@@ -147,7 +148,7 @@ public:
     put_buffer_.swap(other.put_buffer_);
     setg(other.eback(), other.gptr(), other.egptr());
     setp(other.pptr(), other.epptr());
-    other.ec_ = asio::error_code();
+    asio::error::clear(other.ec_);
     other.expiry_time_ = max_expiry_time();
     other.init_buffers();
   }
@@ -164,7 +165,7 @@ public:
     put_buffer_.swap(other.put_buffer_);
     setg(other.eback(), other.gptr(), other.egptr());
     setp(other.pptr(), other.epptr());
-    other.ec_ = asio::error_code();
+    asio::error::clear(other.ec_);
     other.expiry_time_ = max_expiry_time();
     other.put_buffer_.resize(buffer_size);
     other.init_buffers();
@@ -188,7 +189,7 @@ public:
   basic_socket_streambuf* connect(const endpoint_type& endpoint)
   {
     init_buffers();
-    ec_ = asio::error_code();
+    asio::error::clear(ec_);
     this->connect_to_endpoints(&endpoint, &endpoint + 1);
     return !ec_ ? this : 0;
   }

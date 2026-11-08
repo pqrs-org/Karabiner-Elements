@@ -52,6 +52,9 @@ public:
     /// Specify @c detached_t as the default completion token type.
     typedef detached_t default_completion_token_type;
 
+    /// The adapted executor type, without the default completion token.
+    typedef InnerExecutor executor_without_default;
+
     /// Construct the adapted executor from the inner executor type.
     executor_with_default(const InnerExecutor& ex) noexcept
       : InnerExecutor(ex)

@@ -76,7 +76,7 @@ public:
     ASIO_DECL operation* perform_io(uint32_t events);
     ASIO_DECL static void do_complete(
         void* owner, operation* base,
-        const asio::error_code& ec, std::size_t bytes_transferred);
+        int error_value, std::size_t bytes_transferred);
   };
 
   // Per-descriptor data.
@@ -109,6 +109,13 @@ public:
       int op_type, socket_type descriptor,
       per_descriptor_data& descriptor_data, reactor_op* op);
 
+  // Give a descriptor a name, used to lookup per-descriptor configuraation.
+  void set_descriptor_name(per_descriptor_data&,
+      const char* /*name*/, asio::error_code& ec)
+  {
+    asio::error::clear(ec);
+  }
+
   // Move descriptor registration from one descriptor_data object to another.
   ASIO_DECL void move_descriptor(socket_type descriptor,
       per_descriptor_data& target_descriptor_data,
@@ -121,24 +128,28 @@ public:
   ASIO_DECL static void call_post_immediate_completion(
       operation* op, bool is_continuation, const void* self);
 
-  // Start a new operation. The reactor operation will be performed when the
-  // given descriptor is flagged as ready, or an error has occurred.
-  ASIO_DECL void start_op(int op_type, socket_type descriptor,
-      per_descriptor_data& descriptor_data, reactor_op* op,
-      bool is_continuation, bool allow_speculative,
-      void (*on_immediate)(operation*, bool, const void*),
-      const void* immediate_arg);
+  // Start a new operation with the operation type and perform function
+  // specified at compile time. Returns true if the operation is ready for
+  // immediate completion. Otherwise, the reactor operation will be performed
+  // when the given descriptor is flagged as ready, or an error has occurred.
+  template <int OpType, reactor_op::perform_func_type Perform>
+  inline bool start_op(socket_type descriptor,
+      per_descriptor_data& descriptor_data, reactor_op* op);
 
-  // Start a new operation. The reactor operation will be performed when the
-  // given descriptor is flagged as ready, or an error has occurred.
-  void start_op(int op_type, socket_type descriptor,
-      per_descriptor_data& descriptor_data, reactor_op* op,
-      bool is_continuation, bool allow_speculative)
-  {
-    start_op(op_type, descriptor, descriptor_data,
-        op, is_continuation, allow_speculative,
-        &epoll_reactor::call_post_immediate_completion, this);
-  }
+  // Set the result of an operation that was started on an unopen descriptor.
+  ASIO_DECL ASIO_NEVER_INLINE static bool start_bad_descriptor_op(
+      reactor_op* op);
+
+  // Record that a speculative operation exhausted the descriptor.
+  ASIO_DECL ASIO_NEVER_INLINE static void record_done_and_exhausted(
+      int op_type, per_descriptor_data& descriptor_data);
+
+  // Start a new operation that was not completed speculatively. The reactor
+  // operation will be performed when the given descriptor is flagged as ready,
+  // or an error has occurred.
+  ASIO_DECL ASIO_NEVER_INLINE bool start_unready_op(int op_type,
+      per_descriptor_data& descriptor_data, mutex::scoped_lock& descriptor_lock,
+      reactor_op* op, reactor_op::perform_func_type perform_func);
 
   // Cancel all operations associated with the given descriptor. The
   // handlers associated with the descriptor will be invoked with the

@@ -17,15 +17,15 @@
 
 #include <climits>
 #include <cstddef>
-#include "asio/detail/call_stack.hpp"
+// Needs thread_info_base's full definition for call_stack<thread_info_base>
+// below (key_type/key(), and the static_cast in top()/contains()).
+#include "asio/detail/thread_info_base.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
-
-class thread_info_base;
 
 // Base class for things that manage threads (scheduler, win_iocp_io_context).
 class thread_context
@@ -37,7 +37,7 @@ public:
 
 protected:
   // Per-thread call stack to track the state of each thread in the context.
-  typedef call_stack<thread_context, thread_info_base> thread_call_stack;
+  typedef call_stack<thread_info_base> thread_call_stack;
 };
 
 } // namespace detail

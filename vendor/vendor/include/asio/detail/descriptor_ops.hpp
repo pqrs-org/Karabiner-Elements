@@ -66,6 +66,23 @@ inline void get_last_error(
   }
 }
 
+inline int get_last_sys_error(bool is_error_condition)
+{
+  if (!is_error_condition)
+    return 0;
+
+  return errno;
+}
+
+inline void assign_sys_error(asio::error_code& ec, int err)
+{
+  if (err == 0)
+    asio::error::clear(ec);
+  else
+    ec = asio::error_code(err,
+        asio::error::get_system_category());
+}
+
 ASIO_DECL int open(const char* path, int flags,
     asio::error_code& ec);
 

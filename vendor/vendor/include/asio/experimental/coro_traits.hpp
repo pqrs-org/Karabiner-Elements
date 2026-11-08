@@ -1,6 +1,6 @@
 //
-// experimental/detail/coro_traits.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// experimental/coro_traits.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2021-2023 Klemens D. Morgenstern
 //                         (klemens dot morgenstern at gmx dot net)

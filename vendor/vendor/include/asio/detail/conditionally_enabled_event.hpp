@@ -84,6 +84,14 @@ public:
       return false;
   }
 
+  // Whether there are any threads waiting on the event.
+  bool has_waiters(conditionally_enabled_mutex<mutex>::scoped_lock& lock) const
+  {
+    if (lock.mutex_.enabled())
+      return event_.has_waiters(lock);
+    return false;
+  }
+
   // Reset the event.
   void clear(conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {

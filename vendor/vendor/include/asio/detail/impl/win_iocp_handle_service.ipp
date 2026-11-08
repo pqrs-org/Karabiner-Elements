@@ -21,6 +21,7 @@
 #if defined(ASIO_HAS_IOCP)
 
 #include "asio/detail/win_iocp_handle_service.hpp"
+#include "asio/error.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -195,7 +196,7 @@ asio::error_code win_iocp_handle_service::assign(
   }
 
   impl.handle_ = handle;
-  ec = asio::error_code();
+  asio::error::clear(ec);
   return ec;
 }
 
@@ -216,7 +217,7 @@ asio::error_code win_iocp_handle_service::close(
     }
     else
     {
-      ec = asio::error_code();
+      asio::error::clear(ec);
     }
 
     impl.handle_ = INVALID_HANDLE_VALUE;
@@ -224,7 +225,7 @@ asio::error_code win_iocp_handle_service::close(
   }
   else
   {
-    ec = asio::error_code();
+    asio::error::clear(ec);
   }
 
   ASIO_ERROR_LOCATION(ec);
@@ -297,7 +298,7 @@ asio::error_code win_iocp_handle_service::cancel(
         // ERROR_NOT_FOUND means that there were no operations to be
         // cancelled. We swallow this error to match the behaviour on other
         // platforms.
-        ec = asio::error_code();
+        asio::error::clear(ec);
       }
       else
       {
@@ -307,13 +308,13 @@ asio::error_code win_iocp_handle_service::cancel(
     }
     else
     {
-      ec = asio::error_code();
+      asio::error::clear(ec);
     }
   }
   else if (impl.safe_cancellation_thread_id_ == 0)
   {
     // No operations have been started, so there's nothing to cancel.
-    ec = asio::error_code();
+    asio::error::clear(ec);
   }
   else if (impl.safe_cancellation_thread_id_ == ::GetCurrentThreadId())
   {
@@ -327,7 +328,7 @@ asio::error_code win_iocp_handle_service::cancel(
     }
     else
     {
-      ec = asio::error_code();
+      asio::error::clear(ec);
     }
   }
   else
@@ -355,7 +356,7 @@ size_t win_iocp_handle_service::do_write(
   // A request to write 0 bytes on a handle is a no-op.
   if (buffer.size() == 0)
   {
-    ec = asio::error_code();
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -370,7 +371,7 @@ size_t win_iocp_handle_service::do_write(
   overlapped.Offset = offset & 0xFFFFFFFF;
   overlapped.OffsetHigh = (offset >> 32) & 0xFFFFFFFF;
   BOOL ok = ::WriteFile(impl.handle_, buffer.data(),
-      static_cast<DWORD>(buffer.size()), 0, &overlapped);
+      transfer_size(buffer.size()), 0, &overlapped);
   if (!ok)
   {
     DWORD last_error = ::GetLastError();
@@ -396,7 +397,7 @@ size_t win_iocp_handle_service::do_write(
     return 0;
   }
 
-  ec = asio::error_code();
+  asio::error::clear(ec);
   return bytes_transferred;
 }
 
@@ -422,7 +423,7 @@ void win_iocp_handle_service::start_write_op(
     op->Offset = offset & 0xFFFFFFFF;
     op->OffsetHigh = (offset >> 32) & 0xFFFFFFFF;
     BOOL ok = ::WriteFile(impl.handle_, buffer.data(),
-        static_cast<DWORD>(buffer.size()),
+        transfer_size(buffer.size()),
         &bytes_transferred, op);
     DWORD last_error = ::GetLastError();
     if (!ok && last_error != ERROR_IO_PENDING
@@ -451,7 +452,7 @@ size_t win_iocp_handle_service::do_read(
   // A request to read 0 bytes on a stream handle is a no-op.
   if (buffer.size() == 0)
   {
-    ec = asio::error_code();
+    asio::error::clear(ec);
     return 0;
   }
 
@@ -466,7 +467,7 @@ size_t win_iocp_handle_service::do_read(
   overlapped.Offset = offset & 0xFFFFFFFF;
   overlapped.OffsetHigh = (offset >> 32) & 0xFFFFFFFF;
   BOOL ok = ::ReadFile(impl.handle_, buffer.data(),
-      static_cast<DWORD>(buffer.size()), 0, &overlapped);
+      transfer_size(buffer.size()), 0, &overlapped);
   if (!ok)
   {
     DWORD last_error = ::GetLastError();
@@ -506,7 +507,7 @@ size_t win_iocp_handle_service::do_read(
     return (last_error == ERROR_MORE_DATA) ? bytes_transferred : 0;
   }
 
-  ec = asio::error_code();
+  asio::error::clear(ec);
   return bytes_transferred;
 }
 
@@ -532,7 +533,7 @@ void win_iocp_handle_service::start_read_op(
     op->Offset = offset & 0xFFFFFFFF;
     op->OffsetHigh = (offset >> 32) & 0xFFFFFFFF;
     BOOL ok = ::ReadFile(impl.handle_, buffer.data(),
-        static_cast<DWORD>(buffer.size()),
+        transfer_size(buffer.size()),
         &bytes_transferred, op);
     DWORD last_error = ::GetLastError();
     if (!ok && last_error != ERROR_IO_PENDING

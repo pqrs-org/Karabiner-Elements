@@ -103,12 +103,11 @@ private:
   ASIO_DECL void do_post(implementation_type& impl,
       operation* op, bool is_continuation);
 
-  ASIO_DECL static void do_complete(void* owner,
-      operation* base, const asio::error_code& ec,
-      std::size_t bytes_transferred);
+  ASIO_DECL static void do_complete(void* owner, operation* base,
+      int error_value, std::size_t bytes_transferred);
 
   // The io_context used to obtain an I/O executor.
-  io_context& io_context_;
+  io_context& io_context_ ASIO_UNUSED_MEMBER;
 
   // The io_context implementation used to post completions.
   io_context_impl& io_context_impl_;

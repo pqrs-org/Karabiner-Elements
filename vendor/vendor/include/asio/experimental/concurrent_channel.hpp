@@ -15,12 +15,8 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/detail/config.hpp"
-#include "asio/any_io_executor.hpp"
-#include "asio/detail/type_traits.hpp"
-#include "asio/execution/executor.hpp"
-#include "asio/is_executor.hpp"
-#include "asio/experimental/basic_concurrent_channel.hpp"
+#include "asio/concurrent_channel.hpp"
+#include "asio/experimental/channel_error.hpp"
 #include "asio/experimental/channel_traits.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -28,46 +24,10 @@
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
-namespace detail {
 
-template <typename ExecutorOrSignature, typename = void>
-struct concurrent_channel_type
-{
-  template <typename... Signatures>
-  struct inner
-  {
-    typedef basic_concurrent_channel<any_io_executor, channel_traits<>,
-        ExecutorOrSignature, Signatures...> type;
-  };
-};
-
-template <typename ExecutorOrSignature>
-struct concurrent_channel_type<ExecutorOrSignature,
-    enable_if_t<
-      is_executor<ExecutorOrSignature>::value
-        || execution::is_executor<ExecutorOrSignature>::value
-    >>
-{
-  template <typename... Signatures>
-  struct inner
-  {
-    typedef basic_concurrent_channel<ExecutorOrSignature,
-        channel_traits<>, Signatures...> type;
-  };
-};
-
-} // namespace detail
-
-/// Template type alias for common use of channel.
-#if defined(GENERATING_DOCUMENTATION)
 template <typename ExecutorOrSignature, typename... Signatures>
-using concurrent_channel = basic_concurrent_channel<
-    specified_executor_or_any_io_executor, channel_traits<>, signatures...>;
-#else // defined(GENERATING_DOCUMENTATION)
-template <typename ExecutorOrSignature, typename... Signatures>
-using concurrent_channel = typename detail::concurrent_channel_type<
-    ExecutorOrSignature>::template inner<Signatures...>::type;
-#endif // defined(GENERATING_DOCUMENTATION)
+using concurrent_channel =
+  asio::concurrent_channel<ExecutorOrSignature, Signatures...>;
 
 } // namespace experimental
 ASIO_INLINE_NAMESPACE_END

@@ -288,9 +288,8 @@ public:
 
   /// Move constructor.
   allocator_binder(allocator_binder&& other)
-    : allocator_(static_cast<allocator_type&&>(
-          other.get_allocator())),
-      target_(static_cast<T&&>(other.get()))
+    : allocator_(static_cast<Allocator&&>(other.allocator_)),
+      target_(static_cast<T&&>(other.target_))
   {
   }
 

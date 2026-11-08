@@ -58,15 +58,13 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& result_ec,
-      std::size_t /*bytes_transferred*/)
+      int error_value, std::size_t /*bytes_transferred*/)
   {
-    asio::error_code ec(result_ec);
-
     // Take ownership of the operation object.
     ASIO_ASSUME(base != 0);
     win_iocp_wait_op* o(static_cast<win_iocp_wait_op*>(base));
     ptr p = { asio::detail::addressof(o->handler_), o, o };
+    asio::error_code ec(o->make_error_code(error_value));
 
     ASIO_HANDLER_COMPLETION((*o));
 

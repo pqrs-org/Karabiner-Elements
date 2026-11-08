@@ -15,49 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/detail/config.hpp"
-#include "asio/experimental/channel_error.hpp"
-
-#include "asio/detail/push_options.hpp"
-
-namespace asio {
-ASIO_INLINE_NAMESPACE_BEGIN
-namespace experimental {
-namespace error {
-namespace detail {
-
-class channel_category : public asio::error_category
-{
-public:
-  const char* name() const noexcept
-  {
-    return "asio.channel";
-  }
-
-  std::string message(int value) const
-  {
-    switch (value)
-    {
-    case channel_closed: return "Channel closed";
-    case channel_cancelled: return "Channel cancelled";
-    default: return "asio.channel error";
-    }
-  }
-};
-
-} // namespace detail
-
-const asio::error_category& get_channel_category()
-{
-  static detail::channel_category instance;
-  return instance;
-}
-
-} // namespace error
-} // namespace experimental
-ASIO_INLINE_NAMESPACE_END
-} // namespace asio
-
-#include "asio/detail/pop_options.hpp"
+// Redirect to the new location.
+#include "asio/impl/channel_error.ipp"
 
 #endif // ASIO_EXPERIMENTAL_IMPL_CHANNEL_ERROR_IPP

@@ -468,7 +468,7 @@ public:
         void (asio::error_code, std::size_t)>(
           declval<initiate_async_send>(), token, buffers, flags))
   {
-    return async_initiate<WriteToken,
+    ASIO_INVOKE_INLINE return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_send(this), token, buffers, flags);
   }
@@ -658,7 +658,7 @@ public:
           declval<initiate_async_receive_with_flags>(), token,
           buffers, socket_base::message_flags(0), &out_flags))
   {
-    return async_initiate<ReadToken,
+    ASIO_INVOKE_INLINE return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_receive_with_flags(this), token,
         buffers, socket_base::message_flags(0), &out_flags);
@@ -735,7 +735,7 @@ public:
           declval<initiate_async_receive_with_flags>(),
           token, buffers, in_flags, &out_flags))
   {
-    return async_initiate<ReadToken,
+    ASIO_INVOKE_INLINE return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_receive_with_flags(this),
         token, buffers, in_flags, &out_flags);
@@ -772,7 +772,7 @@ private:
       ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
       detail::non_const_lvalue<WriteHandler> handler2(handler);
-      self_->impl_.get_service().async_send(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_send(
           self_->impl_.get_implementation(), buffers, flags,
           handler2.value, self_->impl_.get_executor());
     }
@@ -807,6 +807,7 @@ private:
       ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
       detail::non_const_lvalue<ReadHandler> handler2(handler);
+      ASIO_INVOKE_INLINE
       self_->impl_.get_service().async_receive_with_flags(
           self_->impl_.get_implementation(), buffers, in_flags,
           *out_flags, handler2.value, self_->impl_.get_executor());

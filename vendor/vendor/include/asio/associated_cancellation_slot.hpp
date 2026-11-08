@@ -167,6 +167,16 @@ using associated_cancellation_slot_t =
 namespace detail {
 
 template <typename T, typename S, typename = void>
+struct has_associated_cancellation_slot : true_type {};
+
+template <typename T, typename S>
+struct has_associated_cancellation_slot<T, S,
+    void_t<
+      typename associated_cancellation_slot<T, S>::
+        asio_associated_cancellation_slot_is_unspecialised
+    >> : false_type {};
+
+template <typename T, typename S, typename = void>
 struct associated_cancellation_slot_forwarding_base
 {
 };
@@ -174,11 +184,7 @@ struct associated_cancellation_slot_forwarding_base
 template <typename T, typename S>
 struct associated_cancellation_slot_forwarding_base<T, S,
     enable_if_t<
-      is_same<
-        typename associated_cancellation_slot<T,
-          S>::asio_associated_cancellation_slot_is_unspecialised,
-        void
-      >::value
+      !has_associated_cancellation_slot<T, S>::value
     >>
 {
   typedef void asio_associated_cancellation_slot_is_unspecialised;

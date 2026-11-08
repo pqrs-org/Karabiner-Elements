@@ -326,7 +326,7 @@ public:
   static return_type initiate(Initiation&& initiation,
       RawCompletionToken&& token, Args&&... args)
   {
-    static_cast<Initiation&&>(initiation)(
+    ASIO_INVOKE_INLINE static_cast<Initiation&&>(initiation)(
         static_cast<RawCompletionToken&&>(token),
         static_cast<Args&&>(args)...);
   }
@@ -679,6 +679,7 @@ inline auto async_initiate(Initiation&& initiation,
       static_cast<CompletionToken&&>(token),
       static_cast<Args&&>(args)...))
 {
+  ASIO_INVOKE_INLINE
   return async_result<decay_t<CompletionToken>, Signatures...>::initiate(
       static_cast<Initiation&&>(initiation),
       static_cast<CompletionToken&&>(token),
@@ -700,6 +701,7 @@ inline auto async_initiate(Initiation&& initiation,
       static_cast<CompletionToken&&>(token),
       static_cast<Args&&>(args)...))
 {
+  ASIO_INVOKE_INLINE
   return async_result<decay_t<CompletionToken>, Signatures...>::initiate(
       static_cast<Initiation&&>(initiation),
       static_cast<CompletionToken&&>(token),

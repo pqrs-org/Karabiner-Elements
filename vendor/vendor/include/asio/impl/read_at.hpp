@@ -45,7 +45,7 @@ namespace detail
       const MutableBufferIterator&, CompletionCondition completion_condition,
       asio::error_code& ec)
   {
-    ec = asio::error_code();
+    asio::error::clear(ec);
     asio::detail::consuming_buffers<mutable_buffer,
         MutableBufferSequence, MutableBufferIterator> tmp(buffers);
     while (!tmp.empty())
@@ -124,7 +124,7 @@ std::size_t read_at(SyncRandomAccessReadDevice& d,
       is_completion_condition<CompletionCondition>::value
     >)
 {
-  ec = asio::error_code();
+  asio::error::clear(ec);
   std::size_t total_transferred = 0;
   std::size_t max_size = detail::adapt_completion_condition_result(
         completion_condition(ec, total_transferred));
@@ -204,29 +204,11 @@ namespace detail
     {
     }
 
-    read_at_op(const read_at_op& other)
-      : base_from_cancellation_state<ReadHandler>(other),
-        base_from_completion_cond<CompletionCondition>(other),
-        device_(other.device_),
-        offset_(other.offset_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        handler_(other.handler_)
-    {
-    }
+    read_at_op(const read_at_op& other) = default;
+    read_at_op(read_at_op&& other) = default;
 
-    read_at_op(read_at_op&& other)
-      : base_from_cancellation_state<ReadHandler>(
-          static_cast<base_from_cancellation_state<ReadHandler>&&>(other)),
-        base_from_completion_cond<CompletionCondition>(
-          static_cast<base_from_completion_cond<CompletionCondition>&&>(other)),
-        device_(other.device_),
-        offset_(other.offset_),
-        buffers_(static_cast<buffers_type&&>(other.buffers_)),
-        start_(other.start_),
-        handler_(static_cast<ReadHandler&&>(other.handler_))
-    {
-    }
+    read_at_op& operator=(const read_at_op&) = delete;
+    read_at_op& operator=(read_at_op&&) = delete;
 
     void operator()(asio::error_code ec,
         std::size_t bytes_transferred, int start = 0)
@@ -399,31 +381,11 @@ namespace detail
     {
     }
 
-    read_at_streambuf_op(const read_at_streambuf_op& other)
-      : base_from_cancellation_state<ReadHandler>(other),
-        base_from_completion_cond<CompletionCondition>(other),
-        device_(other.device_),
-        offset_(other.offset_),
-        streambuf_(other.streambuf_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(other.handler_)
-    {
-    }
+    read_at_streambuf_op(const read_at_streambuf_op& other) = default;
+    read_at_streambuf_op(read_at_streambuf_op&& other) = default;
 
-    read_at_streambuf_op(read_at_streambuf_op&& other)
-      : base_from_cancellation_state<ReadHandler>(
-          static_cast<base_from_cancellation_state<ReadHandler>&&>(other)),
-        base_from_completion_cond<CompletionCondition>(
-          static_cast<base_from_completion_cond<CompletionCondition>&&>(other)),
-        device_(other.device_),
-        offset_(other.offset_),
-        streambuf_(other.streambuf_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(static_cast<ReadHandler&&>(other.handler_))
-    {
-    }
+    read_at_streambuf_op& operator=(const read_at_streambuf_op&) = delete;
+    read_at_streambuf_op& operator=(read_at_streambuf_op&&) = delete;
 
     void operator()(asio::error_code ec,
         std::size_t bytes_transferred, int start = 0)

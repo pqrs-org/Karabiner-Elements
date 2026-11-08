@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include "asio/detail/memory.hpp"
 #include "asio/detail/win_iocp_file_service.hpp"
+#include "asio/error.hpp"
 
 #include "asio/detail/push_options.hpp"
 

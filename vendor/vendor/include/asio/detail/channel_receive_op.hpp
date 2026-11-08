@@ -1,6 +1,6 @@
 //
-// experimental/detail/channel_receive_op.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// detail/channel_receive_op.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_EXPERIMENTAL_DETAIL_CHANNEL_RECEIVE_OP_HPP
-#define ASIO_EXPERIMENTAL_DETAIL_CHANNEL_RECEIVE_OP_HPP
+#ifndef ASIO_DETAIL_CHANNEL_RECEIVE_OP_HPP
+#define ASIO_DETAIL_CHANNEL_RECEIVE_OP_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -20,13 +20,12 @@
 #include "asio/detail/completion_handler.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/error.hpp"
-#include "asio/experimental/detail/channel_operation.hpp"
+#include "asio/detail/channel_operation.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
-namespace experimental {
 namespace detail {
 
 template <typename Payload>
@@ -74,7 +73,7 @@ public:
   {
     // Take ownership of the operation object.
     channel_receive_op* o(static_cast<channel_receive_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { addressof(o->handler_), o, o };
 
     ASIO_HANDLER_COMPLETION((*o));
 
@@ -92,9 +91,9 @@ public:
     if (a != channel_operation::destroy_op)
     {
       Payload* payload = static_cast<Payload*>(v);
-      asio::detail::completion_payload_handler<Payload, Handler> handler(
+      completion_payload_handler<Payload, Handler> handler(
           static_cast<Payload&&>(*payload), o->handler_);
-      p.h = asio::detail::addressof(handler.handler_);
+      p.h = addressof(handler.handler_);
       p.reset();
       ASIO_HANDLER_INVOCATION_BEGIN(());
       if (a == channel_operation::immediate_op)
@@ -107,8 +106,8 @@ public:
     }
     else
     {
-      asio::detail::binder0<Handler> handler(o->handler_);
-      p.h = asio::detail::addressof(handler.handler_);
+      binder0<Handler> handler(o->handler_);
+      p.h = addressof(handler.handler_);
       p.reset();
     }
   }
@@ -119,10 +118,9 @@ private:
 };
 
 } // namespace detail
-} // namespace experimental
 ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_EXPERIMENTAL_DETAIL_CHANNEL_RECEIVE_OP_HPP
+#endif // ASIO_DETAIL_CHANNEL_RECEIVE_OP_HPP

@@ -316,11 +316,7 @@ struct parallel_group_op_launcher
 template <std::size_t I, typename Op>
 struct parallel_group_op_launcher<I, Op,
     enable_if_t<
-      is_same<
-        typename associated_executor<
-          Op>::asio_associated_executor_is_unspecialised,
-        void
-      >::value
+      !asio::detail::has_associated_executor<Op, inline_executor>::value
     >>
 {
   template <typename Condition, typename Handler, typename... Ops>
@@ -659,6 +655,44 @@ struct ranged_parallel_group_op_handler_with_executor :
   cancel_proxy* cancel_proxy_;
 };
 
+// Helper to launch an operation using the correct executor, if any.
+template <typename Op, typename = void>
+struct ranged_parallel_group_op_launcher
+{
+  template <typename Condition, typename Handler, typename Allocator>
+  static void launch(Op& op,
+    const std::shared_ptr<ranged_parallel_group_state<
+      Condition, Handler, Op, Allocator>>& state,
+    std::size_t idx)
+  {
+    typedef associated_executor_t<Op> ex_type;
+    ex_type ex = asio::get_associated_executor(op);
+    std::move(op)(
+        ranged_parallel_group_op_handler_with_executor<
+          ex_type, Condition, Handler, Op, Allocator>(
+            state, std::move(ex), idx));
+  }
+};
+
+// Specialised launcher for operations that specify no executor.
+template <typename Op>
+struct ranged_parallel_group_op_launcher<Op,
+    enable_if_t<
+      !asio::detail::has_associated_executor<Op, inline_executor>::value
+    >>
+{
+  template <typename Condition, typename Handler, typename Allocator>
+  static void launch(Op& op,
+    const std::shared_ptr<ranged_parallel_group_state<
+      Condition, Handler, Op, Allocator>>& state,
+    std::size_t idx)
+  {
+    std::move(op)(
+        ranged_parallel_group_op_handler<
+          Condition, Handler, Op, Allocator>(state, idx));
+  }
+};
+
 template <typename Condition, typename Handler, typename Op, typename Allocator>
 struct ranged_parallel_group_cancellation_handler
 {
@@ -711,14 +745,7 @@ void ranged_parallel_group_launch(Condition cancellation_condition,
   std::size_t idx = 0;
   std::size_t range_size = range.size();
   for (auto&& op : std::forward<Range>(range))
-  {
-    typedef associated_executor_t<op_type> ex_type;
-    ex_type ex = asio::get_associated_executor(op);
-    std::move(op)(
-        ranged_parallel_group_op_handler_with_executor<
-          ex_type, Condition, Handler, op_type, Allocator>(
-            state, std::move(ex), idx++));
-  }
+    ranged_parallel_group_op_launcher<op_type>::launch(op, state, idx++);
 
   // Check if any of the operations has already requested cancellation, and if
   // so, emit a signal for each operation in the group.

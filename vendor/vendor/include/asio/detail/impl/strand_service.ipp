@@ -92,7 +92,7 @@ void strand_service::construct(strand_service::implementation_type& impl)
 bool strand_service::running_in_this_thread(
     const implementation_type& impl) const
 {
-  return call_stack<strand_impl>::contains(impl) != 0;
+  return call_stack<call_stack_key_only<strand_impl> >::contains(impl) != 0;
 }
 
 struct strand_service::on_dispatch_exit
@@ -125,13 +125,15 @@ void strand_service::do_dispatch(implementation_type& impl, operation* op)
     impl->mutex_.unlock();
 
     // Indicate that this strand is executing on the current thread.
-    call_stack<strand_impl>::context ctx(impl);
+    call_stack_key_only<strand_impl> call_stack_key;
+    call_stack<call_stack_key_only<strand_impl> >::context
+      ctx(impl, call_stack_key);
 
     // Ensure the next handler, if any, is scheduled on block exit.
     on_dispatch_exit on_exit = { &io_context_impl_, impl };
     (void)on_exit;
 
-    op->complete(&io_context_impl_, asio::error_code(), 0);
+    op->complete(&io_context_impl_, 0, 0);
     return;
   }
 
@@ -174,14 +176,16 @@ void strand_service::do_post(implementation_type& impl,
 }
 
 void strand_service::do_complete(void* owner, operation* base,
-    const asio::error_code& ec, std::size_t /*bytes_transferred*/)
+    int error_value, std::size_t /*bytes_transferred*/)
 {
   if (owner)
   {
     strand_impl* impl = static_cast<strand_impl*>(base);
 
     // Indicate that this strand is executing on the current thread.
-    call_stack<strand_impl>::context ctx(impl);
+    call_stack_key_only<strand_impl> call_stack_key;
+    call_stack<call_stack_key_only<strand_impl> >::context
+      ctx(impl, call_stack_key);
 
     // Ensure the next handler, if any, is scheduled on block exit.
     on_do_complete_exit on_exit;
@@ -193,7 +197,7 @@ void strand_service::do_complete(void* owner, operation* base,
     while (operation* o = impl->ready_queue_.front())
     {
       impl->ready_queue_.pop();
-      o->complete(owner, ec, 0);
+      o->complete(owner, error_value, 0);
     }
   }
 }

@@ -21,7 +21,7 @@
   || defined(ASIO_WINDOWS_RUNTIME) \
   || defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
-#include "asio/detail/scheduler_operation.hpp"
+#include "asio/detail/operation.hpp"
 #include "asio/detail/scheduler_task.hpp"
 #include "asio/execution_context.hpp"
 
@@ -39,6 +39,13 @@ public:
   struct per_descriptor_data
   {
   };
+
+  // Give a descriptor a name, used to lookup per-descriptor configuration.
+  void set_descriptor_name(per_descriptor_data&,
+      const char* /*name*/, asio::error_code& ec)
+  {
+    asio::error::clear(ec);
+  }
 
   // Constructor.
   null_reactor(asio::execution_context& ctx)
@@ -62,7 +69,7 @@ public:
   }
 
   // No-op because should never be called.
-  void run(long /*usec*/, op_queue<scheduler_operation>& /*ops*/)
+  void run(long /*usec*/, op_queue<operation>& /*ops*/)
   {
   }
 

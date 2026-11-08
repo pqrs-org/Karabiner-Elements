@@ -16,6 +16,10 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if defined(ASIO_HAS_BOOST_CONTEXT_FIBER) \
+  || defined(ASIO_HAS_ASM_FIBER)
+
 #include <tuple>
 #include "asio/associated_allocator.hpp"
 #include "asio/associated_cancellation_slot.hpp"
@@ -24,18 +28,16 @@
 #include "asio/bind_executor.hpp"
 #include "asio/detail/atomic_count.hpp"
 #include "asio/detail/bind_handler.hpp"
+#include "asio/detail/fiber.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/noncopyable.hpp"
+#include "asio/detail/throw_error.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/utility.hpp"
 #include "asio/disposition.hpp"
 #include "asio/error.hpp"
 #include "asio/system_error.hpp"
-
-#if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
-# include <boost/context/fiber.hpp>
-#endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
 
 #include "asio/detail/push_options.hpp"
 
@@ -51,52 +53,50 @@ inline void spawned_thread_rethrow(void* ex)
 }
 #endif // !defined(ASIO_NO_EXCEPTIONS)
 
-#if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
-
-// Spawned thread implementation using Boost.Context's fiber.
-class spawned_fiber_thread : public spawned_thread_base
+// Spawned thread implementation using a fiber.
+class spawned_thread
 {
 public:
-  typedef boost::context::fiber fiber_type;
-
-  spawned_fiber_thread(fiber_type&& caller)
-    : caller_(static_cast<fiber_type&&>(caller)),
-      on_suspend_fn_(0),
-      on_suspend_arg_(0)
+  spawned_thread(fiber&& caller)
+    : caller_(static_cast<fiber&&>(caller)),
+      on_suspend_fn_(reinterpret_cast<void (*)(void*)>(not_yet_suspended)),
+      on_suspend_arg_(0),
+      owner_(0),
+      throw_if_cancelled_(false),
+      terminal_(false)
   {
   }
 
   template <typename StackAllocator, typename F>
-  static spawned_thread_base* spawn(allocator_arg_t,
-      StackAllocator&& stack_allocator,
-      F&& f,
+  static spawned_thread* spawn(allocator_arg_t,
+      StackAllocator&& stack_allocator, F&& f,
       cancellation_slot parent_cancel_slot = cancellation_slot(),
       cancellation_state cancel_state = cancellation_state())
   {
-    spawned_fiber_thread* spawned_thread = 0;
-    fiber_type callee(allocator_arg_t(),
+    spawned_thread* spawned_thread = 0;
+    fiber callee(allocator_arg_t(),
         static_cast<StackAllocator&&>(stack_allocator),
         entry_point<decay_t<F>>(
           static_cast<F&&>(f), &spawned_thread));
-    callee = fiber_type(static_cast<fiber_type&&>(callee)).resume();
-    spawned_thread->callee_ = static_cast<fiber_type&&>(callee);
+    callee.resume();
+    spawned_thread->callee_ = static_cast<fiber&&>(callee);
     spawned_thread->parent_cancellation_slot_ = parent_cancel_slot;
     spawned_thread->cancellation_state_ = cancel_state;
     return spawned_thread;
   }
 
   template <typename F>
-  static spawned_thread_base* spawn(F&& f,
+  static spawned_thread* spawn(F&& f,
       cancellation_slot parent_cancel_slot = cancellation_slot(),
       cancellation_state cancel_state = cancellation_state())
   {
-    return spawn(allocator_arg_t(), boost::context::fixedsize_stack(),
+    return spawn(allocator_arg_t(), fiber::default_stack(),
         static_cast<F&&>(f), parent_cancel_slot, cancel_state);
   }
 
   void resume()
   {
-    callee_ = fiber_type(static_cast<fiber_type&&>(callee_)).resume();
+    callee_.resume();
     if (on_suspend_fn_)
     {
       void (*fn)(void*) = on_suspend_fn_;
@@ -106,45 +106,127 @@ public:
     }
   }
 
+  void initial_suspend()
+  {
+    caller_.resume();
+  }
+
+  void suspend()
+  {
+    suspend_with(0, 0);
+  }
+
+  template <typename F>
+  void suspend_with(F f)
+  {
+    suspend_with(&spawned_thread::call<F>, &f);
+  }
+
   void suspend_with(void (*fn)(void*), void* arg)
   {
     if (throw_if_cancelled_)
       if (!!cancellation_state_.cancelled())
         throw_error(asio::error::operation_aborted, "yield");
-    has_context_switched_ = true;
     on_suspend_fn_ = fn;
     on_suspend_arg_ = arg;
-    caller_ = fiber_type(static_cast<fiber_type&&>(caller_)).resume();
+    caller_.resume();
   }
 
   void destroy()
   {
-    fiber_type callee = static_cast<fiber_type&&>(callee_);
+    fiber callee = static_cast<fiber&&>(callee_);
     if (terminal_)
-      fiber_type(static_cast<fiber_type&&>(callee)).resume();
+      callee.resume();
+  }
+
+  cancellation_slot get_cancellation_slot() const noexcept
+  {
+    return cancellation_state_.slot();
+  }
+
+  cancellation_state get_cancellation_state() const noexcept
+  {
+    return cancellation_state_;
+  }
+
+  void reset_cancellation_state()
+  {
+    cancellation_state_ = cancellation_state(parent_cancellation_slot_);
+  }
+
+  template <typename Filter>
+  void reset_cancellation_state(Filter filter)
+  {
+    cancellation_state_ = cancellation_state(
+        parent_cancellation_slot_, filter, filter);
+  }
+
+  template <typename InFilter, typename OutFilter>
+  void reset_cancellation_state(InFilter in_filter, OutFilter out_filter)
+  {
+    cancellation_state_ = cancellation_state(
+        parent_cancellation_slot_, in_filter, out_filter);
+  }
+
+  cancellation_type_t cancelled() const noexcept
+  {
+    return cancellation_state_.cancelled();
+  }
+
+  bool has_context_switched() const noexcept
+  {
+    return reinterpret_cast<std::uintptr_t>(on_suspend_fn_)
+      != not_yet_suspended;
+  }
+
+  bool throw_if_cancelled() const noexcept
+  {
+    return throw_if_cancelled_;
+  }
+
+  void throw_if_cancelled(bool value) noexcept
+  {
+    throw_if_cancelled_ = value;
+  }
+
+  void attach(spawned_thread** owner)
+  {
+    owner_ = owner;
+    *owner_ = this;
+  }
+
+  void detach()
+  {
+    if (owner_)
+      *owner_ = 0;
+    owner_ = 0;
   }
 
 private:
+  // Disallow copying and assignment.
+  spawned_thread(const spawned_thread&) = delete;
+  spawned_thread& operator=(const spawned_thread&) = delete;
+
   template <typename Function>
   class entry_point
   {
   public:
     template <typename F>
     entry_point(F&& f,
-        spawned_fiber_thread** spawned_thread_out)
+        spawned_thread** spawned_thread_out)
       : function_(static_cast<F&&>(f)),
         spawned_thread_out_(spawned_thread_out)
     {
     }
 
-    fiber_type operator()(fiber_type&& caller)
+    fiber operator()(fiber&& caller)
     {
       Function function(static_cast<Function&&>(function_));
-      spawned_fiber_thread spawned_thread(
-          static_cast<fiber_type&&>(caller));
+      spawned_thread spawned_thread(
+          static_cast<fiber&&>(caller));
       *spawned_thread_out_ = &spawned_thread;
       spawned_thread_out_ = 0;
-      spawned_thread.suspend();
+      spawned_thread.initial_suspend();
 #if !defined(ASIO_NO_EXCEPTIONS)
       try
 #endif // !defined(ASIO_NO_EXCEPTIONS)
@@ -154,7 +236,7 @@ private:
         spawned_thread.suspend();
       }
 #if !defined(ASIO_NO_EXCEPTIONS)
-      catch (const boost::context::detail::forced_unwind&)
+      catch (const forced_unwind&)
       {
         throw;
       }
@@ -165,34 +247,38 @@ private:
         spawned_thread.suspend_with(spawned_thread_rethrow, &ex);
       }
 #endif // !defined(ASIO_NO_EXCEPTIONS)
-      return static_cast<fiber_type&&>(spawned_thread.caller_);
+      return static_cast<fiber&&>(spawned_thread.caller_);
     }
 
   private:
     Function function_;
-    spawned_fiber_thread** spawned_thread_out_;
+    spawned_thread** spawned_thread_out_;
   };
 
-  fiber_type caller_;
-  fiber_type callee_;
+  template <typename F>
+  static void call(void* f)
+  {
+    (*static_cast<F*>(f))();
+  }
+
+  fiber caller_;
+  fiber callee_;
   void (*on_suspend_fn_)(void*);
   void* on_suspend_arg_;
+  static const std::uintptr_t not_yet_suspended = 1;
+  spawned_thread** owner_;
+  bool throw_if_cancelled_;
+  bool terminal_;
+  asio::cancellation_slot parent_cancellation_slot_;
+  asio::cancellation_state cancellation_state_;
 };
-
-#endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
-
-#if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
-typedef spawned_fiber_thread default_spawned_thread_type;
-#else
-# error No spawn() implementation available
-#endif
 
 // Helper class to perform the initial resume on the correct executor.
 class spawned_thread_resumer
 {
 public:
-  explicit spawned_thread_resumer(spawned_thread_base* spawned_thread)
-    : spawned_thread_(spawned_thread)
+  explicit spawned_thread_resumer(spawned_thread* t)
+    : spawned_thread_(t)
   {
   }
 
@@ -215,17 +301,17 @@ public:
   }
 
 private:
-  spawned_thread_base* spawned_thread_;
+  spawned_thread* spawned_thread_;
 };
 
 // Helper class to ensure spawned threads are destroyed on the correct executor.
 class spawned_thread_destroyer
 {
 public:
-  explicit spawned_thread_destroyer(spawned_thread_base* spawned_thread)
-    : spawned_thread_(spawned_thread)
+  explicit spawned_thread_destroyer(spawned_thread* t)
+    : spawned_thread_(t)
   {
-    spawned_thread->detach();
+    t->detach();
   }
 
   spawned_thread_destroyer(spawned_thread_destroyer&& other) noexcept
@@ -250,7 +336,7 @@ public:
   }
 
 private:
-  spawned_thread_base* spawned_thread_;
+  spawned_thread* spawned_thread_;
 };
 
 // Base class for all completion handlers associated with a spawned thread.
@@ -279,7 +365,7 @@ public:
   ~spawn_handler_base()
   {
     if (spawned_thread_)
-      (post)(yield_.executor_, spawned_thread_destroyer(spawned_thread_));
+      destroy_spawned_thread();
   }
 
   executor_type get_executor() const noexcept
@@ -301,7 +387,13 @@ public:
 
 protected:
   const basic_yield_context<Executor>& yield_;
-  spawned_thread_base* spawned_thread_;
+  spawned_thread* spawned_thread_;
+
+private:
+  ASIO_NEVER_INLINE void destroy_spawned_thread()
+  {
+    (post)(yield_.executor_, spawned_thread_destroyer(spawned_thread_));
+  }
 };
 
 // Completion handlers for when basic_yield_context is used as a token.
@@ -735,9 +827,9 @@ public:
   {
   }
 
-  void operator()(spawned_thread_base* spawned_thread)
+  void operator()(spawned_thread* t)
   {
-    const basic_yield_context<Executor> yield(spawned_thread, executor_);
+    const basic_yield_context<Executor> yield(t, executor_);
     this->call(yield,
         void_type<result_of_t<Function(basic_yield_context<Executor>)>>());
   }
@@ -757,12 +849,10 @@ private:
       work_.complete(handler, handler.handler_);
     }
 #if !defined(ASIO_NO_EXCEPTIONS)
-# if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
-    catch (const boost::context::detail::forced_unwind&)
+    catch (const forced_unwind&)
     {
       throw;
     }
-# endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
     catch (...)
     {
       exception_ptr ex = current_exception();
@@ -790,12 +880,10 @@ private:
       work_.complete(handler, handler.handler_);
     }
 #if !defined(ASIO_NO_EXCEPTIONS)
-# if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
-    catch (const boost::context::detail::forced_unwind&)
+    catch (const forced_unwind&)
     {
       throw;
     }
-# endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
     catch (...)
     {
       exception_ptr ex = current_exception();
@@ -853,11 +941,7 @@ private:
 template <typename Handler, typename Executor>
 class spawn_cancellation_handler<Handler, Executor,
     enable_if_t<
-      is_same<
-        typename associated_executor<Handler,
-          Executor>::asio_associated_executor_is_unspecialised,
-        void
-      >::value
+      !has_associated_executor<Handler, Executor>::value
     >>
 {
 public:
@@ -920,14 +1004,12 @@ public:
 
     (dispatch)(executor_,
         spawned_thread_resumer(
-          default_spawned_thread_type::spawn(
+          spawned_thread::spawn(
             spawn_entry_point<Executor, function_type, handler_type>(
               executor_, static_cast<F&&>(f),
               static_cast<Handler&&>(handler)),
             proxy_slot, cancel_state)));
   }
-
-#if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
 
   template <typename Handler, typename StackAllocator, typename F>
   void operator()(Handler&& handler, allocator_arg_t,
@@ -955,15 +1037,13 @@ public:
 
     (dispatch)(executor_,
         spawned_thread_resumer(
-          spawned_fiber_thread::spawn(allocator_arg_t(),
+          spawned_thread::spawn(allocator_arg_t(),
             static_cast<StackAllocator&&>(stack_allocator),
             spawn_entry_point<Executor, function_type, handler_type>(
               executor_, static_cast<F&&>(f),
               static_cast<Handler&&>(handler)),
             proxy_slot, cancel_state)));
   }
-
-#endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
 
 private:
   executor_type executor_;
@@ -1032,8 +1112,6 @@ inline auto spawn(const basic_yield_context<Executor>& ctx,
   return (spawn)(ctx.get_executor(), static_cast<F&&>(function),
       static_cast<CompletionToken&&>(token));
 }
-
-#if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
 
 template <typename Executor, typename StackAllocator, typename F,
     ASIO_COMPLETION_TOKEN_FOR(typename detail::spawn_signature<
@@ -1107,11 +1185,74 @@ inline auto spawn(const basic_yield_context<Executor>& ctx, allocator_arg_t,
       static_cast<F&&>(function), static_cast<CompletionToken&&>(token));
 }
 
-#endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
+template <typename Executor>
+inline typename basic_yield_context<Executor>::cancellation_slot_type
+basic_yield_context<Executor>::get_cancellation_slot() const noexcept
+{
+  return spawned_thread_->get_cancellation_slot();
+}
+
+template <typename Executor>
+inline cancellation_state
+basic_yield_context<Executor>::get_cancellation_state() const noexcept
+{
+  return spawned_thread_->get_cancellation_state();
+}
+
+template <typename Executor>
+inline void basic_yield_context<Executor>::reset_cancellation_state() const
+{
+  spawned_thread_->reset_cancellation_state();
+}
+
+template <typename Executor>
+template <typename Filter>
+inline void basic_yield_context<Executor>::reset_cancellation_state(
+    Filter&& filter) const
+{
+  spawned_thread_->reset_cancellation_state(
+      static_cast<Filter&&>(filter));
+}
+
+template <typename Executor>
+template <typename InFilter, typename OutFilter>
+inline void basic_yield_context<Executor>::reset_cancellation_state(
+    InFilter&& in_filter, OutFilter&& out_filter) const
+{
+  spawned_thread_->reset_cancellation_state(
+      static_cast<InFilter&&>(in_filter),
+      static_cast<OutFilter&&>(out_filter));
+}
+
+template <typename Executor>
+inline cancellation_type_t
+basic_yield_context<Executor>::cancelled() const noexcept
+{
+  return spawned_thread_->cancelled();
+}
+
+template <typename Executor>
+inline bool basic_yield_context<Executor>::throw_if_cancelled() const noexcept
+{
+  return spawned_thread_->throw_if_cancelled();
+}
+
+template <typename Executor>
+inline void basic_yield_context<Executor>::throw_if_cancelled(
+    bool value) const noexcept
+{
+  spawned_thread_->throw_if_cancelled(value);
+}
 
 ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#else // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
+      //   || defined(ASIO_HAS_ASM_FIBER)
+# error No spawn() implementation available
+#endif // defined(ASIO_HAS_BOOST_CONTEXT_FIBER)
+       //   || defined(ASIO_HAS_ASM_FIBER)
 
 #endif // ASIO_IMPL_SPAWN_HPP

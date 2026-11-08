@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/io_control.hpp"
 
 #if defined(ASIO_HAS_IOCP)
 
@@ -25,6 +26,8 @@
 #include "asio/socket_base.hpp"
 #include "asio/detail/bind_handler.hpp"
 #include "asio/detail/buffer_sequence_adapter.hpp"
+#include "asio/detail/buffer_sequences_adapter.hpp"
+#include "asio/detail/empty_range.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/memory.hpp"
@@ -32,9 +35,11 @@
 #include "asio/detail/operation.hpp"
 #include "asio/detail/reactor_op.hpp"
 #include "asio/detail/select_reactor.hpp"
+#include "asio/detail/single_datagram_handler.hpp"
 #include "asio/detail/socket_holder.hpp"
 #include "asio/detail/socket_ops.hpp"
 #include "asio/detail/socket_types.hpp"
+#include "asio/detail/unwrap_ref.hpp"
 #include "asio/detail/win_iocp_io_context.hpp"
 #include "asio/detail/win_iocp_null_buffers_op.hpp"
 #include "asio/detail/win_iocp_socket_connect_op.hpp"
@@ -151,6 +156,13 @@ public:
   asio::error_code io_control(base_implementation_type& impl,
       IO_Control_Command& command, asio::error_code& ec)
   {
+    const char* descriptor_name = 0;
+    if (get_descriptor_name(command, descriptor_name, ec))
+    {
+      // Descriptor name is unused.
+      return ec;
+    }
+
     socket_ops::ioctl(impl.socket_, impl.state_, command.name(),
         static_cast<ioctl_arg_type*>(command.data()), ec);
     return ec;
@@ -246,11 +258,11 @@ public:
         break;
       case socket_base::wait_write:
         op_type = select_reactor::write_op;
-        start_reactor_op(impl, select_reactor::write_op, p.p);
+        start_reactor_op<select_reactor::write_op>(impl, p.p);
         break;
       case socket_base::wait_error:
         op_type = select_reactor::read_op;
-        start_reactor_op(impl, select_reactor::except_op, p.p);
+        start_reactor_op<select_reactor::except_op>(impl, p.p);
         break;
       default:
         p.p->ec_ = asio::error::invalid_argument;
@@ -339,7 +351,7 @@ public:
     ASIO_HANDLER_CREATION((context_, *p.p, "socket",
           &impl, impl.socket_, "async_send(null_buffers)"));
 
-    start_reactor_op(impl, select_reactor::write_op, p.p);
+    start_reactor_op<select_reactor::write_op>(impl, p.p);
     p.v = p.p = 0;
   }
 
@@ -545,6 +557,82 @@ public:
     }
   }
 
+  // Send multiple datagrams to the peer. Returns the number of datagrams sent.
+  // At most one datagram is sent per call.
+  template <typename BufferSequences>
+  size_t send_multiple(base_implementation_type& impl,
+      BufferSequences&& buffer_sequences,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    empty_range endpoints;
+    return detail::send_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, flags, ec);
+  }
+
+  // Receive multiple datagrams from the peer. Returns the number of datagrams
+  // received. At most one datagram is received per call.
+  template <typename BufferSequences,
+      typename SizeSequence, typename FlagsSequence>
+  size_t receive_multiple(base_implementation_type& impl,
+      BufferSequences&& buffer_sequences, SizeSequence&& sizes,
+      FlagsSequence&& out_flags, socket_base::message_flags flags,
+      asio::error_code& ec)
+  {
+    empty_range endpoints;
+    return detail::receive_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, sizes, out_flags, flags, ec);
+  }
+
+  // Start an asynchronous send of multiple datagrams. At most one datagram is
+  // sent per operation.
+  template <typename BufferSequences, typename Handler, typename IoExecutor>
+  void async_send_multiple(base_implementation_type& impl,
+      BufferSequences&& buffer_sequences, socket_base::message_flags flags,
+      Handler& handler, const IoExecutor& io_ex)
+  {
+    typedef single_datagram_handler<Handler,
+        empty_range, empty_range> handler_type;
+
+    auto&& range = unwrap_ref(buffer_sequences);
+    auto iter = range.begin();
+    bool empty = !(iter != range.end());
+    handler_type handler2(static_cast<Handler&&>(handler),
+        empty_range(), empty_range(), empty);
+
+    if (empty)
+      start_empty_multiple_op(impl, handler2, io_ex);
+    else
+      async_send(impl, *iter, flags, handler2, io_ex);
+  }
+
+  // Start an asynchronous receive of multiple datagrams. At most one datagram
+  // is received per operation.
+  template <typename BufferSequences, typename SizeSequence,
+      typename FlagsSequence, typename Handler, typename IoExecutor>
+  void async_receive_multiple(base_implementation_type& impl,
+      BufferSequences&& buffer_sequences, SizeSequence&& sizes,
+      FlagsSequence&& out_flags, socket_base::message_flags flags,
+      Handler& handler, const IoExecutor& io_ex)
+  {
+    typedef single_datagram_handler<Handler, decay_t<SizeSequence>,
+        decay_t<FlagsSequence>> handler_type;
+
+    empty_range endpoints;
+    transmit_multiple_limit<empty_range, remove_reference_t<SizeSequence>,
+        remove_reference_t<FlagsSequence>> limit(endpoints, sizes, out_flags);
+    auto&& range = unwrap_ref(buffer_sequences);
+    auto iter = range.begin();
+    bool empty = !(iter != range.end()) || limit.at_end();
+    handler_type handler2(static_cast<Handler&&>(handler),
+        static_cast<SizeSequence&&>(sizes),
+        static_cast<FlagsSequence&&>(out_flags), empty);
+
+    if (empty)
+      start_empty_multiple_op(impl, handler2, io_ex);
+    else
+      async_receive(impl, *iter, flags, handler2, io_ex);
+  }
+
   // Helper function to restart an asynchronous accept operation.
   ASIO_DECL void restart_accept_op(socket_type s,
       socket_holder& new_socket, int family, int type,
@@ -552,6 +640,25 @@ public:
       LONG* cancel_requested, operation* op);
 
 protected:
+  // Complete a multiple-datagram operation that has no datagrams to transfer.
+  template <typename Handler, typename IoExecutor>
+  void start_empty_multiple_op(base_implementation_type& impl,
+      Handler& handler, const IoExecutor& io_ex)
+  {
+    typedef win_iocp_socket_send_op<
+        asio::const_buffer, Handler, IoExecutor> op;
+    typename op::ptr p = { asio::detail::addressof(handler),
+      op::ptr::allocate(handler), 0 };
+    p.p = new (p.v) op(impl.cancel_token_,
+        asio::const_buffer(), handler, io_ex);
+
+    ASIO_HANDLER_CREATION((context_, *p.p, "socket",
+          &impl, impl.socket_, "async_multiple"));
+
+    start_send_op(impl, 0, 0, 0, true, p.p);
+    p.v = p.p = 0;
+  }
+
   // Open a new socket implementation.
   ASIO_DECL asio::error_code do_open(
       base_implementation_type& impl, int family, int type,
@@ -592,9 +699,25 @@ protected:
       bool peer_is_open, socket_holder& new_socket, int family, int type,
       int protocol, void* output_buffer, DWORD address_length, operation* op);
 
-  // Start an asynchronous read or write operation using the reactor.
-  ASIO_DECL void start_reactor_op(base_implementation_type& impl,
-      int op_type, reactor_op* op);
+  // Prepare to start an operation on the reactor. Returns the reactor, or
+  // null if the socket is not open, in which case the operation has already
+  // been completed.
+  ASIO_DECL select_reactor* prepare_reactor_op(
+      base_implementation_type& impl, reactor_op* op);
+
+  // Start an asynchronous read or write operation using the reactor, naming
+  // the operation type as a template argument. The operation is never
+  // attempted speculatively.
+  template <int OpType>
+  void start_reactor_op(base_implementation_type& impl, reactor_op* op)
+  {
+    if (select_reactor* r = prepare_reactor_op(impl, op))
+    {
+      if (r->start_op<OpType, nullptr>(impl.socket_,
+            impl.reactor_data_, op))
+        r->post_immediate_completion(op, false);
+    }
+  }
 
   // Start the asynchronous connect operation using the reactor.
   ASIO_DECL int start_connect_op(base_implementation_type& impl,
@@ -657,11 +780,11 @@ protected:
     }
 
     static void do_complete(void* owner, operation* base,
-        const asio::error_code& result_ec,
-        std::size_t bytes_transferred)
+        int error_value, std::size_t bytes_transferred)
     {
       iocp_op_cancellation* o = static_cast<iocp_op_cancellation*>(base);
-      o->target_->complete(owner, result_ec, bytes_transferred);
+      o->target_->Internal = o->Internal;
+      o->target_->complete(owner, error_value, bytes_transferred);
     }
 
     void operator()(cancellation_type_t type)
@@ -690,7 +813,7 @@ protected:
   {
   public:
     accept_op_cancellation(SOCKET s, operation* target)
-      : operation(&iocp_op_cancellation::do_complete),
+      : operation(&accept_op_cancellation::do_complete),
         socket_(s),
         target_(target),
         cancel_requested_(0)
@@ -698,11 +821,11 @@ protected:
     }
 
     static void do_complete(void* owner, operation* base,
-        const asio::error_code& result_ec,
-        std::size_t bytes_transferred)
+        int error_value, std::size_t bytes_transferred)
     {
       accept_op_cancellation* o = static_cast<accept_op_cancellation*>(base);
-      o->target_->complete(owner, result_ec, bytes_transferred);
+      o->target_->Internal = o->Internal;
+      o->target_->complete(owner, error_value, bytes_transferred);
     }
 
     LONG* get_cancel_requested()
@@ -755,11 +878,11 @@ protected:
     }
 
     static void do_complete(void* owner, operation* base,
-        const asio::error_code& result_ec,
-        std::size_t bytes_transferred)
+        int error_value, std::size_t bytes_transferred)
     {
       reactor_op_cancellation* o = static_cast<reactor_op_cancellation*>(base);
-      o->target_->complete(owner, result_ec, bytes_transferred);
+      o->target_->Internal = o->Internal;
+      o->target_->complete(owner, error_value, bytes_transferred);
     }
 
     void operator()(cancellation_type_t type)

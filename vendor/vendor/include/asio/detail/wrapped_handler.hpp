@@ -100,21 +100,21 @@ public:
 
   void operator()()
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(static_cast<Handler&&>(handler_),
         empty_work_function());
   }
 
   void operator()() const
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(handler_, empty_work_function());
   }
 
   template <typename Arg1>
   void operator()(const Arg1& arg1)
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(detail::bind_handler(handler_, arg1),
         empty_work_function());
   }
@@ -122,7 +122,7 @@ public:
   template <typename Arg1>
   void operator()(const Arg1& arg1) const
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(detail::bind_handler(handler_, arg1),
         empty_work_function());
   }
@@ -130,7 +130,7 @@ public:
   template <typename Arg1, typename Arg2>
   void operator()(const Arg1& arg1, const Arg2& arg2)
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(detail::bind_handler(handler_, arg1, arg2),
         empty_work_function());
   }
@@ -138,7 +138,7 @@ public:
   template <typename Arg1, typename Arg2>
   void operator()(const Arg1& arg1, const Arg2& arg2) const
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(detail::bind_handler(handler_, arg1, arg2),
         empty_work_function());
   }
@@ -146,7 +146,7 @@ public:
   template <typename Arg1, typename Arg2, typename Arg3>
   void operator()(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3)
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(detail::bind_handler(handler_, arg1, arg2, arg3),
         empty_work_function());
   }
@@ -154,7 +154,7 @@ public:
   template <typename Arg1, typename Arg2, typename Arg3>
   void operator()(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) const
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(detail::bind_handler(handler_, arg1, arg2, arg3),
         empty_work_function());
   }
@@ -163,7 +163,7 @@ public:
   void operator()(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3,
       const Arg4& arg4)
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(
           detail::bind_handler(handler_, arg1, arg2, arg3, arg4),
           empty_work_function());
@@ -173,7 +173,7 @@ public:
   void operator()(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3,
       const Arg4& arg4) const
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(
           detail::bind_handler(handler_, arg1, arg2, arg3, arg4),
           empty_work_function());
@@ -184,7 +184,7 @@ public:
   void operator()(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3,
       const Arg4& arg4, const Arg5& arg5)
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(
           detail::bind_handler(handler_, arg1, arg2, arg3, arg4, arg5),
           empty_work_function());
@@ -195,7 +195,7 @@ public:
   void operator()(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3,
       const Arg4& arg4, const Arg5& arg5) const
   {
-    detail::initiate_dispatch_with_executor<executor_type>(
+    detail::initiate_dispatch_with_executor<const executor_type&>(
         this->get_executor())(
           detail::bind_handler(handler_, arg1, arg2, arg3, arg4, arg5),
           empty_work_function());

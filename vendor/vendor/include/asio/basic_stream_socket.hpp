@@ -501,7 +501,7 @@ public:
           declval<initiate_async_send>(), token,
           buffers, socket_base::message_flags(0)))
   {
-    return async_initiate<WriteToken,
+    ASIO_INVOKE_INLINE return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_send(this), token,
         buffers, socket_base::message_flags(0));
@@ -571,7 +571,7 @@ public:
         void (asio::error_code, std::size_t)>(
           declval<initiate_async_send>(), token, buffers, flags))
   {
-    return async_initiate<WriteToken,
+    ASIO_INVOKE_INLINE return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_send(this), token, buffers, flags);
   }
@@ -745,7 +745,7 @@ public:
           declval<initiate_async_receive>(), token,
           buffers, socket_base::message_flags(0)))
   {
-    return async_initiate<ReadToken,
+    ASIO_INVOKE_INLINE return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_receive(this), token,
         buffers, socket_base::message_flags(0));
@@ -817,7 +817,7 @@ public:
         void (asio::error_code, std::size_t)>(
           declval<initiate_async_receive>(), token, buffers, flags))
   {
-    return async_initiate<ReadToken,
+    ASIO_INVOKE_INLINE return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_receive(this), token, buffers, flags);
   }
@@ -945,7 +945,7 @@ public:
           declval<initiate_async_send>(), token,
           buffers, socket_base::message_flags(0)))
   {
-    return async_initiate<WriteToken,
+    ASIO_INVOKE_INLINE return async_initiate<WriteToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_send(this), token,
         buffers, socket_base::message_flags(0));
@@ -1077,7 +1077,7 @@ public:
           declval<initiate_async_receive>(), token,
           buffers, socket_base::message_flags(0)))
   {
-    return async_initiate<ReadToken,
+    ASIO_INVOKE_INLINE return async_initiate<ReadToken,
       void (asio::error_code, std::size_t)>(
         initiate_async_receive(this), token,
         buffers, socket_base::message_flags(0));
@@ -1113,7 +1113,7 @@ private:
       ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
       detail::non_const_lvalue<WriteHandler> handler2(handler);
-      self_->impl_.get_service().async_send(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_send(
           self_->impl_.get_implementation(), buffers, flags,
           handler2.value, self_->impl_.get_executor());
     }
@@ -1147,7 +1147,7 @@ private:
       ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
       detail::non_const_lvalue<ReadHandler> handler2(handler);
-      self_->impl_.get_service().async_receive(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_receive(
           self_->impl_.get_implementation(), buffers, flags,
           handler2.value, self_->impl_.get_executor());
     }

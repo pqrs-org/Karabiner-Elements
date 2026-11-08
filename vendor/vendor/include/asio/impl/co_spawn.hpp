@@ -47,7 +47,7 @@ public:
   {
   }
 
-  executor_type get_executor() const noexcept
+  const executor_type& get_executor() const noexcept
   {
     return executor_;
   }
@@ -94,11 +94,7 @@ struct co_spawn_state
 template <typename Handler, typename Executor, typename Function>
 struct co_spawn_state<Handler, Executor, Function,
     enable_if_t<
-      is_same<
-        typename associated_executor<Handler,
-          Executor>::asio_associated_executor_is_unspecialised,
-        void
-      >::value
+      !has_associated_executor<Handler, Executor>::value
     >>
 {
   template <typename H, typename F>
@@ -272,11 +268,7 @@ private:
 template <typename Handler, typename Executor>
 class co_spawn_cancellation_handler<Handler, Executor,
     enable_if_t<
-      is_same<
-        typename associated_executor<Handler,
-          Executor>::asio_associated_executor_is_unspecialised,
-        void
-      >::value
+      !has_associated_executor<Handler, Executor>::value
     >>
 {
 public:
@@ -310,7 +302,7 @@ public:
   {
   }
 
-  executor_type get_executor() const noexcept
+  const executor_type& get_executor() const noexcept
   {
     return ex_;
   }

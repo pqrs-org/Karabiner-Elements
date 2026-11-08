@@ -11,7 +11,7 @@
 namespace pqrs::dispatcher::extra {
 class shared_dispatcher final {
 public:
-  void initialize() {
+  void initialize(dispatcher::execution_wrapper execution_wrapper = {}) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (!time_source_) {
@@ -19,7 +19,8 @@ public:
     }
 
     if (!dispatcher_) {
-      dispatcher_ = std::make_shared<dispatcher>(time_source_);
+      dispatcher_ = std::make_shared<dispatcher>(time_source_,
+                                                 std::move(execution_wrapper));
     }
   }
 
@@ -64,9 +65,9 @@ private:
   mutable std::mutex mutex_;
 };
 
-inline void initialize_shared_dispatcher() {
+inline void initialize_shared_dispatcher(dispatcher::execution_wrapper execution_wrapper = {}) {
   auto p = shared_dispatcher::get_shared_dispatcher();
-  p->initialize();
+  p->initialize(std::move(execution_wrapper));
 }
 
 inline void terminate_shared_dispatcher() {

@@ -126,33 +126,11 @@ public:
   {
   }
 
-  io_op(const io_op& other)
-    : asio::detail::base_from_cancellation_state<Handler>(other),
-      next_layer_(other.next_layer_),
-      core_(other.core_),
-      op_(other.op_),
-      start_(other.start_),
-      want_(other.want_),
-      ec_(other.ec_),
-      bytes_transferred_(other.bytes_transferred_),
-      handler_(other.handler_)
-  {
-  }
+  io_op(const io_op& other) = default;
+  io_op(io_op&& other) = default;
 
-  io_op(io_op&& other)
-    : asio::detail::base_from_cancellation_state<Handler>(
-        static_cast<
-          asio::detail::base_from_cancellation_state<Handler>&&>(other)),
-      next_layer_(other.next_layer_),
-      core_(other.core_),
-      op_(static_cast<Operation&&>(other.op_)),
-      start_(other.start_),
-      want_(other.want_),
-      ec_(other.ec_),
-      bytes_transferred_(other.bytes_transferred_),
-      handler_(static_cast<Handler&&>(other.handler_))
-  {
-  }
+  io_op& operator=(const io_op&) = delete;
+  io_op& operator=(io_op&&) = delete;
 
   void operator()(asio::error_code ec,
       std::size_t bytes_transferred = ~std::size_t(0), int start = 0)

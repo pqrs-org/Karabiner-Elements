@@ -99,6 +99,15 @@ public:
     return false;
   }
 
+  // Whether there are any threads waiting on the event.
+  template <typename Lock>
+  bool has_waiters(Lock& lock) const
+  {
+    ASIO_ASSERT(lock.locked());
+    (void)lock;
+    return state_ > 1;
+  }
+
   // Reset the event.
   template <typename Lock>
   void clear(Lock& lock)

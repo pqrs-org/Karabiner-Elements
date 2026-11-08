@@ -47,9 +47,10 @@ public:
     return perform_func_(this);
   }
 
-protected:
+  // The type of the function used to perform the operation.
   typedef status (*perform_func_type)(reactor_op*);
 
+protected:
   reactor_op(const asio::error_code& success_ec,
       perform_func_type perform_func, func_type complete_func)
     : operation(complete_func),

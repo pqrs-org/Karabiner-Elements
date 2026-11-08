@@ -103,12 +103,7 @@ private:
 template <typename Handler>
 class base_from_cancellation_state<Handler,
     enable_if_t<
-      is_same<
-        typename associated_cancellation_slot<
-          Handler, cancellation_slot
-        >::asio_associated_cancellation_slot_is_unspecialised,
-        void
-      >::value
+      !has_associated_cancellation_slot<Handler, cancellation_slot>::value
     >
   >
 {

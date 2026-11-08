@@ -71,6 +71,9 @@ public:
     /// Specify @c as_tuple_t as the default completion token type.
     typedef as_tuple_t default_completion_token_type;
 
+    /// The adapted executor type, without the default completion token.
+    typedef InnerExecutor executor_without_default;
+
     /// Construct the adapted executor from the inner executor type.
     template <typename InnerExecutor1>
     executor_with_default(const InnerExecutor1& ex,

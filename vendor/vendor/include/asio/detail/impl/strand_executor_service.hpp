@@ -15,6 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/detail/executor_function.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/recycling_allocator.hpp"
 #include "asio/executor_work_guard.hpp"
@@ -40,17 +41,8 @@ public:
   {
   }
 
-  allocator_binder(const allocator_binder& other)
-    : f_(other.f_),
-      allocator_(other.allocator_)
-  {
-  }
-
-  allocator_binder(allocator_binder&& other)
-    : f_(static_cast<F&&>(other.f_)),
-      allocator_(static_cast<allocator_type&&>(other.allocator_))
-  {
-  }
+  allocator_binder(const allocator_binder& other) = default;
+  allocator_binder(allocator_binder&& other) = default;
 
   allocator_type get_allocator() const noexcept
   {
@@ -80,17 +72,8 @@ public:
   {
   }
 
-  invoker(const invoker& other)
-    : impl_(other.impl_),
-      executor_(other.executor_)
-  {
-  }
-
-  invoker(invoker&& other)
-    : impl_(static_cast<implementation_type&&>(other.impl_)),
-      executor_(static_cast<executor_type&&>(other.executor_))
-  {
-  }
+  invoker(const invoker& other) = default;
+  invoker(invoker&& other) = default;
 
   struct on_invoker_exit
   {
@@ -148,17 +131,8 @@ public:
   {
   }
 
-  invoker(const invoker& other)
-    : impl_(other.impl_),
-      work_(other.work_)
-  {
-  }
-
-  invoker(invoker&& other)
-    : impl_(static_cast<implementation_type&&>(other.impl_)),
-      work_(static_cast<executor_work_guard<Executor>&&>(other.work_))
-  {
-  }
+  invoker(const invoker& other) = default;
+  invoker(invoker&& other) = default;
 
   struct on_invoker_exit
   {
@@ -245,6 +219,31 @@ void strand_executor_service::do_execute(const implementation_type& impl,
   // Add the function to the strand and schedule the strand if required.
   bool first = enqueue(impl, p.p);
   p.v = p.p = 0;
+  if (first)
+  {
+    ex.execute(invoker<Executor>(impl, ex));
+  }
+}
+
+template <typename Executor, typename Allocator>
+void strand_executor_service::do_execute(const implementation_type& impl,
+    Executor& ex, executor_function&& function, const Allocator&)
+{
+  // If the executor is not never-blocking, and we are already in the strand,
+  // then the function can run immediately.
+  if (asio::query(ex, execution::blocking) != execution::blocking.never
+      && running_in_this_thread(impl))
+  {
+    fenced_block b(fenced_block::full);
+    function();
+    return;
+  }
+
+  ASIO_HANDLER_CREATION((impl->service_->context(), *function.get(),
+        "strand_executor", impl.get(), 0, "execute"));
+
+  // Add the operation to the strand and schedule the strand if required.
+  bool first = enqueue(impl, function.release());
   if (first)
   {
     ex.execute(invoker<Executor>(impl, ex));

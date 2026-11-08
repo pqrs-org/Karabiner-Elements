@@ -44,7 +44,7 @@ namespace detail
       const MutableBufferSequence& buffers, const MutableBufferIterator&,
       CompletionCondition completion_condition, asio::error_code& ec)
   {
-    ec = asio::error_code();
+    asio::error::clear(ec);
     asio::detail::consuming_buffers<mutable_buffer,
         MutableBufferSequence, MutableBufferIterator> tmp(buffers);
     while (!tmp.empty())
@@ -135,7 +135,7 @@ std::size_t read(SyncReadStream& s,
   decay_t<DynamicBuffer_v1> b(
       static_cast<DynamicBuffer_v1&&>(buffers));
 
-  ec = asio::error_code();
+  asio::error::clear(ec);
   std::size_t total_transferred = 0;
   std::size_t max_size = detail::adapt_completion_condition_result(
         completion_condition(ec, total_transferred));
@@ -272,7 +272,7 @@ std::size_t read(SyncReadStream& s, DynamicBuffer_v2 buffers,
 {
   DynamicBuffer_v2& b = buffers;
 
-  ec = asio::error_code();
+  asio::error::clear(ec);
   std::size_t total_transferred = 0;
   std::size_t max_size = detail::adapt_completion_condition_result(
         completion_condition(ec, total_transferred));
@@ -361,27 +361,11 @@ namespace detail
     {
     }
 
-    read_op(const read_op& other)
-      : base_from_cancellation_state<ReadHandler>(other),
-        base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        handler_(other.handler_)
-    {
-    }
+    read_op(const read_op& other) = default;
+    read_op(read_op&& other) = default;
 
-    read_op(read_op&& other)
-      : base_from_cancellation_state<ReadHandler>(
-          static_cast<base_from_cancellation_state<ReadHandler>&&>(other)),
-        base_from_completion_cond<CompletionCondition>(
-          static_cast<base_from_completion_cond<CompletionCondition>&&>(other)),
-        stream_(other.stream_),
-        buffers_(static_cast<buffers_type&&>(other.buffers_)),
-        start_(other.start_),
-        handler_(static_cast<ReadHandler&&>(other.handler_))
-    {
-    }
+    read_op& operator=(const read_op&) = delete;
+    read_op& operator=(read_op&&) = delete;
 
     void operator()(asio::error_code ec,
         std::size_t bytes_transferred, int start = 0)
@@ -412,7 +396,7 @@ namespace detail
           }
         }
 
-        static_cast<ReadHandler&&>(handler_)(
+        ASIO_INVOKE_INLINE static_cast<ReadHandler&&>(handler_)(
             static_cast<const asio::error_code&>(ec),
             static_cast<const std::size_t&>(buffers_.total_consumed()));
       }
@@ -548,29 +532,11 @@ namespace detail
     {
     }
 
-    read_dynbuf_v1_op(const read_dynbuf_v1_op& other)
-      : base_from_cancellation_state<ReadHandler>(other),
-        base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(other.handler_)
-    {
-    }
+    read_dynbuf_v1_op(const read_dynbuf_v1_op& other) = default;
+    read_dynbuf_v1_op(read_dynbuf_v1_op&& other) = default;
 
-    read_dynbuf_v1_op(read_dynbuf_v1_op&& other)
-      : base_from_cancellation_state<ReadHandler>(
-          static_cast<base_from_cancellation_state<ReadHandler>&&>(other)),
-        base_from_completion_cond<CompletionCondition>(
-          static_cast<base_from_completion_cond<CompletionCondition>&&>(other)),
-        stream_(other.stream_),
-        buffers_(static_cast<DynamicBuffer_v1&&>(other.buffers_)),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(static_cast<ReadHandler&&>(other.handler_))
-    {
-    }
+    read_dynbuf_v1_op& operator=(const read_dynbuf_v1_op&) = delete;
+    read_dynbuf_v1_op& operator=(read_dynbuf_v1_op&&) = delete;
 
     void operator()(asio::error_code ec,
         std::size_t bytes_transferred, int start = 0)
@@ -733,31 +699,11 @@ namespace detail
     {
     }
 
-    read_dynbuf_v2_op(const read_dynbuf_v2_op& other)
-      : base_from_cancellation_state<ReadHandler>(other),
-        base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        bytes_available_(other.bytes_available_),
-        handler_(other.handler_)
-    {
-    }
+    read_dynbuf_v2_op(const read_dynbuf_v2_op& other) = default;
+    read_dynbuf_v2_op(read_dynbuf_v2_op&& other) = default;
 
-    read_dynbuf_v2_op(read_dynbuf_v2_op&& other)
-      : base_from_cancellation_state<ReadHandler>(
-          static_cast<base_from_cancellation_state<ReadHandler>&&>(other)),
-        base_from_completion_cond<CompletionCondition>(
-          static_cast<base_from_completion_cond<CompletionCondition>&&>(other)),
-        stream_(other.stream_),
-        buffers_(static_cast<DynamicBuffer_v2&&>(other.buffers_)),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        bytes_available_(other.bytes_available_),
-        handler_(static_cast<ReadHandler&&>(other.handler_))
-    {
-    }
+    read_dynbuf_v2_op& operator=(const read_dynbuf_v2_op&) = delete;
+    read_dynbuf_v2_op& operator=(read_dynbuf_v2_op&&) = delete;
 
     void operator()(asio::error_code ec,
         std::size_t bytes_transferred, int start = 0)

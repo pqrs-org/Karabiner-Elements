@@ -92,7 +92,8 @@ public:
     else if (after_completion)
     {
       if (!o->ec_)
-        o->out_flags_ = o->msghdr_.msg_flags;
+        o->out_flags_ = socket_ops::recv_out_flags(
+            o->msghdr_.msg_flags, o->in_flags_);
       else
         o->out_flags_ = 0;
     }
@@ -139,8 +140,7 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
-      std::size_t /*bytes_transferred*/)
+      int /*error_value*/, std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     ASIO_ASSUME(base != 0);

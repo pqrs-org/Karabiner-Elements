@@ -69,6 +69,13 @@ public:
     return false;
   }
 
+  // Whether there are any threads waiting on the event.
+  template <typename Lock>
+  bool has_waiters(Lock&) const
+  {
+    return false;
+  }
+
   // Reset the event.
   template <typename Lock>
   void clear(Lock&)

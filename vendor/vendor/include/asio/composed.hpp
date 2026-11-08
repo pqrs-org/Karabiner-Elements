@@ -51,15 +51,7 @@ public:
   {
   }
 
-  composed_op(composed_op&& other)
-    : base_from_cancellation_state<Handler>(
-        static_cast<base_from_cancellation_state<Handler>&&>(other)),
-      impl_(static_cast<Impl&&>(other.impl_)),
-      work_(static_cast<Work&&>(other.work_)),
-      handler_(static_cast<Handler&&>(other.handler_)),
-      invocations_(other.invocations_)
-  {
-  }
+  composed_op(composed_op&& other) = default;
 
   typedef typename composed_work_guard<
     typename Work::head_type>::executor_type io_executor_type;

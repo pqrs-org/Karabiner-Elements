@@ -552,6 +552,23 @@ constexpr bool can_prefer_v
 #endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename... Properties>
+struct is_identity_prefer :
+  integral_constant<bool,
+    ASIO_VERSIONED_NAME(prefer_fn)::call_traits<
+      prefer_t, T, void(Properties...)>::overload
+        == ASIO_VERSIONED_NAME(prefer_fn)::identity>
+{
+};
+
+#if defined(ASIO_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename... Properties>
+constexpr bool is_identity_prefer_v
+  = is_identity_prefer<T, Properties...>::value;
+
+#endif // defined(ASIO_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename... Properties>
 struct is_nothrow_prefer :
   integral_constant<bool,
     ASIO_VERSIONED_NAME(prefer_fn)::call_traits<

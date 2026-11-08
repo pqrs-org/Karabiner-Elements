@@ -722,7 +722,7 @@ public:
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
 
-    return asio::async_initiate<ResolveToken,
+    ASIO_INVOKE_INLINE return asio::async_initiate<ResolveToken,
       void (asio::error_code, results_type)>(
         initiate_async_resolve(this), token, q);
   }
@@ -867,7 +867,7 @@ public:
         protocol, static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
 
-    return asio::async_initiate<ResolveToken,
+    ASIO_INVOKE_INLINE return asio::async_initiate<ResolveToken,
       void (asio::error_code, results_type)>(
         initiate_async_resolve(this), token, q);
   }
@@ -954,7 +954,7 @@ public:
         void (asio::error_code, results_type)>(
           declval<initiate_async_resolve>(), token, e))
   {
-    return asio::async_initiate<ResolveToken,
+    ASIO_INVOKE_INLINE return asio::async_initiate<ResolveToken,
       void (asio::error_code, results_type)>(
         initiate_async_resolve(this), token, e);
   }
@@ -989,7 +989,7 @@ private:
           ResolveHandler, handler, results_type) type_check;
 
       asio::detail::non_const_lvalue<ResolveHandler> handler2(handler);
-      self_->impl_.get_service().async_resolve(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_resolve(
           self_->impl_.get_implementation(), q,
           handler2.value, self_->impl_.get_executor());
     }

@@ -47,14 +47,13 @@ public:
   {
   }
 
-  static status do_perform(reactor_op*)
+  static ASIO_ALWAYS_INLINE status do_perform(reactor_op*)
   {
     return done;
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
-      std::size_t /*bytes_transferred*/)
+      int /*error_value*/, std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     ASIO_ASSUME(base != 0);

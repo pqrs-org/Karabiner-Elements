@@ -164,6 +164,16 @@ using associated_allocator_t
 namespace detail {
 
 template <typename T, typename A, typename = void>
+struct has_associated_allocator : true_type {};
+
+template <typename T, typename A>
+struct has_associated_allocator<T, A,
+    void_t<
+      typename associated_allocator<T, A>::
+        asio_associated_allocator_is_unspecialised
+    >> : false_type {};
+
+template <typename T, typename A, typename = void>
 struct associated_allocator_forwarding_base
 {
 };
@@ -171,11 +181,7 @@ struct associated_allocator_forwarding_base
 template <typename T, typename A>
 struct associated_allocator_forwarding_base<T, A,
     enable_if_t<
-      is_same<
-        typename associated_allocator<T,
-          A>::asio_associated_allocator_is_unspecialised,
-        void
-      >::value
+      !has_associated_allocator<T, A>::value
     >>
 {
   typedef void asio_associated_allocator_is_unspecialised;

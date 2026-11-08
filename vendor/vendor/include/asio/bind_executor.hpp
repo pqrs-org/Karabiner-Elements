@@ -285,7 +285,7 @@ public:
 
   /// Copy constructor.
   executor_binder(const executor_binder& other)
-    : base_type(other.get_executor(), other.get())
+    : base_type(other.executor_, other.target_)
   {
   }
 
@@ -326,8 +326,8 @@ public:
 
   /// Move constructor.
   executor_binder(executor_binder&& other)
-    : base_type(static_cast<executor_type&&>(other.get_executor()),
-        static_cast<T&&>(other.get()))
+    : base_type(static_cast<Executor&&>(other.executor_),
+        static_cast<T&&>(other.target_))
   {
   }
 

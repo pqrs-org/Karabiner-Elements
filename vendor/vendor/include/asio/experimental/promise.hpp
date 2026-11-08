@@ -164,6 +164,13 @@ private:
     std::shared_ptr<detail::promise_impl<
       void(Ts...), Executor, Allocator>> self_;
 
+    typedef Executor executor_type;
+
+    executor_type get_executor() const noexcept
+    {
+      return self_->get_executor();
+    }
+
     template <typename WaitHandler>
     void operator()(WaitHandler&& handler) const
     {

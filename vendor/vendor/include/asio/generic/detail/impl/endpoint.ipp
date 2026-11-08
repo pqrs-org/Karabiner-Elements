@@ -1,5 +1,5 @@
 //
-// generic/detail/impl/endpoint.hpp
+// generic/detail/impl/endpoint.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)

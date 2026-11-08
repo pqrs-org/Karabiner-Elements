@@ -16,7 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-
+#include "asio/error.hpp"
 #include "asio/ssl/detail/engine.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -49,7 +49,7 @@ public:
       // The engine only generates an eof when the shutdown notification has
       // been received from the peer. This indicates that the shutdown has
       // completed successfully, and thus need not be returned to the caller.
-      ec = asio::error_code();
+      asio::error::clear(ec);
     }
   }
 

@@ -1228,7 +1228,8 @@ public:
       async_initiate<WaitToken, void (asio::error_code)>(
         declval<initiate_async_wait>(), token, w))
   {
-    return async_initiate<WaitToken, void (asio::error_code)>(
+    ASIO_INVOKE_INLINE return async_initiate<WaitToken,
+      void (asio::error_code)>(
         initiate_async_wait(this), token, w);
   }
 
@@ -1366,7 +1367,8 @@ public:
         declval<initiate_async_accept>(), token,
         &peer, static_cast<endpoint_type*>(0)))
   {
-    return async_initiate<AcceptToken, void (asio::error_code)>(
+    ASIO_INVOKE_INLINE return async_initiate<AcceptToken,
+      void (asio::error_code)>(
         initiate_async_accept(this), token,
         &peer, static_cast<endpoint_type*>(0));
   }
@@ -1493,7 +1495,8 @@ public:
       async_initiate<AcceptToken, void (asio::error_code)>(
         declval<initiate_async_accept>(), token, &peer, &peer_endpoint))
   {
-    return async_initiate<AcceptToken, void (asio::error_code)>(
+    ASIO_INVOKE_INLINE return async_initiate<AcceptToken,
+      void (asio::error_code)>(
         initiate_async_accept(this), token, &peer, &peer_endpoint);
   }
 #endif // !defined(ASIO_NO_EXTENSIONS)
@@ -1639,7 +1642,7 @@ public:
             static_cast<typename Protocol::socket::template
               rebind_executor<executor_type>::other*>(0)))
   {
-    return async_initiate<MoveAcceptToken,
+    ASIO_INVOKE_INLINE return async_initiate<MoveAcceptToken,
       void (asio::error_code, typename Protocol::socket::template
         rebind_executor<executor_type>::other)>(
           initiate_async_move_accept(this), token,
@@ -1896,7 +1899,7 @@ public:
               static_cast<typename Protocol::socket::template
                 rebind_executor<Executor1>::other*>(0)))
   {
-    return async_initiate<MoveAcceptToken,
+    ASIO_INVOKE_INLINE return async_initiate<MoveAcceptToken,
       void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
           Executor1>::other)>(
@@ -1989,7 +1992,7 @@ public:
               static_cast<typename Protocol::socket::template rebind_executor<
                 typename ExecutionContext::executor_type>::other*>(0)))
   {
-    return async_initiate<MoveAcceptToken,
+    ASIO_INVOKE_INLINE return async_initiate<MoveAcceptToken,
       void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
           typename ExecutionContext::executor_type>::other)>(
@@ -2156,7 +2159,7 @@ public:
             static_cast<typename Protocol::socket::template
               rebind_executor<executor_type>::other*>(0)))
   {
-    return async_initiate<MoveAcceptToken,
+    ASIO_INVOKE_INLINE return async_initiate<MoveAcceptToken,
       void (asio::error_code, typename Protocol::socket::template
         rebind_executor<executor_type>::other)>(
           initiate_async_move_accept(this), token,
@@ -2444,7 +2447,7 @@ public:
           static_cast<typename Protocol::socket::template
             rebind_executor<Executor1>::other*>(0)))
   {
-    return async_initiate<MoveAcceptToken,
+    ASIO_INVOKE_INLINE return async_initiate<MoveAcceptToken,
       void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
           Executor1>::other)>(
@@ -2542,7 +2545,7 @@ public:
               static_cast<typename Protocol::socket::template rebind_executor<
                 typename ExecutionContext::executor_type>::other*>(0)))
   {
-    return async_initiate<MoveAcceptToken,
+    ASIO_INVOKE_INLINE return async_initiate<MoveAcceptToken,
       void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
           typename ExecutionContext::executor_type>::other)>(
@@ -2581,7 +2584,7 @@ private:
       ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
 
       detail::non_const_lvalue<WaitHandler> handler2(handler);
-      self_->impl_.get_service().async_wait(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_wait(
           self_->impl_.get_implementation(), w,
           handler2.value, self_->impl_.get_executor());
     }
@@ -2615,7 +2618,7 @@ private:
       ASIO_ACCEPT_HANDLER_CHECK(AcceptHandler, handler) type_check;
 
       detail::non_const_lvalue<AcceptHandler> handler2(handler);
-      self_->impl_.get_service().async_accept(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_accept(
           self_->impl_.get_implementation(), *peer, peer_endpoint,
           handler2.value, self_->impl_.get_executor());
     }
@@ -2649,7 +2652,7 @@ private:
           MoveAcceptHandler, handler, Socket) type_check;
 
       detail::non_const_lvalue<MoveAcceptHandler> handler2(handler);
-      self_->impl_.get_service().async_move_accept(
+      ASIO_INVOKE_INLINE self_->impl_.get_service().async_move_accept(
           self_->impl_.get_implementation(), peer_ex, peer_endpoint,
           handler2.value, self_->impl_.get_executor());
     }

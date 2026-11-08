@@ -34,6 +34,33 @@ inline void kqueue_reactor::post_immediate_completion(
   scheduler_.post_immediate_completion(op, is_continuation);
 }
 
+template <int OpType, reactor_op::perform_func_type Perform>
+inline bool kqueue_reactor::start_op(socket_type descriptor,
+    kqueue_reactor::per_descriptor_data& descriptor_data, reactor_op* op)
+{
+  if (ASIO_UNLIKELY(!descriptor_data))
+    return start_bad_descriptor_op(op);
+
+  mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
+
+  const bool speculative = Perform != nullptr
+    && descriptor_data->op_queue_[OpType].empty()
+    && (OpType != read_op
+      || descriptor_data->op_queue_[except_op].empty());
+
+  if (speculative)
+  {
+    if (Perform(op))
+    {
+      descriptor_lock.unlock();
+      return true;
+    }
+  }
+
+  return start_unready_op(OpType, descriptor,
+      descriptor_data, descriptor_lock, op, speculative);
+}
+
 template <typename TimeTraits, typename Allocator>
 void kqueue_reactor::add_timer_queue(timer_queue<TimeTraits, Allocator>& queue)
 {

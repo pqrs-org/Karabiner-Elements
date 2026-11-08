@@ -35,6 +35,7 @@
 #include "asio/detail/socket_holder.hpp"
 #include "asio/detail/socket_ops.hpp"
 #include "asio/detail/socket_types.hpp"
+#include "asio/detail/unwrap_ref.hpp"
 #include "asio/detail/win_iocp_io_context.hpp"
 #include "asio/detail/win_iocp_null_buffers_op.hpp"
 #include "asio/detail/win_iocp_socket_accept_op.hpp"
@@ -391,7 +392,7 @@ public:
     ASIO_HANDLER_CREATION((context_, *p.p, "socket",
           &impl, impl.socket_, "async_send_to(null_buffers)"));
 
-    start_reactor_op(impl, select_reactor::write_op, o);
+    start_reactor_op<select_reactor::write_op>(impl, o);
     p.v = p.p = 0;
   }
 
@@ -507,6 +508,99 @@ public:
     {
       static_cast<reactor_op_cancellation*>(iocp_op)->use_reactor(
           &get_reactor(), &impl.reactor_data_, op_type);
+    }
+  }
+
+  // Send multiple datagrams to the specified endpoints. Returns the number of
+  // datagrams sent. At most one datagram is sent per call.
+  template <typename BufferSequences, typename EndpointSequence>
+  size_t send_to_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    size_t n = detail::send_multiple<endpoint_type>(impl.socket_,
+        impl.state_, buffer_sequences, endpoints, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
+
+  // Receive multiple datagrams with the endpoints of the senders. Returns the
+  // number of datagrams received. At most one datagram is received per call.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence>
+  size_t receive_from_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, asio::error_code& ec)
+  {
+    size_t n = detail::receive_multiple(impl.socket_, impl.state_,
+        buffer_sequences, endpoints, sizes, out_flags, flags, ec);
+    ASIO_ERROR_LOCATION(ec);
+    return n;
+  }
+
+  // Start an asynchronous send of multiple datagrams to the specified
+  // endpoints. At most one datagram is sent per operation.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename Handler, typename IoExecutor>
+  void async_send_to_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex)
+  {
+    typedef single_datagram_handler<Handler,
+        empty_range, empty_range> handler_type;
+
+    empty_range none;
+    transmit_multiple_limit<remove_reference_t<EndpointSequence>,
+        empty_range, empty_range> limit(endpoints, none, none);
+    auto&& range = unwrap_ref(buffer_sequences);
+    auto iter = range.begin();
+    bool empty = !(iter != range.end()) || limit.at_end();
+    handler_type handler2(static_cast<Handler&&>(handler),
+        empty_range(), empty_range(), empty);
+
+    if (empty)
+      this->start_empty_multiple_op(impl, handler2, io_ex);
+    else
+    {
+      endpoint_type destination(unwrap_ref(*unwrap_ref(endpoints).begin()));
+      async_send_to(impl, *iter, destination, flags, handler2, io_ex);
+    }
+  }
+
+  // Start an asynchronous receive of multiple datagrams with the endpoints of
+  // the senders. At most one datagram is received per operation.
+  template <typename BufferSequences, typename EndpointSequence,
+      typename SizeSequence, typename FlagsSequence,
+      typename Handler, typename IoExecutor>
+  void async_receive_from_multiple(implementation_type& impl,
+      BufferSequences&& buffer_sequences, EndpointSequence&& endpoints,
+      SizeSequence&& sizes, FlagsSequence&& out_flags,
+      socket_base::message_flags flags, Handler& handler,
+      const IoExecutor& io_ex)
+  {
+    typedef single_datagram_handler<Handler, decay_t<SizeSequence>,
+        decay_t<FlagsSequence>> handler_type;
+
+    transmit_multiple_limit<remove_reference_t<EndpointSequence>,
+        remove_reference_t<SizeSequence>, remove_reference_t<FlagsSequence>>
+      limit(endpoints, sizes, out_flags);
+    auto&& range = unwrap_ref(buffer_sequences);
+    auto iter = range.begin();
+    bool empty = !(iter != range.end()) || limit.at_end();
+    handler_type handler2(static_cast<Handler&&>(handler),
+        static_cast<SizeSequence&&>(sizes),
+        static_cast<FlagsSequence&&>(out_flags), empty);
+
+    if (empty)
+      this->start_empty_multiple_op(impl, handler2, io_ex);
+    else
+    {
+      endpoint_type& sender_endpoint =
+        unwrap_ref(*unwrap_ref(endpoints).begin());
+      async_receive_from(impl, *iter, sender_endpoint,
+          flags, handler2, io_ex);
     }
   }
 

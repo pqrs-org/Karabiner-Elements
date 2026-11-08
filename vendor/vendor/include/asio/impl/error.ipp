@@ -138,7 +138,7 @@ public:
 
 const asio::error_category& get_netdb_category()
 {
-  static detail::netdb_category instance;
+  ASIO_NO_DESTROY static detail::netdb_category instance;
   return instance;
 }
 
@@ -166,7 +166,7 @@ public:
 
 const asio::error_category& get_addrinfo_category()
 {
-  static detail::addrinfo_category instance;
+  ASIO_NO_DESTROY static detail::addrinfo_category instance;
   return instance;
 }
 
@@ -201,7 +201,7 @@ public:
 
 const asio::error_category& get_misc_category()
 {
-  static detail::misc_category instance;
+  ASIO_NO_DESTROY static detail::misc_category instance;
   return instance;
 }
 

@@ -203,6 +203,8 @@ ASIO_DECL bool non_blocking_recvfrom1(socket_type s, void* data,
 
 #endif // defined(ASIO_HAS_IOCP)
 
+ASIO_DECL int recv_out_flags(int msg_flags, int in_flags);
+
 ASIO_DECL signed_size_type recvmsg(socket_type s, buf* bufs,
     size_t count, int in_flags, int& out_flags,
     asio::error_code& ec);
@@ -224,6 +226,29 @@ ASIO_DECL bool non_blocking_recvmsg(socket_type s,
     asio::error_code& ec, size_t& bytes_transferred);
 
 #endif // defined(ASIO_HAS_IOCP)
+
+#if defined(ASIO_HAS_RECVMMSG_SENDMMSG)
+
+ASIO_DECL signed_size_type recvmmsg(socket_type s, mmsghdr* bufs,
+    size_t count, int flags, asio::error_code& ec);
+
+#endif // defined(ASIO_HAS_RECVMMSG_SENDMMSG)
+
+#if !defined(ASIO_WINDOWS_RUNTIME)
+
+ASIO_DECL size_t sync_recvmmsg(socket_type s, state_type state,
+    mmsghdr* bufs, size_t count, int flags, bool want_flags,
+    asio::error_code& ec);
+
+#if !defined(ASIO_HAS_IOCP)
+
+ASIO_DECL bool non_blocking_recvmmsg(socket_type s, mmsghdr* bufs,
+    size_t count, int flags, bool want_flags, asio::error_code& ec,
+    size_t& messages_transferred);
+
+#endif // !defined(ASIO_HAS_IOCP)
+
+#endif // !defined(ASIO_WINDOWS_RUNTIME)
 
 ASIO_DECL signed_size_type send(socket_type s, const buf* bufs,
     size_t count, int flags, asio::error_code& ec);
@@ -283,6 +308,28 @@ ASIO_DECL bool non_blocking_sendto1(socket_type s, const void* data,
     asio::error_code& ec, size_t& bytes_transferred);
 
 #endif // !defined(ASIO_HAS_IOCP)
+
+#if defined(ASIO_HAS_RECVMMSG_SENDMMSG)
+
+ASIO_DECL signed_size_type sendmmsg(socket_type s, mmsghdr* bufs,
+    size_t count, int flags, asio::error_code& ec);
+
+#endif // defined(ASIO_HAS_RECVMMSG_SENDMMSG)
+
+#if !defined(ASIO_WINDOWS_RUNTIME)
+
+ASIO_DECL size_t sync_sendmmsg(socket_type s, state_type state,
+    mmsghdr* bufs, size_t count, int flags, asio::error_code& ec);
+
+#if !defined(ASIO_HAS_IOCP)
+
+ASIO_DECL bool non_blocking_sendmmsg(socket_type s, mmsghdr* bufs,
+    size_t count, int flags, asio::error_code& ec,
+    size_t& messages_transferred);
+
+#endif // !defined(ASIO_HAS_IOCP)
+
+#endif // !defined(ASIO_WINDOWS_RUNTIME)
 
 ASIO_DECL socket_type socket(int af, int type, int protocol,
     asio::error_code& ec);

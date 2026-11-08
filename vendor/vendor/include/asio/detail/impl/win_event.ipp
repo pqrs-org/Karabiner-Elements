@@ -1,6 +1,6 @@
 //
-// detail/win_event.ipp
-// ~~~~~~~~~~~~~~~~~~~~
+// detail/impl/win_event.ipp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //

@@ -24,6 +24,8 @@
 # include "asio/detail/win_iocp_io_context.hpp"
 #elif defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 # include "asio/detail/io_uring_service.hpp"
+#elif defined(ASIO_ENABLE_SPIN_REACTOR)
+# include "asio/detail/spin_reactor.hpp"
 #elif defined(ASIO_HAS_EPOLL)
 # include "asio/detail/epoll_reactor.hpp"
 #elif defined(ASIO_HAS_KQUEUE)

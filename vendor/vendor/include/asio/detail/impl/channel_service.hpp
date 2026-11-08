@@ -1,6 +1,6 @@
 //
-// experimental/detail/impl/channel_service.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// detail/impl/channel_service.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_EXPERIMENTAL_DETAIL_IMPL_CHANNEL_SERVICE_HPP
-#define ASIO_EXPERIMENTAL_DETAIL_IMPL_CHANNEL_SERVICE_HPP
+#ifndef ASIO_DETAIL_IMPL_CHANNEL_SERVICE_HPP
+#define ASIO_DETAIL_IMPL_CHANNEL_SERVICE_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -19,13 +19,12 @@
 
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
-namespace experimental {
 namespace detail {
 
 template <typename Mutex>
 inline channel_service<Mutex>::channel_service(
     asio::execution_context& ctx)
-  : asio::detail::execution_context_service_base<channel_service>(ctx),
+  : execution_context_service_base<channel_service>(ctx),
     mutex_(),
     impl_list_(0)
 {
@@ -35,8 +34,8 @@ template <typename Mutex>
 inline void channel_service<Mutex>::shutdown()
 {
   // Abandon all pending operations.
-  asio::detail::op_queue<channel_operation> ops;
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  op_queue<channel_operation> ops;
+  mutex::scoped_lock lock(mutex_);
   base_implementation_type* impl = impl_list_;
   while (impl)
   {
@@ -54,7 +53,7 @@ inline void channel_service<Mutex>::construct(
   impl.send_state_ = max_buffer_size ? buffer : block;
 
   // Insert implementation into linked list of all implementations.
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(mutex_);
   impl.next_ = impl_list_;
   impl.prev_ = 0;
   if (impl_list_)
@@ -85,7 +84,7 @@ void channel_service<Mutex>::move_construct(
   impl.buffer_move_from(other_impl);
 
   // Insert implementation into linked list of all implementations.
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(mutex_);
   impl.next_ = impl_list_;
   impl.prev_ = 0;
   if (impl_list_)
@@ -105,7 +104,7 @@ void channel_service<Mutex>::move_assign(
   if (this != &other_service)
   {
     // Remove implementation from linked list of all implementations.
-    asio::detail::mutex::scoped_lock lock(mutex_);
+    mutex::scoped_lock lock(mutex_);
     if (impl_list_ == &impl)
       impl_list_ = impl.next_;
     if (impl.prev_)
@@ -126,7 +125,7 @@ void channel_service<Mutex>::move_assign(
   if (this != &other_service)
   {
     // Insert implementation into linked list of all implementations.
-    asio::detail::mutex::scoped_lock lock(other_service.mutex_);
+    mutex::scoped_lock lock(other_service.mutex_);
     impl.next_ = other_service.impl_list_;
     impl.prev_ = 0;
     if (other_service.impl_list_)
@@ -140,7 +139,7 @@ inline void channel_service<Mutex>::base_destroy(
     base_implementation_type& impl)
 {
   // Remove implementation from linked list of all implementations.
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(mutex_);
   if (impl_list_ == &impl)
     impl_list_ = impl.next_;
   if (impl.prev_)
@@ -210,7 +209,7 @@ void channel_service<Mutex>::close(
   }
 
   impl.send_state_ = closed;
-  if (impl.receive_state_ != buffer)
+  if (impl.receive_state_ == block)
     impl.receive_state_ = closed;
 }
 
@@ -228,7 +227,7 @@ void channel_service<Mutex>::cancel(
 
   while (channel_operation* op = impl.waiters_.front())
   {
-    if (impl.send_state_ == block)
+    if (impl.send_state_ != waiter)
     {
       impl.waiters_.pop();
       static_cast<channel_send<payload_type>*>(op)->cancel();
@@ -244,7 +243,7 @@ void channel_service<Mutex>::cancel(
   }
 
   if (impl.receive_state_ == waiter)
-    impl.receive_state_ = block;
+    impl.receive_state_ = (impl.send_state_ == closed) ? closed : block;
   if (impl.send_state_ == waiter)
     impl.send_state_ = impl.max_buffer_size_ ? buffer : block;
 }
@@ -262,12 +261,12 @@ void channel_service<Mutex>::cancel_by_key(
 
   typename Mutex::scoped_lock lock(impl.mutex_);
 
-  asio::detail::op_queue<channel_operation> other_ops;
+  op_queue<channel_operation> other_ops;
   while (channel_operation* op = impl.waiters_.front())
   {
     if (op->cancellation_key_ == cancellation_key)
     {
-      if (impl.send_state_ == block)
+      if (impl.send_state_ != waiter)
       {
         impl.waiters_.pop();
         static_cast<channel_send<payload_type>*>(op)->cancel();
@@ -292,16 +291,24 @@ void channel_service<Mutex>::cancel_by_key(
   if (impl.waiters_.empty())
   {
     if (impl.receive_state_ == waiter)
-      impl.receive_state_ = block;
+      impl.receive_state_ = (impl.send_state_ == closed) ? closed : block;
     if (impl.send_state_ == waiter)
       impl.send_state_ = impl.max_buffer_size_ ? buffer : block;
   }
 }
 
 template <typename Mutex>
-inline bool channel_service<Mutex>::ready(
-    const base_implementation_type& impl)
-  const noexcept
+inline bool channel_service<Mutex>::can_send(
+    const base_implementation_type& impl) const noexcept
+{
+  typename Mutex::scoped_lock lock(impl.mutex_);
+
+  return impl.send_state_ != block;
+}
+
+template <typename Mutex>
+inline bool channel_service<Mutex>::can_receive(
+    const base_implementation_type& impl) const noexcept
 {
   typename Mutex::scoped_lock lock(impl.mutex_);
 
@@ -514,8 +521,8 @@ bool channel_service<Mutex>::try_receive(
         impl.send_state_ = (impl.send_state_ == closed) ? closed : buffer;
       }
       lock.unlock();
-      asio::detail::non_const_lvalue<Handler> handler2(handler);
-      asio::detail::completion_payload_handler<
+      non_const_lvalue<Handler> handler2(handler);
+      completion_payload_handler<
         payload_type, decay_t<Handler>>(
           static_cast<payload_type&&>(payload), handler2.value)();
       return true;
@@ -530,8 +537,8 @@ bool channel_service<Mutex>::try_receive(
         impl.receive_state_ = (impl.send_state_ == closed) ? closed : block;
       send_op->post();
       lock.unlock();
-      asio::detail::non_const_lvalue<Handler> handler2(handler);
-      asio::detail::completion_payload_handler<
+      non_const_lvalue<Handler> handler2(handler);
+      completion_payload_handler<
         payload_type, decay_t<Handler>>(
           static_cast<payload_type&&>(payload), handler2.value)();
       return true;
@@ -612,11 +619,51 @@ void channel_service<Mutex>::start_receive_op(
   }
 }
 
+template <typename Mutex>
+template <typename Traits, typename... Signatures, typename Handler>
+bool channel_service<Mutex>::try_peek(
+    implementation_type<Traits, Signatures...>& impl,
+    Handler&& handler)
+{
+  // No locking since try_peek is only exposed on basic_channel.
+
+  typedef typename implementation_type<Traits,
+      Signatures...>::payload_type payload_type;
+
+  switch (impl.receive_state_)
+  {
+  case block:
+    {
+      return false;
+    }
+  case buffer:
+    {
+      const payload_type& payload = impl.buffer_peek();
+      non_const_lvalue<Handler> handler2(handler);
+      payload.peek(handler2.value);
+      return true;
+    }
+  case waiter:
+    {
+      channel_send<payload_type>* send_op =
+        static_cast<channel_send<payload_type>*>(impl.waiters_.front());
+      const payload_type& payload = send_op->peek_payload();
+      non_const_lvalue<Handler> handler2(handler);
+      payload.peek(handler2.value);
+      return true;
+    }
+  case closed:
+  default:
+    {
+      return false;
+    }
+  }
+}
+
 } // namespace detail
-} // namespace experimental
 ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_EXPERIMENTAL_DETAIL_IMPL_CHANNEL_SERVICE_HPP
+#endif // ASIO_DETAIL_IMPL_CHANNEL_SERVICE_HPP

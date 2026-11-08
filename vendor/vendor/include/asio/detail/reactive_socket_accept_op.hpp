@@ -50,7 +50,7 @@ public:
   {
   }
 
-  static status do_perform(reactor_op* base)
+  static ASIO_ALWAYS_INLINE status do_perform(reactor_op* base)
   {
     ASIO_ASSUME(base != 0);
     reactive_socket_accept_op_base* o(
@@ -114,8 +114,7 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
-      std::size_t /*bytes_transferred*/)
+      int /*error_value*/, std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     ASIO_ASSUME(base != 0);
@@ -225,8 +224,7 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
-      std::size_t /*bytes_transferred*/)
+      int /*error_value*/, std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     ASIO_ASSUME(base != 0);

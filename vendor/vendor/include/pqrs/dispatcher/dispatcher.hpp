@@ -22,11 +22,21 @@
 namespace pqrs::dispatcher {
 class dispatcher final {
 public:
+  // `execution_wrapper` must invoke the supplied function exactly once,
+  // synchronously, and return after the function has finished.
+  using execution_wrapper = std::function<void(const std::function<void()>&)>;
+
   dispatcher(const dispatcher&) = delete;
   dispatcher& operator=(const dispatcher&) = delete;
 
   explicit dispatcher(std::weak_ptr<time_source> weak_time_source)
-      : weak_time_source_(std::move(weak_time_source)) {
+      : dispatcher(std::move(weak_time_source), {}) {
+  }
+
+  dispatcher(std::weak_ptr<time_source> weak_time_source,
+             execution_wrapper execution_wrapper)
+      : weak_time_source_(std::move(weak_time_source)),
+        execution_wrapper_(std::move(execution_wrapper)) {
     worker_thread_id_wait_->wait_notice();
 
     attach(object_id_);
@@ -388,7 +398,25 @@ private:
 
         // Run function
 
-        e->call_function();
+        const auto call_function = [&e] {
+          try {
+            e->call_function();
+          } catch (...) {
+            // Release resources captured by the entry inside execution_wrapper
+            // before propagating the exception to it.
+            e.reset();
+            throw;
+          }
+
+          // Release resources captured by the entry inside execution_wrapper.
+          e.reset();
+        };
+
+        if (execution_wrapper_) {
+          execution_wrapper_(call_function);
+        } else {
+          call_function();
+        }
 
         // Unset running_function_object_id_
 
@@ -426,6 +454,9 @@ private:
   std::optional<uint64_t> running_function_object_id_;
   mutable std::mutex running_function_object_id_mutex_;
   std::condition_variable running_function_object_id_cv_;
+
+  // This member must be initialized before worker_thread_ starts.
+  execution_wrapper execution_wrapper_;
 
   // Start the worker after all members it uses have been initialized.
   std::thread worker_thread_{[this] {

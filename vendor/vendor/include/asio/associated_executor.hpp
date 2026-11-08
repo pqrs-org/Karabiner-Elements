@@ -184,6 +184,16 @@ using associated_executor_t = typename associated_executor<T, Executor>::type;
 namespace detail {
 
 template <typename T, typename E, typename = void>
+struct has_associated_executor : true_type {};
+
+template <typename T, typename E>
+struct has_associated_executor<T, E,
+    void_t<
+      typename associated_executor<T, E>::
+        asio_associated_executor_is_unspecialised
+    >> : false_type {};
+
+template <typename T, typename E, typename = void>
 struct associated_executor_forwarding_base
 {
 };
@@ -191,11 +201,7 @@ struct associated_executor_forwarding_base
 template <typename T, typename E>
 struct associated_executor_forwarding_base<T, E,
     enable_if_t<
-      is_same<
-        typename associated_executor<T,
-          E>::asio_associated_executor_is_unspecialised,
-        void
-      >::value
+      !has_associated_executor<T, E>::value
     >>
 {
   typedef void asio_associated_executor_is_unspecialised;
