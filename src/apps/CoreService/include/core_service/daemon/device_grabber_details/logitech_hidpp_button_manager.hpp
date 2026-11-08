@@ -78,7 +78,13 @@ public:
     update_task_.cancel();
 
     if (!device_is_seized) {
-      abandon();
+      if (session_controller_) {
+        session_controller_->stop_without_writing();
+        session_controller_ = nullptr;
+      }
+
+      applied_configuration_ = std::nullopt;
+      applied_control_ids_.clear();
       return;
     }
 
@@ -122,6 +128,10 @@ public:
           control_abandoned(control_id);
         }
       }
+    } else {
+      // stop() may have destroyed the controller before IOHIDDeviceClose.
+      // Clean up query buffers whose callbacks were suppressed by the close.
+      logitech_hidpp_session_controller::clear_pending_queries(*device_);
     }
 
     applied_configuration_ = std::nullopt;

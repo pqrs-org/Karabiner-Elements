@@ -114,12 +114,26 @@ public:
     return handle_result(session_.stop());
   }
 
+  // Stops protocol processing without writing to the device or releasing query
+  // buffers which may still be owned by IOKit. The owner clears those buffers
+  // after the device has closed.
+  void stop_without_writing() {
+    queries_enabled_->store(false);
+    static_cast<void>(session_.stop());
+  }
+
   // Forgets the session without writing to the device or emitting signals.
   // This method should be called in the shared dispatcher thread after the device has been closed.
   void abandon() {
     queries_enabled_->store(false);
     session_.stop();
-    clear_query_contexts(*device_);
+    clear_pending_queries(*device_);
+  }
+
+  // Releases query buffers whose IOKit callbacks were suppressed by closing
+  // the device. This method must be called only after the device has closed.
+  static void clear_pending_queries(IOHIDDeviceRef device) {
+    clear_query_contexts(device);
   }
 
 private:
