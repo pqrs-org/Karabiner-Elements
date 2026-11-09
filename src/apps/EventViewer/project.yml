@@ -39,7 +39,6 @@ targets:
           - .gitignore
           - '*.orig.png'
           - '*.plist.in'
-          - app.icns
       - path: ../../../files/icons/Tamura/EventViewer/EventViewer.icon
     dependencies:
       - sdk: Carbon.framework
