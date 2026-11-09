@@ -245,6 +245,19 @@ inline bool prepare_system_tmp_directory() {
                                          permissions_0755);
 }
 
+inline bool prepare_system_configuration_directory() {
+  // /Library/Application Support/org.pqrs/config
+  auto directory_path = constants::get_system_configuration_directory();
+
+  return filesystem_utility::prepare_system_application_support_root_directory() &&
+         filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   0,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0755);
+}
+
 inline bool prepare_system_rootonly_directory() {
   // /Library/Application Support/org.pqrs/tmp/rootonly
   auto directory_path = constants::get_rootonly_directory();
@@ -284,8 +297,31 @@ inline bool prepare_system_user_directory(uid_t uid) {
                                          permissions_0700);
 }
 
+inline bool system_directories_missing(std::optional<uid_t> uid) {
+  if (!filesystem_utility::exists(constants::get_system_configuration_directory()) ||
+      !filesystem_utility::exists(constants::get_rootonly_directory())) {
+    return true;
+  }
+
+  if (uid.has_value()) {
+    if (!filesystem_utility::exists(constants::get_system_user_directory(*uid))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 inline bool prepare_system_directories(std::optional<uid_t> uid) {
-  auto result = filesystem_utility::prepare_system_rootonly_directory();
+  auto result = true;
+
+  if (!filesystem_utility::prepare_system_configuration_directory()) {
+    result = false;
+  }
+
+  if (!filesystem_utility::prepare_system_rootonly_directory()) {
+    result = false;
+  }
 
   if (uid.has_value()) {
     if (!filesystem_utility::prepare_system_user_directory(*uid)) {

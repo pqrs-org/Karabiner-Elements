@@ -4,6 +4,7 @@ targets:
   Karabiner-EventViewer:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-EventViewer
+      ASSETCATALOG_COMPILER_APPICON_NAME: EventViewer
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
@@ -38,6 +39,8 @@ targets:
           - .gitignore
           - '*.orig.png'
           - '*.plist.in'
+          - app.icns
+      - path: ../../../files/icons/Tamura/EventViewer/EventViewer.icon
     dependencies:
       - sdk: Carbon.framework
       - sdk: CoreFoundation.framework

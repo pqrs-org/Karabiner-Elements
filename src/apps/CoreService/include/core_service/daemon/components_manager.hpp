@@ -118,29 +118,13 @@ private:
   void enqueue_ensure_base_directories() {
     enqueue_to_dispatcher(
         [this] {
-          if (base_directories_missing()) {
+          if (filesystem_utility::system_directories_missing(current_console_user_id_)) {
             filesystem_utility::prepare_system_directories(current_console_user_id_);
           }
 
           enqueue_ensure_base_directories();
         },
         when_now() + std::chrono::seconds(3));
-  }
-
-  [[nodiscard]] bool base_directories_missing() const {
-    if (!filesystem_utility::exists(constants::get_tmp_directory()) ||
-        !filesystem_utility::exists(constants::get_rootonly_directory())) {
-      return true;
-    }
-
-    if (current_console_user_id_) {
-      if (!filesystem_utility::exists(constants::get_system_user_directory()) ||
-          !filesystem_utility::exists(constants::get_system_user_directory(*current_console_user_id_))) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;

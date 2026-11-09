@@ -124,12 +124,6 @@ public:
     }
   }
 
-  void async_set_app_icon(int number) const {
-    if (auto client = std::atomic_load(&core_service_daemon_client_)) {
-      client->async_set_app_icon(number);
-    }
-  }
-
 private:
   void cleanup() {
     system_variables_timer_.stop();

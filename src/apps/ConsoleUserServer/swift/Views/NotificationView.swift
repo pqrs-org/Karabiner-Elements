@@ -39,9 +39,6 @@ struct NotificationView: View {
     .whenHovered { hover in
       opacity = hover ? 0.2 : 1.0
     }
-    .onChange(of: state.appIconNumber) { _ in
-      applicationIcon = Self.makeApplicationIcon()
-    }
   }
 
   private var theme: UIStatePayload.NotificationWindowSettings.Colors.Theme {

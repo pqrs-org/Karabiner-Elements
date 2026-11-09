@@ -17,12 +17,6 @@ if [ ! -f '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifie
 fi
 
 #
-# Set icon
-#
-
-'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
-
-#
 # Relaunch launchd-managed processes after all files have been updated
 #
 

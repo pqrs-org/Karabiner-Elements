@@ -469,8 +469,7 @@ int main() {
         .updated = [](const auto&) {},
         .save = [&](auto& configuration) {
           const auto& value = configuration.get_selected_profile().get_device(identifiers)->get_logitech_hidpp();
-          saved_logitech_hidpp = value ? std::optional(value->to_json()) : std::nullopt;
-        },
+          saved_logitech_hidpp = value ? std::optional(value->to_json()) : std::nullopt; },
     });
     const auto device = identifiers.to_normalized_json().dump();
 
@@ -487,18 +486,16 @@ int main() {
     std::promise<void> initialized;
     store.enqueue_to_dispatcher([&] {
       auto configuration = std::make_shared<krbn::core_configuration::core_configuration>();
-      configuration->get_selected_profile().get_device(identifiers)->set_logitech_hidpp(
-          krbn::core_configuration::details::logitech_hidpp({
-              {"buttons",
-               {
-                   {
-                       {"control_id", 82},
-                       {"to", {{{"key_code", "x"}}}},
-                       {"future_button_key", true},
-                   },
-               }},
-              {"future_top_level_key", true},
-          }));
+      configuration->get_selected_profile().get_device(identifiers)->set_logitech_hidpp(krbn::core_configuration::details::logitech_hidpp({
+          {"buttons", {
+                          {
+                              {"control_id", 82},
+                              {"to", {{{"key_code", "x"}}}},
+                              {"future_button_key", true},
+                          },
+                      }},
+          {"future_top_level_key", true},
+      }));
       store.update(configuration);
       initialized.set_value();
     });

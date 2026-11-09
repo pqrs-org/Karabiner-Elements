@@ -12,6 +12,7 @@ targets:
   Karabiner-Elements:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements.Settings
+      ASSETCATALOG_COMPILER_APPICON_NAME: KarabinerElements
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
@@ -52,7 +53,7 @@ targets:
           - .gitignore
           - '*.orig.png'
           - '*.plist.in'
-      - path: ../share/Resources/app.icns
+      - path: ../../../files/icons/Tamura/KarabinerElements/KarabinerElements.icon
     dependencies:
       - package: CodeEditor
       - sdk: Foundation.framework

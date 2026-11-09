@@ -58,10 +58,6 @@ public:
     return configuration_monitor_.get_configuration_store();
   }
 
-  void async_set_app_icon(int number) {
-    core_service_daemon_client_.async_set_app_icon(number);
-  }
-
   [[nodiscard]] bool console_user_server_client_connected() const {
     return console_user_server_client_.connected();
   }

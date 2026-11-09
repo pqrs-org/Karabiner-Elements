@@ -2,7 +2,6 @@
 
 // `krbn::console_user_server::components_manager` can be used safely in a multi-threaded environment.
 
-#include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "console_user_server/ui_bridge.hpp"
 #include "constants.hpp"
@@ -213,10 +212,6 @@ private:
                     global_configuration.get_ui_language(),
                 },
                 {
-                    "appIconNumber",
-                    app_icon(constants::get_system_app_icon_configuration_file_path()).get_number(),
-                },
-                {
                     "menuSettings",
                     {
                         {"showIcon", configuration_loaded && global_configuration.get_show_in_menu_bar()},
@@ -296,11 +291,6 @@ private:
           stop_child_components();
           start_child_components();
         }
-        return;
-      }
-
-      if (operation_type == krbn::operation_type::app_icon_changed) {
-        publish_ui_state(core_configuration_.get());
         return;
       }
 

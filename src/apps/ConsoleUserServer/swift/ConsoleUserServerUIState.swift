@@ -45,7 +45,6 @@ struct UIStatePayload: Decodable {
 
   let uiLanguage: String
   let configurationLoaded: Bool
-  let appIconNumber: Int
   let menuSettings: MenuSettings
   let notificationWindowSettings: NotificationWindowSettings
   let profiles: [Profile]
@@ -76,7 +75,6 @@ final class ConsoleUserServerUIState: ObservableObject {
 
   @Published private(set) var uiLanguage = "auto"
   @Published private(set) var configurationLoaded = false
-  @Published private(set) var appIconNumber = 0
   @Published private(set) var menuSettings = UIStatePayload.MenuSettings()
   @Published private(set) var notificationWindowSettings =
     UIStatePayload.NotificationWindowSettings()
@@ -117,7 +115,6 @@ final class ConsoleUserServerUIState: ObservableObject {
 
   fileprivate func apply(_ payload: UIStatePayload) {
     uiLanguage = payload.uiLanguage
-    appIconNumber = payload.appIconNumber
     menuSettings = payload.menuSettings
     notificationWindowSettings = payload.notificationWindowSettings
     profiles = payload.profiles

@@ -3,7 +3,6 @@ import SwiftUI
 struct UIView: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var settings = Settings.shared
-  @ObservedObject private var appIcons = AppIcons.shared
 
   private var defaults: SettingsConfiguration.Defaults {
     settings.configuration.defaultConfiguration
@@ -241,57 +240,6 @@ struct UIView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: AppLocalizedText("settings.ui.app_icon")) {
-          VStack(alignment: .leading, spacing: 12.0) {
-            VStack {
-              AppLocalizedLabel(
-                "settings.ui.app_icon_hint",
-                systemImage: InfoBorder.icon
-              )
-              .modifier(InfoBorder())
-            }
-
-            Picker(selection: $appIcons.selectedAppIconNumber, label: Text("")) {
-              ForEach($appIcons.icons) { $appIcon in
-                HStack {
-                  if let image = appIcon.karabinerElementsThumbnailImage {
-                    Image(nsImage: image)
-                      .resizable()
-                      .scaledToFit()
-                      .frame(width: 64.0, height: 64.0)
-                  }
-
-                  if let image = appIcon.eventViewerThumbnailImage {
-                    Image(nsImage: image)
-                      .resizable()
-                      .scaledToFit()
-                      .frame(width: 64.0, height: 64.0)
-                  }
-
-                  if let image = appIcon.multitouchExtensionThumbnailImage {
-                    Image(nsImage: image)
-                      .resizable()
-                      .scaledToFit()
-                      .frame(width: 64.0, height: 64.0)
-                  }
-                }
-                .padding(5.0)
-                .overlay(
-                  RoundedRectangle(cornerRadius: 8)
-                    .inset(by: -4)
-                    .stroke(
-                      Color(NSColor.selectedControlColor),
-                      lineWidth: appIcons.selectedAppIconNumber == appIcon.id ? 3 : 0
-                    )
-                )
-
-                .tag(appIcon.id)
-              }
-            }.pickerStyle(RadioGroupPickerStyle())
-          }
-          .padding()
-          .frame(maxWidth: .infinity, alignment: .leading)
-        }
       }
       .padding()
     }

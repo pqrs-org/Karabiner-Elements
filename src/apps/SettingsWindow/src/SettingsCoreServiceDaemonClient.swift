@@ -64,8 +64,4 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
   func componentsManagerStopped() {
     useFkeysAsStandardFunctionKeys = false
   }
-
-  public func setAppIcon(_ number: Int32) {
-    krbn_core_service_daemon_client_async_set_app_icon(number)
-  }
 }

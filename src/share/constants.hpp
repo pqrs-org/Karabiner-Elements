@@ -65,11 +65,6 @@ public:
     return path;
   }
 
-  [[nodiscard]] static const std::filesystem::path& get_system_app_icon_configuration_file_path() {
-    static auto path = get_system_configuration_directory() / "karabiner_app_icon.json";
-    return path;
-  }
-
   [[nodiscard]] static const std::filesystem::path& get_system_core_configuration_file_path() {
     static auto path = get_system_configuration_directory() / "karabiner.json";
     return path;

@@ -19,9 +19,9 @@
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/autorelease_pool.hpp>
 #include <pqrs/osx/cg_event_tap.hpp>
 #include <pqrs/osx/chrono.hpp>
-#include <pqrs/osx/autorelease_pool.hpp>
 #include <unordered_map>
 
 namespace krbn {

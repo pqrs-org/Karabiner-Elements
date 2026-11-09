@@ -2,7 +2,6 @@
 
 // `krbn::core_service::daemon::receiver` can be used safely in a multi-threaded environment.
 
-#include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "console_user_server_peer.hpp"
 #include "constants.hpp"
@@ -419,24 +418,6 @@ private:
           multitouch_extension_peer_id_ = peer_id;
           async_respond_none(reply);
           break;
-
-        case operation_type::set_app_icon: {
-          // `set_app_icon` requires root privileges.
-          auto number = json.at("number").get<int>();
-
-          logger::get_logger()->info("set_app_icon {0}", number);
-
-          app_icon(number).save_to_file(constants::get_system_app_icon_configuration_file_path());
-
-          application_launcher::launch_app_icon_switcher();
-
-          if (console_user_server_peer_) {
-            console_user_server_peer_->async_app_icon_changed(number);
-          }
-
-          async_respond_none(reply);
-          break;
-        }
 
         case operation_type::set_variables:
           if (device_grabber_) {

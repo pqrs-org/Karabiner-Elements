@@ -183,17 +183,6 @@ public:
     });
   }
 
-  void async_set_app_icon(int number) const {
-    enqueue_to_dispatcher([this, number] {
-      nlohmann::json json{
-          {"operation_type", operation_type::set_app_icon},
-          {"number", number},
-      };
-
-      async_request(std::move(json));
-    });
-  }
-
   void async_set_variables(const nlohmann::json& variables) const {
     async_set_variables_with_completion_handler(variables,
                                                 nullptr);

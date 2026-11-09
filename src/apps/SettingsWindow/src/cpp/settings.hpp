@@ -93,8 +93,6 @@ bool krbn_system_core_configuration_file_path_exists(void);
 
 bool krbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists(void);
 
-int krbn_get_app_icon_number(void);
-
 void krbn_save_prettierrc(void);
 
 //
@@ -137,8 +135,6 @@ void krbn_complex_modifications_assets_file_parse(const char* _Nonnull code,
 //
 // settings_core_service_daemon_client
 //
-
-void krbn_core_service_daemon_client_async_set_app_icon(int number);
 
 //
 // settings_console_user_server_client

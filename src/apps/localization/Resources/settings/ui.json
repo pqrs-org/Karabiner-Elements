@@ -1,23 +1,4 @@
 {
-    "settings.ui.app_icon": {
-        "en": "App icon"
-        ,"ja": "アプリアイコン"
-        ,"zh-Hans": "应用图标"
-    },
-    "settings.ui.app_icon_hint": {
-        "en": [
-            "It takes a few seconds for changes to the application icon to take effect.\n",
-            "And to update the Dock icon, you need to close and reopen the application."
-        ]
-        ,"ja": [
-            "アプリアイコンの変更が反映されるまで数秒かかります。\n",
-            "Dockのアイコンを更新するには、アプリをいったん終了してから開き直してください。"
-        ]
-        ,"zh-Hans": [
-            "更改应用图标后，需要几秒钟才能生效。\n",
-            "要更新程序坞（Dock）中的图标，请退出并重新打开应用。"
-        ]
-    },
     "settings.ui.appearance": {
         "en": "Appearance"
         ,"ja": "外観"

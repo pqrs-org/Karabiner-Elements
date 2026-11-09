@@ -19,7 +19,6 @@ enum class operation_type : uint8_t {
   // core_service (daemon) -> console_user_server
   core_service_daemon_server_bound,
   core_service_daemon_state,
-  app_icon_changed,
   check_for_updates,
   shell_command_execution,
   send_user_command,
@@ -41,7 +40,6 @@ enum class operation_type : uint8_t {
   // multitouch_extension -> core_service (daemon)
   connect_multitouch_extension,
   // any -> core_service (daemon)
-  set_app_icon,
   set_variables,
   clear_user_variables,
   observe_connected_devices,
@@ -70,7 +68,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::core_service_daemon_server_bound, "core_service_daemon_server_bound"},
         {operation_type::core_service_daemon_state, "core_service_daemon_state"},
-        {operation_type::app_icon_changed, "app_icon_changed"},
         {operation_type::check_for_updates, "check_for_updates"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::send_user_command, "send_user_command"},
@@ -84,7 +81,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::get_manipulator_environment, "get_manipulator_environment"},
         {operation_type::manipulator_environment, "manipulator_environment"},
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},
-        {operation_type::set_app_icon, "set_app_icon"},
         {operation_type::set_variables, "set_variables"},
         {operation_type::clear_user_variables, "clear_user_variables"},
         {operation_type::observe_connected_devices, "observe_connected_devices"},

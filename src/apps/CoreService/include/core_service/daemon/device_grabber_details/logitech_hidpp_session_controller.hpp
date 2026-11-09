@@ -215,9 +215,9 @@ private:
   };
 
   static registered_query_context register_query_context(IOHIDDeviceRef device,
-                                                          const logitech::hidpp::long_report& report,
-                                                          const std::string& log_prefix,
-                                                          const std::shared_ptr<std::atomic<bool>>& queries_enabled) {
+                                                         const logitech::hidpp::long_report& report,
+                                                         const std::string& log_prefix,
+                                                         const std::shared_ptr<std::atomic<bool>>& queries_enabled) {
     auto context = std::make_unique<query_context>(query_context{
         .device = device,
         .report = report,

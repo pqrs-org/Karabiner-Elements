@@ -1,6 +1,5 @@
 #pragma once
 
-#include "app_icon.hpp"
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_utility.hpp"

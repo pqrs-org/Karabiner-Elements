@@ -32,6 +32,7 @@
     - Improved internal handling of expressions used by `set_variable` to ensure consistent equality and hashing. (Thanks to @monsterlag)
     - Improved key repeat for mappings with modifiers so that the modifiers remain active while the key is repeating.
     - Improved `to_if_alone` handling so that actual remapped output cancels it, while keys disabled with `vk_none` do not.
+    - Migrated the Karabiner-Elements and Karabiner-EventViewer app icons to the Icon Composer format, and removed the app icon selection setting.
 
 ## Karabiner-Elements 16.3.0
 

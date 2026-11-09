@@ -1,5 +1,4 @@
 all:
-	$(MAKE) -C apps/AppIconSwitcher
 	$(MAKE) -C apps/ConsoleUserServer
 	$(MAKE) -C apps/CoreService
 	$(MAKE) -C apps/EventViewer
@@ -12,7 +11,6 @@ all:
 	$(MAKE) -C bin/cli
 
 clean:
-	$(MAKE) -C apps/AppIconSwitcher clean
 	$(MAKE) -C apps/ConsoleUserServer clean
 	$(MAKE) -C apps/CoreService clean
 	$(MAKE) -C apps/EventViewer clean

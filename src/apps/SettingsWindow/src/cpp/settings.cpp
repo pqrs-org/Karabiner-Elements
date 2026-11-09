@@ -1,5 +1,4 @@
 #include "settings.hpp"
-#include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
@@ -238,11 +237,6 @@ bool krbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists() {
   return false;
 }
 
-int krbn_get_app_icon_number() {
-  auto icon = krbn::app_icon(krbn::constants::get_system_app_icon_configuration_file_path());
-  return icon.get_number();
-}
-
 void krbn_save_prettierrc() {
   krbn::complex_modifications_utility::save_prettierrc();
 }
@@ -299,12 +293,6 @@ void krbn_complex_modifications_assets_file_parse(const char* code,
 //
 // core_service_client
 //
-
-void krbn_core_service_daemon_client_async_set_app_icon(int number) {
-  if (auto manager = settings_cpp::get_components_manager()) {
-    manager->async_set_app_icon(number);
-  }
-}
 
 //
 // console_user_server_client
