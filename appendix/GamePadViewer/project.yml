@@ -4,6 +4,7 @@ targets:
   Karabiner-GamePadViewer:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-GamePadViewer
+      ASSETCATALOG_COMPILER_APPICON_NAME: KarabinerElements
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
@@ -41,7 +42,7 @@ targets:
           - .gitignore
           - '*.orig.png'
           - '*.plist.in'
-      - path: ../../src/apps/share/Resources/app.icns
+      - path: ../../files/icons/Tamura/KarabinerElements/KarabinerElements.icon
     dependencies:
       - sdk: Foundation.framework
       - sdk: IOKit.framework
