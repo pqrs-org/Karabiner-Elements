@@ -1241,7 +1241,7 @@ private:
       switch (event_type) {
         case event_type::key_down:
           if (pressed_momentary_switch_events.contains(*mse)) {
-            logger::get_logger()->warn("drop duplicated momentary switch key_down before merged_input_event_queue insertion");
+            logger::get_logger()->info("drop duplicated momentary switch key_down before merged_input_event_queue insertion");
             return true;
           }
           pressed_momentary_switch_events.insert(*mse);
@@ -1249,7 +1249,7 @@ private:
 
         case event_type::key_up:
           if (!pressed_momentary_switch_events.contains(*mse)) {
-            logger::get_logger()->warn("drop unmatched momentary switch key_up before merged_input_event_queue insertion");
+            logger::get_logger()->info("drop unmatched momentary switch key_up before merged_input_event_queue insertion");
             return true;
           }
           pressed_momentary_switch_events.erase(*mse);
