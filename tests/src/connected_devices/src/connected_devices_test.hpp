@@ -113,6 +113,23 @@ void run_connected_devices_test() {
       expect(krbn::json_utility::parse_jsonc(ifs) == nlohmann::json(connected_devices));
     }
 
+    // Additional identifier fields distinguish devices with the same VID/PID.
+    {
+      krbn::connected_devices connected_devices;
+
+      for (const auto& address : {"aa-bb-cc-dd-ee-01", "aa-bb-cc-dd-ee-02"}) {
+        connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+            .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+            .product_id = pqrs::hid::product_id::value_t(5678),
+            .device_address = address,
+            .is_keyboard = true,
+            .additional_device_identifier_fields = {"device_address"},
+        }));
+      }
+
+      expect(connected_devices.get_devices().size() == 2);
+    }
+
     {
       std::ifstream ifs("json/connected_devices.json");
       auto expected = krbn::connected_devices(krbn::json_utility::parse_jsonc(ifs));

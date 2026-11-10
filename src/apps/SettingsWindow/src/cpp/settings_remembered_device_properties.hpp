@@ -22,13 +22,22 @@ public:
     std::lock_guard<std::mutex> lock(mutex_);
     for (const auto& device : connected_devices.get_devices()) {
       const auto& identifiers = device.properties->get_device_identifiers();
+
       auto it = std::ranges::find_if(
           device_properties_,
           [&](const auto& p) {
-            return p->get_device_identifiers() == identifiers;
+            // device_identifiers can change while a device remains connected when
+            // additional identifier fields are enabled or disabled. Match device_id
+            // to replace that device's remembered properties instead of retaining a
+            // stale entry. Matching identifiers handles reconnections where the
+            // device_id may change.
+            return p->get_device_id() == device.properties->get_device_id() ||
+                   p->get_device_identifiers() == identifiers;
           });
       if (it == std::end(device_properties_)) {
         device_properties_.push_back(device.properties);
+      } else {
+        *it = device.properties;
       }
     }
   }

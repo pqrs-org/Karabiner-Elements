@@ -26,6 +26,8 @@ void run_device_identifiers_test() {
           {"vendor_id", 1234},
           {"product_id", 5678},
           {"device_address", "aa-bb-cc-dd-ee-ff"},
+          {"serial_number", "serial number"},
+          {"transport", "USB"},
           {"is_keyboard", true},
           {"dummy key", "dummy value"},
       });
@@ -34,6 +36,8 @@ void run_device_identifiers_test() {
       expect(pqrs::hid::vendor_id::value_t(1234) == di.get_vendor_id());
       expect(pqrs::hid::product_id::value_t(5678) == di.get_product_id());
       expect("aa-bb-cc-dd-ee-ff" == di.get_device_address());
+      expect("serial number" == di.get_serial_number());
+      expect("USB" == di.get_transport());
       expect(true == di.get_is_keyboard());
       expect(false == di.get_is_pointing_device());
       expect(false == di.get_is_game_pad());
@@ -45,6 +49,9 @@ void run_device_identifiers_test() {
           nlohmann::json::object({
               {"vendor_id", 1234},
               {"product_id", 5678},
+              {"device_address", "aa-bb-cc-dd-ee-ff"},
+              {"serial_number", "serial number"},
+              {"transport", "USB"},
               {"is_keyboard", true},
           }) == di.to_normalized_json());
     }

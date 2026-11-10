@@ -27,7 +27,16 @@ public:
   nod::signal<void(entry&,
                    event_queue::not_null_entries_ptr_t event_queue_entries)>
       hid_values_arrived;
-  nod::signal<void()> logitech_hidpp_divertable_control_ids_changed;
+
+  // Notify device_grabber that externally visible connected-device data has changed
+  // after the initial device connection. device_grabber forwards this notification
+  // through connected_devices_changed, which ultimately refreshes consumers such as
+  // the device lists in the UI.
+  //
+  // This signal must be emitted whenever data exposed as connected-device data changes,
+  // including device_identifiers and capabilities such as
+  // logitech_hidpp.divertable_control_ids.
+  nod::signal<void()> connected_device_changed;
 
   //
   // Methods
@@ -41,8 +50,10 @@ public:
       : device_id_(device_id),
         device_(device),
         core_configuration_(core_configuration),
-        device_properties_(device_properties::make_device_properties(device_id,
-                                                                     device)),
+        device_properties_(device_properties::make_device_properties(
+            device_id,
+            device,
+            core_configuration->get_global_configuration().get_additional_device_identifier_fields())),
         pressed_keys_manager_(std::make_shared<pressed_keys_manager>()) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
@@ -77,6 +88,7 @@ public:
             // finished settling.
             if (logitech_hidpp_button_manager_) {
               logitech_hidpp_button_manager_->async_update(core_configuration_,
+                                                           device_properties_->get_device_identifiers(),
                                                            seized());
             }
 
@@ -217,6 +229,13 @@ public:
   void set_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
 
+    const auto previous_device_identifiers = device_properties_->get_device_identifiers();
+    device_properties_->set_additional_device_identifier_fields(
+        core_configuration->get_global_configuration().get_additional_device_identifier_fields());
+    if (previous_device_identifiers != device_properties_->get_device_identifiers()) {
+      connected_device_changed();
+    }
+
     control_caps_lock_led_state_manager();
 
     if (game_pad_stick_converter_) {
@@ -226,6 +245,7 @@ public:
     if (logitech_hidpp_button_manager_ &&
         hid_device_events_monitor_->is_started()) {
       logitech_hidpp_button_manager_->async_update(core_configuration_,
+                                                   device_properties_->get_device_identifiers(),
                                                    seized());
     }
   }
@@ -345,6 +365,7 @@ public:
     if (logitech_hidpp_button_manager_ &&
         was_started && was_seized == requested_seized) {
       logitech_hidpp_button_manager_->update(core_configuration_,
+                                             device_properties_->get_device_identifiers(),
                                              seized());
     }
   }
@@ -428,7 +449,6 @@ private:
     logitech_hidpp_button_manager_ = std::make_shared<logitech_hidpp_button_manager>(
         pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
         device,
-        device_properties_->get_device_identifiers(),
         fmt::format("{0} logitech_hidpp_button:", device_name_));
 
     report_handler->set_input_report_handler(
@@ -443,7 +463,7 @@ private:
         [this](const auto& control_ids) {
           if (connected_device_capabilities_.get_logitech_hidpp_divertable_control_ids() != control_ids) {
             connected_device_capabilities_.set_logitech_hidpp_divertable_control_ids(control_ids);
-            logitech_hidpp_divertable_control_ids_changed();
+            connected_device_changed();
           }
         });
 
@@ -473,6 +493,7 @@ private:
 
     // Ignore a pending configuration change which the controller has not applied yet.
     if (!logitech_hidpp_button_manager_->configuration_is_applied(core_configuration_,
+                                                                  device_properties_->get_device_identifiers(),
                                                                   seized())) {
       return;
     }

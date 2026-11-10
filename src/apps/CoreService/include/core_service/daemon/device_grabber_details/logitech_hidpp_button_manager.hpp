@@ -20,12 +20,10 @@ public:
 
   logitech_hidpp_button_manager(pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
                                 IOHIDDeviceRef device,
-                                const device_identifiers& identifiers,
                                 const std::string& log_prefix)
       : dispatcher_client(pqrs::dispatcher::extra::get_shared_dispatcher()),
         run_loop_thread_(run_loop_thread),
         device_(device),
-        identifiers_(identifiers),
         log_prefix_(log_prefix) {
     dispatcher_client_constructor_guard_.initialize([] {});
   }
@@ -47,21 +45,25 @@ public:
   // Applies the desired setting. A session without a selected control is retained for discovery.
   // This method should be called in the shared dispatcher thread while the device is open.
   void update(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration,
+              const device_identifiers& identifiers,
               bool device_is_seized) {
     apply(make_desired_configuration(*core_configuration,
+                                     identifiers,
                                      device_is_seized),
           device_is_seized);
   }
 
   // Applies the desired setting after the device has finished settling.
   void async_update(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration,
+                    device_identifiers identifiers,
                     bool device_is_seized) {
     // A Bluetooth device may reject an output report with kIOReturnNotOpen immediately
     // after IOHIDDeviceOpen succeeds. Give the device time to become writable before
     // starting the HID++ session.
     update_task_.debounce_after(
-        [this, core_configuration, device_is_seized] {
+        [this, core_configuration, identifiers = std::move(identifiers), device_is_seized] {
           update(core_configuration,
+                 identifiers,
                  device_is_seized);
         },
         std::chrono::milliseconds(100));
@@ -151,8 +153,10 @@ public:
 
   [[nodiscard]] bool configuration_is_applied(
       pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration,
+      const device_identifiers& identifiers,
       bool device_is_seized) const {
     return make_desired_configuration(*core_configuration,
+                                      identifiers,
                                       device_is_seized) == applied_configuration_;
   }
 
@@ -188,9 +192,10 @@ private:
 
   [[nodiscard]] std::optional<core_configuration::details::logitech_hidpp> make_desired_configuration(
       const core_configuration::core_configuration& core_configuration,
+      const device_identifiers& identifiers,
       bool device_is_seized) const {
     if (device_is_seized) {
-      return core_configuration.get_selected_profile().get_device(identifiers_)->get_logitech_hidpp();
+      return core_configuration.get_selected_profile().get_device(identifiers)->get_logitech_hidpp();
     }
     return std::nullopt;
   }
@@ -231,7 +236,6 @@ private:
 
   pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread_;
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
-  device_identifiers identifiers_;
   std::string log_prefix_;
   std::optional<core_configuration::details::logitech_hidpp> applied_configuration_;
   std::vector<uint16_t> applied_control_ids_;

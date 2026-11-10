@@ -82,6 +82,7 @@ private:
                    }},
               }},
              {"unsafe_ui", global.get_unsafe_ui()},
+             {"additional_device_identifier_fields", global.get_additional_device_identifier_fields()},
              {"filter_useless_events_from_specific_devices", global.get_filter_useless_events_from_specific_devices()},
              {"reorder_same_timestamp_input_events_to_prioritize_modifiers", global.get_reorder_same_timestamp_input_events_to_prioritize_modifiers()},
              {"enable_cgeventtap_fallback", global.get_enable_cgeventtap_fallback()},

@@ -8,6 +8,24 @@ struct ExpertView: View {
     settings.configuration.defaultConfiguration
   }
 
+  private func additionalDeviceIdentifierFieldBinding(_ field: String) -> Binding<Bool> {
+    Binding(
+      get: {
+        settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(field)
+      },
+      set: { enabled in
+        var fields = settings.configuration.globalConfiguration.additionalDeviceIdentifierFields
+        if enabled {
+          if !fields.contains(field) {
+            fields.append(field)
+          }
+        } else {
+          fields.removeAll { $0 == field }
+        }
+        settings.configuration.globalConfiguration.additionalDeviceIdentifierFields = fields
+      })
+  }
+
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
@@ -56,6 +74,37 @@ struct ExpertView: View {
             ])
           }
           .switchToggleStyle()
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
+
+        GroupBox(label: AppLocalizedText("settings.expert.additional_device_identifier_fields")) {
+          VStack(alignment: .leading, spacing: 8.0) {
+            Toggle(
+              localized("settings.expert.device_identifier_field.device_address"),
+              isOn: additionalDeviceIdentifierFieldBinding("device_address")
+            )
+            .toggleStyle(.checkbox)
+
+            Toggle(
+              localized("settings.expert.device_identifier_field.serial_number"),
+              isOn: additionalDeviceIdentifierFieldBinding("serial_number")
+            )
+            .toggleStyle(.checkbox)
+
+            Toggle(
+              localized("settings.expert.device_identifier_field.transport"),
+              isOn: additionalDeviceIdentifierFieldBinding("transport")
+            )
+            .toggleStyle(.checkbox)
+
+            AppLocalizedLabel(
+              "settings.expert.additional_device_identifier_fields_description",
+              systemImage: WarningBorder.icon
+            )
+            .modifier(WarningBorder())
+            .fixedSize(horizontal: false, vertical: true)
+          }
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)
         }

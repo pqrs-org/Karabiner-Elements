@@ -49,6 +49,7 @@ struct SettingsConfiguration: Decodable {
     var notificationWindowFontSize: Int
     var notificationWindowColors: NotificationWindowColors
     var unsafeUi: Bool
+    var additionalDeviceIdentifierFields: [String]
     var filterUselessEventsFromSpecificDevices: Bool
     var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool
     var enableCgeventtapFallback: Bool

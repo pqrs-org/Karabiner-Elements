@@ -79,6 +79,9 @@ public:
       changed |= apply_value<bool>(global_json,
                                    "unsafe_ui",
                                    [&](auto value) { global.set_unsafe_ui(value); });
+      changed |= apply_value<std::vector<std::string>>(global_json,
+                                                       "additional_device_identifier_fields",
+                                                       [&](const auto& value) { global.set_additional_device_identifier_fields(value); });
       changed |= apply_value<bool>(global_json,
                                    "filter_useless_events_from_specific_devices",
                                    [&](auto value) { global.set_filter_useless_events_from_specific_devices(value); });

@@ -65,6 +65,10 @@ public:
                                          unsafe_ui_,
                                          false);
 
+    helper_values_.push_back_value<std::vector<std::string>>("additional_device_identifier_fields",
+                                                             additional_device_identifier_fields_,
+                                                             {});
+
     helper_values_.push_back_value<bool>("filter_useless_events_from_specific_devices",
                                          filter_useless_events_from_specific_devices_,
                                          true);
@@ -93,6 +97,7 @@ public:
     helper_values_.update_value(json_, error_handling);
 
     set_ui_language(ui_language_);
+    set_additional_device_identifier_fields(additional_device_identifier_fields_);
     set_notification_window_position(notification_window_position_);
     set_notification_window_font_size(notification_window_font_size_);
     set_delay_milliseconds_before_sleep_shortcut(delay_milliseconds_before_sleep_shortcut_);
@@ -203,6 +208,13 @@ public:
     unsafe_ui_ = value;
   }
 
+  [[nodiscard]] const std::vector<std::string>& get_additional_device_identifier_fields() const {
+    return additional_device_identifier_fields_;
+  }
+  void set_additional_device_identifier_fields(const std::vector<std::string>& value) {
+    additional_device_identifier_fields_ = value;
+  }
+
   [[nodiscard]] const bool& get_filter_useless_events_from_specific_devices() const {
     return filter_useless_events_from_specific_devices_;
   }
@@ -246,6 +258,7 @@ private:
   int notification_window_font_size_;
   pqrs::not_null_shared_ptr_t<notification_window_colors> notification_window_colors_;
   bool unsafe_ui_;
+  std::vector<std::string> additional_device_identifier_fields_;
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;
   bool enable_cgeventtap_fallback_;

@@ -27,6 +27,9 @@ struct ChangedSettings {
   ]
 
   static let settingLocalizationKeys: [String: [String]] = [
+    "additional_device_identifier_fields": [
+      "settings.expert.additional_device_identifier_fields"
+    ],
     "background_color": [
       "settings.ui.background_color"
     ],

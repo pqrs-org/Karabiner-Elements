@@ -15,6 +15,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
   let manufacturerName: String
   let productName: String
   let transport: String
+  let serialNumber: String
   let vendorId: UInt64
   let productId: UInt64
   let deviceAddress: String
@@ -45,6 +46,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
       manufacturerName: "",
       productName: "",
       transport: "",
+      serialNumber: "",
       vendorId: 0,
       productId: 0,
       deviceAddress: "",
@@ -65,6 +67,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     manufacturerName: String,
     productName: String,
     transport: String,
+    serialNumber: String,
     vendorId: UInt64,
     productId: UInt64,
     deviceAddress: String,
@@ -82,6 +85,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     self.manufacturerName = manufacturerName
     self.productName = productName
     self.transport = transport
+    self.serialNumber = serialNumber
     self.vendorId = vendorId
     self.productId = productId
     self.deviceAddress = deviceAddress

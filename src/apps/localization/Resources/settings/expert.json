@@ -1,4 +1,14 @@
 {
+    "settings.expert.additional_device_identifier_fields": {
+        "en": "Additional device identifier fields"
+        ,"ja": "追加のデバイス識別フィールド"
+        ,"zh-Hans": "其他设备标识字段"
+    },
+    "settings.expert.additional_device_identifier_fields_description": {
+        "en": "Selected fields become part of device identifiers. Changing this setting may cause existing device-specific settings to stop applying."
+        ,"ja": "選択したフィールドがデバイス識別子の一部になります。この設定を変更すると、既存のデバイス固有設定が適用されなくなる場合があります。"
+        ,"zh-Hans": "所选字段将成为设备标识符的一部分。更改此设置可能会导致现有的设备特定设置不再适用。"
+    },
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
         ,"ja": "CGEventTapフォールバック"
@@ -29,6 +39,21 @@
             "\n",
             "（这是 macOS 的问题，拔下设备并重新插入即可解决。）"
         ]
+    },
+    "settings.expert.device_identifier_field.device_address": {
+        "en": "Device address"
+        ,"ja": "デバイスアドレス"
+        ,"zh-Hans": "设备地址"
+    },
+    "settings.expert.device_identifier_field.serial_number": {
+        "en": "Serial number"
+        ,"ja": "シリアル番号"
+        ,"zh-Hans": "序列号"
+    },
+    "settings.expert.device_identifier_field.transport": {
+        "en": "Transport"
+        ,"ja": "接続方式"
+        ,"zh-Hans": "连接方式"
     },
     "settings.expert.enable_cgeventtap_fallback": {
         "en": "Enable CGEventTap fallback"

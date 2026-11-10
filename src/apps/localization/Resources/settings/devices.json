@@ -224,10 +224,20 @@
         ,"ja": "現在接続されていないデバイスの設定を削除（{count}件）"
         ,"zh-Hans": "移除当前未连接设备的设置（{count} 项）"
     },
+    "settings.devices.serial_number": {
+        "en": "Serial Number: {serial_number}"
+        ,"ja": "シリアル番号: {serial_number}"
+        ,"zh-Hans": "序列号：{serial_number}"
+    },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
         ,"ja": "ISO配列固有のキーを交換（例: `~ / §± / ^° / ² ↔ \\| / <>）"
         ,"zh-Hans": "交换 ISO 键盘布局特定按键（例如：`~ / §± / ^° / ² ↔ \\| / <>）"
+    },
+    "settings.devices.transport": {
+        "en": "Transport: {transport}"
+        ,"ja": "接続方式: {transport}"
+        ,"zh-Hans": "连接方式：{transport}"
     },
     "settings.devices.treat_as_built_in": {
         "en": "Treat as a built-in keyboard"

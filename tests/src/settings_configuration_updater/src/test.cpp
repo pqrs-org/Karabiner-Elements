@@ -60,6 +60,7 @@ int main() {
     global_patch["notification_window_colors"]["dark"]["background_color"] = "#99AABBCC";
     global_patch["notification_window_colors"]["dark"]["text_color"] = "#DDEEFF00";
     global_patch["unsafe_ui"] = true;
+    global_patch["additional_device_identifier_fields"] = {"transport", "device_address"};
     global_patch["filter_useless_events_from_specific_devices"] = false;
     global_patch["reorder_same_timestamp_input_events_to_prioritize_modifiers"] = false;
     global_patch["enable_cgeventtap_fallback"] = true;
@@ -90,6 +91,8 @@ int main() {
     expect(global.get_notification_window_colors().get_dark().get_background_color() == "#99aabbcc");
     expect(global.get_notification_window_colors().get_dark().get_text_color() == "#ddeeff00");
     expect(global.get_unsafe_ui());
+    expect(global.get_additional_device_identifier_fields() ==
+           std::vector<std::string>{"transport", "device_address"});
     expect(!global.get_filter_useless_events_from_specific_devices());
     expect(!global.get_reorder_same_timestamp_input_events_to_prioritize_modifiers());
     expect(global.get_enable_cgeventtap_fallback());

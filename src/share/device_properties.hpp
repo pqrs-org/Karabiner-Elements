@@ -23,6 +23,7 @@ public:
     bool is_pointing_device = false;
     bool is_game_pad = false;
     bool is_consumer = false;
+    std::vector<std::string> additional_device_identifier_fields;
   };
 
   device_properties(initialization_parameters parameters)
@@ -31,7 +32,8 @@ public:
         manufacturer_(parameters.manufacturer),
         product_(parameters.product),
         serial_number_(parameters.serial_number),
-        transport_(parameters.transport) {
+        transport_(parameters.transport),
+        device_address_(parameters.device_address) {
     device_identifiers_ = device_identifiers({
         .vendor_id = parameters.vendor_id,
         .product_id = parameters.product_id,
@@ -41,6 +43,9 @@ public:
         .is_consumer = parameters.is_consumer,
         .is_virtual_device = iokit_utility::is_karabiner_virtual_hid_device(manufacturer_, product_),
         .device_address = parameters.device_address,
+        .serial_number = parameters.serial_number,
+        .transport = parameters.transport,
+        .additional_device_identifier_fields = parameters.additional_device_identifier_fields,
     });
 
     //
@@ -127,7 +132,8 @@ public:
   }
 
   static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(device_id device_id,
-                                                                               IOHIDDeviceRef device) {
+                                                                               IOHIDDeviceRef device,
+                                                                               const std::vector<std::string>& additional_device_identifier_fields = {}) {
     pqrs::osx::iokit_hid_device hid_device(device);
 
     //
@@ -208,6 +214,7 @@ public:
         .is_pointing_device = is_pointing_device,
         .is_game_pad = is_game_pad,
         .is_consumer = is_consumer,
+        .additional_device_identifier_fields = additional_device_identifier_fields,
     });
   }
 
@@ -226,6 +233,17 @@ public:
         parameters.vendor_id = identifiers.get_vendor_id();
         parameters.product_id = identifiers.get_product_id();
         parameters.device_address = identifiers.get_device_address();
+        parameters.serial_number = identifiers.get_serial_number();
+        parameters.transport = identifiers.get_transport();
+        if (!identifiers.get_device_address().empty()) {
+          parameters.additional_device_identifier_fields.push_back(std::string(device_identifiers::device_address_field));
+        }
+        if (!identifiers.get_serial_number().empty()) {
+          parameters.additional_device_identifier_fields.push_back(std::string(device_identifiers::serial_number_field));
+        }
+        if (!identifiers.get_transport().empty()) {
+          parameters.additional_device_identifier_fields.push_back(std::string(device_identifiers::transport_field));
+        }
         parameters.is_keyboard = identifiers.get_is_keyboard();
         parameters.is_pointing_device = identifiers.get_is_pointing_device();
         parameters.is_game_pad = identifiers.get_is_game_pad();
@@ -302,6 +320,22 @@ public:
 
   [[nodiscard]] const device_identifiers& get_device_identifiers() const {
     return device_identifiers_;
+  }
+
+  void set_additional_device_identifier_fields(const std::vector<std::string>& fields) {
+    device_identifiers_ = device_identifiers({
+        .vendor_id = device_identifiers_.get_vendor_id(),
+        .product_id = device_identifiers_.get_product_id(),
+        .is_keyboard = device_identifiers_.get_is_keyboard(),
+        .is_pointing_device = device_identifiers_.get_is_pointing_device(),
+        .is_game_pad = device_identifiers_.get_is_game_pad(),
+        .is_consumer = device_identifiers_.get_is_consumer(),
+        .is_virtual_device = device_identifiers_.get_is_virtual_device(),
+        .device_address = device_address_,
+        .serial_number = serial_number_,
+        .transport = transport_,
+        .additional_device_identifier_fields = fields,
+    });
   }
 
   [[nodiscard]] location_id get_location_id() const {
@@ -425,6 +459,7 @@ private:
   pqrs::hid::product_string::value_t product_;
   std::string serial_number_;
   std::string transport_;
+  std::string device_address_;
   bool is_built_in_keyboard_{false};
   bool is_built_in_pointing_device_{false};
   bool is_built_in_touch_bar_{false};

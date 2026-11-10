@@ -303,9 +303,9 @@ public:
                                    event_queue_entries);
               });
 
-              // Notify observers again because HID++ control discovery finishes after
+              // Notify observers when properties or capabilities change after
               // the device's initial connected_devices notification.
-              entry->logitech_hidpp_divertable_control_ids_changed.connect([this] {
+              entry->connected_device_changed.connect([this] {
                 connected_devices_changed();
               });
 

@@ -48,6 +48,27 @@ void run_device_test() {
       expect(identifiers.get_is_keyboard() == true);
       expect(identifiers.get_is_pointing_device() == false);
     }
+
+    // construct with additional identifier fields
+    {
+      krbn::device_identifiers identifiers({
+          .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+          .product_id = pqrs::hid::product_id::value_t(5678),
+          .is_keyboard = true,
+          .device_address = "ec-ba-73-21-e6-f5",
+          .serial_number = "serial",
+          .transport = "Bluetooth Low Energy",
+          .additional_device_identifier_fields = {"device_address", "serial_number", "transport"},
+      });
+      expect(identifiers.get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(identifiers.get_serial_number() == "serial");
+      expect(identifiers.get_transport() == "Bluetooth Low Energy");
+
+      auto json = identifiers.to_normalized_json();
+      expect(json.at("device_address") == "ec-ba-73-21-e6-f5");
+      expect(json.at("serial_number") == "serial");
+      expect(json.at("transport") == "Bluetooth Low Energy");
+    }
     {
       krbn::device_identifiers identifiers({
           .is_keyboard = true,

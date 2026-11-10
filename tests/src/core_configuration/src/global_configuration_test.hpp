@@ -28,10 +28,28 @@ void run_global_configuration_test() {
       expect(global_configuration.get_notification_window_colors().get_dark().get_background_color() == "system");
       expect(global_configuration.get_notification_window_colors().get_dark().get_text_color() == "system");
       expect(global_configuration.get_unsafe_ui() == false);
+      expect(global_configuration.get_additional_device_identifier_fields().empty());
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(global_configuration.get_enable_cgeventtap_fallback() == false);
       expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 500);
+    }
+
+    // additional_device_identifier_fields
+    {
+      krbn::core_configuration::details::global_configuration global_configuration(
+          nlohmann::json({
+              {"additional_device_identifier_fields", {"transport", "unknown", "device_address", "transport"}},
+          }),
+          krbn::core_configuration::error_handling::strict);
+
+      expect(global_configuration.get_additional_device_identifier_fields() ==
+             std::vector<std::string>{"transport", "unknown", "device_address", "transport"});
+      expect(global_configuration.to_json().at("additional_device_identifier_fields") ==
+             nlohmann::json::array({"transport", "unknown", "device_address", "transport"}));
+
+      global_configuration.set_additional_device_identifier_fields({});
+      expect(!global_configuration.to_json().contains("additional_device_identifier_fields"));
     }
 
     // Preserve language selections without depending on the installed translations.

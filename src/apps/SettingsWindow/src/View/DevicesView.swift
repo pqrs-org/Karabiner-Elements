@@ -125,6 +125,7 @@ struct DevicesView: View {
 
   struct DeviceName: View {
     @AppLocalizationContext private var localized
+    @ObservedObject private var settings = Settings.shared
     let connectedDevice: ConnectedDevice
 
     var body: some View {
@@ -174,6 +175,22 @@ struct DevicesView: View {
             if !connectedDevice.deviceAddress.isEmpty {
               AppLocalizedText(
                 "settings.devices.address", arguments: ["address": connectedDevice.deviceAddress])
+            }
+
+            if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
+              "serial_number"), !connectedDevice.serialNumber.isEmpty
+            {
+              AppLocalizedText(
+                "settings.devices.serial_number",
+                arguments: ["serial_number": connectedDevice.serialNumber])
+            }
+
+            if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
+              "transport"), !connectedDevice.transport.isEmpty
+            {
+              AppLocalizedText(
+                "settings.devices.transport",
+                arguments: ["transport": connectedDevice.transport])
             }
           }
           .font(.callout)
