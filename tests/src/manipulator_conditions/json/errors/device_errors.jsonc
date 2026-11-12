@@ -82,6 +82,42 @@
             "type": "device_if",
             "identifiers": [
                 {
+                    "device_address": null
+                }
+            ]
+        },
+        "error": "identifiers entry `device_address` must be string, but is `null`"
+    },
+    {
+        "class": "device",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "serial_number": null
+                }
+            ]
+        },
+        "error": "identifiers entry `serial_number` must be string, but is `null`"
+    },
+    {
+        "class": "device",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
+                    "transport": null
+                }
+            ]
+        },
+        "error": "identifiers entry `transport` must be string, but is `null`"
+    },
+    {
+        "class": "device",
+        "input": {
+            "type": "device_if",
+            "identifiers": [
+                {
                     "is_keyboard": null
                 }
             ]

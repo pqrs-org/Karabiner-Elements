@@ -26,6 +26,9 @@ void run_device_properties_test() {
     expect(device_properties.get_device_identifiers().get_location_id() == krbn::location_id(0));
     expect(device_properties.get_device_identifiers().get_serial_number().empty());
     expect(device_properties.get_device_identifiers().get_transport().empty());
+    expect(device_properties.get_device_address() == "aa-bb-cc-dd-ee-ff");
+    expect(device_properties.get_serial_number() == "serial");
+    expect(device_properties.get_transport() == "Bluetooth Low Energy");
 
     device_properties.set_additional_device_identifier_fields({
         "device_address",

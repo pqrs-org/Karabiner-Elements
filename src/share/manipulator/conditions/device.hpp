@@ -119,6 +119,8 @@ private:
     std::optional<pqrs::hid::product_id::value_t> product_id;
     std::optional<location_id> location_id;
     std::optional<std::string> device_address;
+    std::optional<std::string> serial_number;
+    std::optional<std::string> transport;
     std::optional<bool> is_keyboard;
     std::optional<bool> is_pointing_device;
     std::optional<bool> is_game_pad;
@@ -131,6 +133,8 @@ private:
              product_id ||
              location_id ||
              device_address ||
+             serial_number ||
+             transport ||
              is_keyboard ||
              is_pointing_device ||
              is_game_pad ||
@@ -142,8 +146,10 @@ private:
     bool fulfilled(const device_properties& device_properties,
                    const manipulator_environment& manipulator_environment) const {
       //
-      // If `device_properties.vendor_id` is std::nullopt, it is treated as 0 in `devices.identifiers` in `karabiner.json`, so std::nullopt is also treated as 0 here.
-      // Other properties are treated in the same way.
+      // vendor_id, product_id, and the device type flags are compared with
+      // device_identifiers for compatibility with devices.identifiers in karabiner.json.
+      // The physical properties are compared with device_properties so that they
+      // are available regardless of additional_device_identifier_fields.
       //
 
       if (vendor_id && vendor_id != device_properties.get_device_identifiers().get_vendor_id()) {
@@ -155,7 +161,13 @@ private:
       if (location_id && location_id != device_properties.get_location_id()) {
         return false;
       }
-      if (device_address && device_address != device_properties.get_device_identifiers().get_device_address()) {
+      if (device_address && device_address != device_properties.get_device_address()) {
+        return false;
+      }
+      if (serial_number && serial_number != device_properties.get_serial_number()) {
+        return false;
+      }
+      if (transport && transport != device_properties.get_transport()) {
         return false;
       }
       if (is_keyboard && is_keyboard != device_properties.get_device_identifiers().get_is_keyboard()) {
@@ -213,6 +225,16 @@ private:
           pqrs::json::requires_string(value, "identifiers entry `device_address`");
 
           d.device_address = value.get<std::string>();
+
+        } else if (key == "serial_number") {
+          pqrs::json::requires_string(value, "identifiers entry `serial_number`");
+
+          d.serial_number = value.get<std::string>();
+
+        } else if (key == "transport") {
+          pqrs::json::requires_string(value, "identifiers entry `transport`");
+
+          d.transport = value.get<std::string>();
 
         } else if (key == "is_keyboard") {
           pqrs::json::requires_boolean(value, "identifiers entry `is_keyboard`");

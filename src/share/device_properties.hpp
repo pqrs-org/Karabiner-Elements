@@ -361,6 +361,10 @@ public:
     return location_id_;
   }
 
+  [[nodiscard]] const std::string& get_device_address() const {
+    return device_address_;
+  }
+
   [[nodiscard]] const pqrs::hid::manufacturer_string::value_t& get_manufacturer() const {
     return manufacturer_;
   }

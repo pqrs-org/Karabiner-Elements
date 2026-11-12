@@ -95,6 +95,14 @@ void run_device_test() {
         .location_id = krbn::location_id(4000),
     });
 
+    auto device_id_with_physical_properties = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        .product_id = pqrs::hid::product_id::value_t(5678),
+        .serial_number = "serial number",
+        .transport = "USB",
+        .device_address = "11-22-33-44-55-66",
+    });
+
     {
       actual_examples_helper helper("device_if.jsonc");
       expect(helper.get_error_messages() == std::vector<std::string>{
@@ -212,6 +220,36 @@ void run_device_test() {
         expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                            environment) == false);
       }
+    }
+
+    // Physical properties are available to conditions even when they are not
+    // included in device_identifiers by additional_device_identifier_fields.
+    {
+      const auto is_fulfilled = [&](const std::string& key,
+                                    const std::string& value) {
+        nlohmann::json json;
+        json["type"] = "device_if";
+        json["identifiers"] = nlohmann::json::array({
+            {
+                {key, value},
+            },
+        });
+        krbn::manipulator::conditions::device condition(json);
+
+        return condition.is_fulfilled(
+            krbn::manipulator::conditions::condition_context{
+                .device_id = device_id_with_physical_properties,
+                .state = krbn::event_queue::state::original,
+            },
+            environment);
+      };
+
+      expect(is_fulfilled("device_address", "11-22-33-44-55-66"));
+      expect(!is_fulfilled("device_address", "different address"));
+      expect(is_fulfilled("serial_number", "serial number"));
+      expect(!is_fulfilled("serial_number", "different serial number"));
+      expect(is_fulfilled("transport", "USB"));
+      expect(!is_fulfilled("transport", "Bluetooth"));
     }
 
     {
