@@ -87,6 +87,12 @@ struct ExpertView: View {
             .toggleStyle(.checkbox)
 
             Toggle(
+              localized("settings.expert.device_identifier_field.location_id"),
+              isOn: additionalDeviceIdentifierFieldBinding("location_id")
+            )
+            .toggleStyle(.checkbox)
+
+            Toggle(
               localized("settings.expert.device_identifier_field.serial_number"),
               isOn: additionalDeviceIdentifierFieldBinding("serial_number")
             )

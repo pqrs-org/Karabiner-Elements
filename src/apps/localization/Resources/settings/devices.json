@@ -114,6 +114,11 @@
         ,"ja": "Apple内蔵キーボード / トラックパッド"
         ,"zh-Hans": "Apple 内建键盘 / 触控板"
     },
+    "settings.devices.location_id": {
+        "en": "Location ID"
+        ,"ja": "ロケーションID"
+        ,"zh-Hans": "位置 ID"
+    },
     "settings.devices.logitech_hidpp_button_assignments": {
         "en": "Logitech HID++ button assignments"
         ,"ja": "Logitech HID++ ボタンの割り当て"

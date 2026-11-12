@@ -1,5 +1,6 @@
 #pragma once
 
+#include "location_id.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <nlohmann/json.hpp>
@@ -12,12 +13,14 @@ namespace krbn {
 class device_identifiers final {
 public:
   static constexpr std::string_view device_address_field = "device_address";
+  static constexpr std::string_view location_id_field = "location_id";
   static constexpr std::string_view serial_number_field = "serial_number";
   static constexpr std::string_view transport_field = "transport";
 
   struct initialization_parameters final {
     pqrs::hid::vendor_id::value_t vendor_id = pqrs::hid::vendor_id::value_t(0);
     pqrs::hid::product_id::value_t product_id = pqrs::hid::product_id::value_t(0);
+    location_id location_id = krbn::location_id(0);
     bool is_keyboard = false;
     bool is_pointing_device = false;
     bool is_game_pad = false;
@@ -37,6 +40,7 @@ public:
       : json_(nlohmann::json::object()),
         vendor_id_(parameters.vendor_id),
         product_id_(parameters.product_id),
+        location_id_(krbn::location_id(0)),
         is_keyboard_(parameters.is_keyboard),
         is_pointing_device_(parameters.is_pointing_device),
         is_game_pad_(parameters.is_game_pad),
@@ -53,6 +57,10 @@ public:
         std::ranges::contains(parameters.additional_device_identifier_fields,
                               device_address_field)) {
       device_address_ = parameters.device_address;
+    }
+    if (std::ranges::contains(parameters.additional_device_identifier_fields,
+                              location_id_field)) {
+      location_id_ = parameters.location_id;
     }
     if (std::ranges::contains(parameters.additional_device_identifier_fields,
                               serial_number_field)) {
@@ -85,6 +93,11 @@ public:
         pqrs::json::requires_string(v, "`" + k + "`");
 
         device_address_ = v.get<std::string>();
+
+      } else if (k == "location_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+
+        location_id_ = v.get<location_id>();
 
       } else if (k == "serial_number") {
         pqrs::json::requires_string(v, "`" + k + "`");
@@ -163,6 +176,10 @@ public:
     return device_address_;
   }
 
+  [[nodiscard]] location_id get_location_id() const {
+    return location_id_;
+  }
+
   [[nodiscard]] const std::string& get_serial_number() const {
     return serial_number_;
   }
@@ -184,6 +201,7 @@ public:
            !is_consumer_ &&
            !is_virtual_device_ &&
            device_address_.empty() &&
+           location_id_ == location_id(0) &&
            serial_number_.empty() &&
            transport_.empty();
   }
@@ -197,6 +215,7 @@ public:
            is_consumer_ == other.is_consumer_ &&
            is_virtual_device_ == other.is_virtual_device_ &&
            device_address_ == other.device_address_ &&
+           location_id_ == other.location_id_ &&
            serial_number_ == other.serial_number_ &&
            transport_ == other.transport_;
   }
@@ -218,6 +237,7 @@ private:
   nlohmann::json json_;
   pqrs::hid::vendor_id::value_t vendor_id_;
   pqrs::hid::product_id::value_t product_id_;
+  location_id location_id_;
   bool is_keyboard_;
   bool is_pointing_device_;
   bool is_game_pad_;
@@ -304,6 +324,16 @@ inline void device_identifiers::write_known_fields(nlohmann::json& json) const {
     auto key = "device_address";
     auto v = get_device_address();
     if (v != "") {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "location_id";
+    auto v = type_safe::get(get_location_id());
+    if (v != 0) {
       json[key] = v;
     } else {
       json.erase(key);

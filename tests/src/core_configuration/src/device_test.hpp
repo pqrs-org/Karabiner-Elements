@@ -39,12 +39,14 @@ void run_device_test() {
       krbn::device_identifiers identifiers({
           .vendor_id = pqrs::hid::vendor_id::value_t(1234),
           .product_id = pqrs::hid::product_id::value_t(5678),
+          .location_id = krbn::location_id(123456),
           .is_keyboard = true,
           .device_address = "ec-ba-73-21-e6-f5", // ignored
       });
       expect(identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(identifiers.get_product_id() == pqrs::hid::product_id::value_t(5678));
       expect(identifiers.get_device_address() == "");
+      expect(identifiers.get_location_id() == krbn::location_id(0));
       expect(identifiers.get_is_keyboard() == true);
       expect(identifiers.get_is_pointing_device() == false);
     }
@@ -54,18 +56,21 @@ void run_device_test() {
       krbn::device_identifiers identifiers({
           .vendor_id = pqrs::hid::vendor_id::value_t(1234),
           .product_id = pqrs::hid::product_id::value_t(5678),
+          .location_id = krbn::location_id(123456),
           .is_keyboard = true,
           .device_address = "ec-ba-73-21-e6-f5",
           .serial_number = "serial",
           .transport = "Bluetooth Low Energy",
-          .additional_device_identifier_fields = {"device_address", "serial_number", "transport"},
+          .additional_device_identifier_fields = {"device_address", "location_id", "serial_number", "transport"},
       });
       expect(identifiers.get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(identifiers.get_location_id() == krbn::location_id(123456));
       expect(identifiers.get_serial_number() == "serial");
       expect(identifiers.get_transport() == "Bluetooth Low Energy");
 
       auto json = identifiers.to_normalized_json();
       expect(json.at("device_address") == "ec-ba-73-21-e6-f5");
+      expect(json.at("location_id") == 123456);
       expect(json.at("serial_number") == "serial");
       expect(json.at("transport") == "Bluetooth Low Energy");
     }

@@ -13,6 +13,7 @@ void run_device_identifiers_test() {
 
       expect(pqrs::hid::vendor_id::value_t(0) == di.get_vendor_id());
       expect(pqrs::hid::product_id::value_t(0) == di.get_product_id());
+      expect(krbn::location_id(0) == di.get_location_id());
       expect("" == di.get_device_address());
       expect(false == di.get_is_keyboard());
       expect(false == di.get_is_pointing_device());
@@ -26,6 +27,7 @@ void run_device_identifiers_test() {
           {"vendor_id", 1234},
           {"product_id", 5678},
           {"device_address", "aa-bb-cc-dd-ee-ff"},
+          {"location_id", 123456},
           {"serial_number", "serial number"},
           {"transport", "USB"},
           {"is_keyboard", true},
@@ -36,6 +38,7 @@ void run_device_identifiers_test() {
       expect(pqrs::hid::vendor_id::value_t(1234) == di.get_vendor_id());
       expect(pqrs::hid::product_id::value_t(5678) == di.get_product_id());
       expect("aa-bb-cc-dd-ee-ff" == di.get_device_address());
+      expect(krbn::location_id(123456) == di.get_location_id());
       expect("serial number" == di.get_serial_number());
       expect("USB" == di.get_transport());
       expect(true == di.get_is_keyboard());
@@ -50,6 +53,7 @@ void run_device_identifiers_test() {
               {"vendor_id", 1234},
               {"product_id", 5678},
               {"device_address", "aa-bb-cc-dd-ee-ff"},
+              {"location_id", 123456},
               {"serial_number", "serial number"},
               {"transport", "USB"},
               {"is_keyboard", true},

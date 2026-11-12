@@ -78,6 +78,7 @@ final class ConnectedDevices: ObservableObject {
           index: index,
           manufacturerName: manufacturer,
           productName: product,
+          locationId: payload.locationId ?? 0,
           transport: payload.transport ?? "",
           serialNumber: payload.serialNumber ?? "",
           vendorId: payload.deviceIdentifiers.vendorId ?? 0,

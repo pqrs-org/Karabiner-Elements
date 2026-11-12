@@ -53,6 +53,7 @@ void run_json_test() {
   "device_id": 1,
   "device_identifiers": {
     "device_address": "d",
+    "future_field": "preserve me",
     "is_keyboard": true,
     "is_pointing_device": true,
     "is_game_pad": true

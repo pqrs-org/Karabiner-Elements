@@ -45,6 +45,11 @@
         ,"ja": "デバイスアドレス"
         ,"zh-Hans": "设备地址"
     },
+    "settings.expert.device_identifier_field.location_id": {
+        "en": "Location ID"
+        ,"ja": "ロケーションID"
+        ,"zh-Hans": "位置 ID"
+    },
     "settings.expert.device_identifier_field.serial_number": {
         "en": "Serial number"
         ,"ja": "シリアル番号"

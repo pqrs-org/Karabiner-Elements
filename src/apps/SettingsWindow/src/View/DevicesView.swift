@@ -201,6 +201,17 @@ struct DevicesView: View {
       }
 
       if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
+        "location_id"), connectedDevice.locationId != 0
+      {
+        result.append(
+          Row(
+            label: "settings.devices.location_id",
+            value:
+              "\(connectedDevice.locationId) (\(String(format: "0x%08llx", connectedDevice.locationId)))"
+          ))
+      }
+
+      if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
         "serial_number"), !connectedDevice.serialNumber.isEmpty
       {
         result.append(

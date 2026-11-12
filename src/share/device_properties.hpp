@@ -2,6 +2,7 @@
 
 #include "iokit_utility.hpp"
 #include "types.hpp"
+#include <optional>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_types.hpp>
@@ -24,30 +25,45 @@ public:
     bool is_game_pad = false;
     bool is_consumer = false;
     std::vector<std::string> additional_device_identifier_fields;
+
+    [[nodiscard]] krbn::device_identifiers make_device_identifiers() const {
+      return device_identifiers({
+          .vendor_id = vendor_id,
+          .product_id = product_id,
+          .location_id = location_id,
+          .is_keyboard = is_keyboard,
+          .is_pointing_device = is_pointing_device,
+          .is_game_pad = is_game_pad,
+          .is_consumer = is_consumer,
+          .is_virtual_device = iokit_utility::is_karabiner_virtual_hid_device(manufacturer,
+                                                                              product),
+          .device_address = device_address,
+          .serial_number = serial_number,
+          .transport = transport,
+          .additional_device_identifier_fields = additional_device_identifier_fields,
+      });
+    }
   };
 
   device_properties(initialization_parameters parameters)
+      : device_properties(parameters,
+                          parameters.make_device_identifiers()) {
+  }
+
+private:
+  // This constructor performs common initialization with finalized device_identifiers.
+  // The public constructor passes device_identifiers created by initialization_parameters,
+  // while make_device_properties(json) passes device_identifiers restored from JSON.
+  device_properties(const initialization_parameters& parameters,
+                    krbn::device_identifiers device_identifiers)
       : device_id_(parameters.device_id),
+        device_identifiers_(std::move(device_identifiers)),
         location_id_(parameters.location_id),
         manufacturer_(parameters.manufacturer),
         product_(parameters.product),
         serial_number_(parameters.serial_number),
         transport_(parameters.transport),
         device_address_(parameters.device_address) {
-    device_identifiers_ = device_identifiers({
-        .vendor_id = parameters.vendor_id,
-        .product_id = parameters.product_id,
-        .is_keyboard = parameters.is_keyboard,
-        .is_pointing_device = parameters.is_pointing_device,
-        .is_game_pad = parameters.is_game_pad,
-        .is_consumer = parameters.is_consumer,
-        .is_virtual_device = iokit_utility::is_karabiner_virtual_hid_device(manufacturer_, product_),
-        .device_address = parameters.device_address,
-        .serial_number = parameters.serial_number,
-        .transport = parameters.transport,
-        .additional_device_identifier_fields = parameters.additional_device_identifier_fields,
-    });
-
     //
     // Override manufacturer_ and product_
     //
@@ -128,6 +144,7 @@ public:
     }
   }
 
+public:
   device_properties() : device_properties(initialization_parameters{}) {
   }
 
@@ -220,6 +237,7 @@ public:
 
   [[nodiscard]] static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(const nlohmann::json& json) {
     initialization_parameters parameters;
+    std::optional<krbn::device_identifiers> parsed_device_identifiers;
 
     pqrs::json::requires_object(json, "json");
 
@@ -230,20 +248,13 @@ public:
 
       } else if (k == "device_identifiers") {
         auto identifiers = v.get<krbn::device_identifiers>();
+        parsed_device_identifiers = identifiers;
         parameters.vendor_id = identifiers.get_vendor_id();
         parameters.product_id = identifiers.get_product_id();
+        parameters.location_id = identifiers.get_location_id();
         parameters.device_address = identifiers.get_device_address();
         parameters.serial_number = identifiers.get_serial_number();
         parameters.transport = identifiers.get_transport();
-        if (!identifiers.get_device_address().empty()) {
-          parameters.additional_device_identifier_fields.push_back(std::string(device_identifiers::device_address_field));
-        }
-        if (!identifiers.get_serial_number().empty()) {
-          parameters.additional_device_identifier_fields.push_back(std::string(device_identifiers::serial_number_field));
-        }
-        if (!identifiers.get_transport().empty()) {
-          parameters.additional_device_identifier_fields.push_back(std::string(device_identifiers::transport_field));
-        }
         parameters.is_keyboard = identifiers.get_is_keyboard();
         parameters.is_pointing_device = identifiers.get_is_pointing_device();
         parameters.is_game_pad = identifiers.get_is_game_pad();
@@ -272,6 +283,13 @@ public:
       } else {
         // Allow unknown key
       }
+    }
+
+    if (parsed_device_identifiers) {
+      // Use `new` here because `std::make_shared` cannot access the private constructor.
+      return std::shared_ptr<device_properties>(
+          new device_properties(parameters,
+                                std::move(*parsed_device_identifiers)));
     }
 
     return std::make_shared<device_properties>(parameters);
@@ -326,6 +344,7 @@ public:
     device_identifiers_ = device_identifiers({
         .vendor_id = device_identifiers_.get_vendor_id(),
         .product_id = device_identifiers_.get_product_id(),
+        .location_id = location_id_,
         .is_keyboard = device_identifiers_.get_is_keyboard(),
         .is_pointing_device = device_identifiers_.get_is_pointing_device(),
         .is_game_pad = device_identifiers_.get_is_game_pad(),

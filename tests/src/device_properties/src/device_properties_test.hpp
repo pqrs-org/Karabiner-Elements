@@ -15,6 +15,7 @@ void run_device_properties_test() {
     auto device_properties = krbn::device_properties(krbn::device_properties::initialization_parameters{
         .vendor_id = pqrs::hid::vendor_id::value_t(1234),
         .product_id = pqrs::hid::product_id::value_t(5678),
+        .location_id = krbn::location_id(123456),
         .serial_number = "serial",
         .transport = "Bluetooth Low Energy",
         .device_address = "aa-bb-cc-dd-ee-ff",
@@ -22,16 +23,24 @@ void run_device_properties_test() {
     });
 
     expect(device_properties.get_device_identifiers().get_device_address().empty());
+    expect(device_properties.get_device_identifiers().get_location_id() == krbn::location_id(0));
     expect(device_properties.get_device_identifiers().get_serial_number().empty());
     expect(device_properties.get_device_identifiers().get_transport().empty());
 
-    device_properties.set_additional_device_identifier_fields({"device_address", "serial_number", "transport"});
+    device_properties.set_additional_device_identifier_fields({
+        "device_address",
+        "location_id",
+        "serial_number",
+        "transport",
+    });
     expect(device_properties.get_device_identifiers().get_device_address() == "aa-bb-cc-dd-ee-ff");
+    expect(device_properties.get_device_identifiers().get_location_id() == krbn::location_id(123456));
     expect(device_properties.get_device_identifiers().get_serial_number() == "serial");
     expect(device_properties.get_device_identifiers().get_transport() == "Bluetooth Low Energy");
 
     device_properties.set_additional_device_identifier_fields({});
     expect(device_properties.get_device_identifiers().get_device_address().empty());
+    expect(device_properties.get_device_identifiers().get_location_id() == krbn::location_id(0));
     expect(device_properties.get_device_identifiers().get_serial_number().empty());
     expect(device_properties.get_device_identifiers().get_transport().empty());
   };
