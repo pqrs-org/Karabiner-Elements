@@ -5,9 +5,9 @@
         ,"zh-Hans": "其他设备标识字段"
     },
     "settings.expert.additional_device_identifier_fields_description": {
-        "en": "Selected fields become part of device identifiers. Changing this setting may cause existing device-specific settings to stop applying."
-        ,"ja": "選択したフィールドがデバイス識別子の一部になります。この設定を変更すると、既存のデバイス固有設定が適用されなくなる場合があります。"
-        ,"zh-Hans": "所选字段将成为设备标识符的一部分。更改此设置可能会导致现有的设备特定设置不再适用。"
+        "en": "Selected fields become part of device identifiers. After changing this setting, you may need to configure device-specific settings again."
+        ,"ja": "選択したフィールドがデバイス識別子の一部になります。この設定を変更した場合、デバイス固有設定を設定し直す必要があることがあります。"
+        ,"zh-Hans": "所选字段将成为设备标识符的一部分。更改此设置后，可能需要重新配置特定于设备的设置。"
     },
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
