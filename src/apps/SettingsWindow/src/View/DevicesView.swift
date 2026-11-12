@@ -10,54 +10,68 @@ struct DevicesView: View {
     VStack(alignment: .leading, spacing: 0.0) {
       // Build all device rows eagerly so offscreen grids are laid out before scrolling.
       ScrollView {
-        VStack(alignment: .leading, spacing: 4.0) {
-          ForEach(connectedDevices.connectedDevices) { connectedDevice in
+        VStack(alignment: .leading, spacing: 0.0) {
+          ForEach(
+            Array(connectedDevices.connectedDevices.enumerated()),
+            id: \.element.id
+          ) { index, connectedDevice in
             if let deviceConfiguration = settings.deviceConfigurationBinding(connectedDevice) {
-              VStack(alignment: .leading, spacing: 0.0) {
-                DeviceName(connectedDevice: connectedDevice)
-                  .if(connectedDevice.isVirtualDevice) {
-                    $0.foregroundColor(Color(NSColor.placeholderTextColor))
-                  }
+              HStack(alignment: .top, spacing: 8.0) {
+                ConnectedDeviceIcons(
+                  isKeyboard: connectedDevice.isKeyboard,
+                  isPointingDevice: connectedDevice.isPointingDevice,
+                  isGamePad: connectedDevice.isGamePad,
+                  isConsumer: connectedDevice.isConsumer
+                )
 
-                if !connectedDevice.isVirtualDevice {
-                  VStack(alignment: .leading, spacing: 0.0) {
-                    ModifyEventsSetting(
-                      connectedDevice: connectedDevice,
-                      deviceConfiguration: deviceConfiguration)
+                VStack(alignment: .leading, spacing: 0.0) {
+                  DeviceName(connectedDevice: connectedDevice)
 
-                    Grid(alignment: .leading, horizontalSpacing: 8.0, verticalSpacing: 6.0) {
-                      KeyboardSettings(
+                  if !connectedDevice.isVirtualDevice {
+                    VStack(alignment: .leading, spacing: 0.0) {
+                      ModifyEventsSetting(
                         connectedDevice: connectedDevice,
                         deviceConfiguration: deviceConfiguration)
 
-                      MouseSettings(
-                        connectedDevice: connectedDevice,
-                        deviceConfiguration: deviceConfiguration)
+                      VStack(alignment: .leading, spacing: 6.0) {
+                        KeyboardSettings(
+                          connectedDevice: connectedDevice,
+                          deviceConfiguration: deviceConfiguration)
 
-                      GamePadSettings(
-                        connectedDevice: connectedDevice,
-                        deviceConfiguration: deviceConfiguration)
+                        MouseSettings(
+                          connectedDevice: connectedDevice,
+                          deviceConfiguration: deviceConfiguration)
 
-                      ExtraSettings(
+                        GamePadSettings(
+                          connectedDevice: connectedDevice,
+                          deviceConfiguration: deviceConfiguration)
+
+                        ExtraSettings(
+                          connectedDevice: connectedDevice,
+                          deviceConfiguration: deviceConfiguration)
+                      }
+                      .padding(.leading, 20.0)
+                      .padding(.top, 8.0)
+
+                      LogitechHidppSettings(
                         connectedDevice: connectedDevice,
-                        deviceConfiguration: deviceConfiguration)
+                        deviceConfiguration: deviceConfiguration
+                      )
+                      .padding(.leading, 20.0)
+                      .padding(.top, 12.0)
                     }
-                    .padding(.leading, 20.0)
                     .padding(.top, 8.0)
-
-                    LogitechHidppSettings(
-                      connectedDevice: connectedDevice,
-                      deviceConfiguration: deviceConfiguration
-                    )
-                    .padding(.leading, 20.0)
-                    .padding(.top, 12.0)
                   }
-                  .padding(.leading, 62.0)
-                  .padding(.top, 20.0)
                 }
+                .frame(minWidth: 0.0, maxWidth: .infinity, alignment: .leading)
+
+                DeviceIdentifiers(connectedDevice: connectedDevice)
+              }
+              .if(connectedDevice.isVirtualDevice) {
+                $0.foregroundColor(Color(NSColor.placeholderTextColor))
               }
               .padding(.vertical, 12.0)
-              .padding(.trailing, 12.0)
+              .padding(.horizontal, 12.0)
               .frame(maxWidth: .infinity, alignment: .leading)
               .overlay(
                 RoundedRectangle(cornerRadius: 8)
@@ -69,6 +83,10 @@ struct DevicesView: View {
                   )
                   .padding(2)
               )
+
+              if index < connectedDevices.connectedDevices.count - 1 {
+                Divider()
+              }
             }
           }
         }
@@ -125,77 +143,122 @@ struct DevicesView: View {
 
   struct DeviceName: View {
     @AppLocalizationContext private var localized
-    @ObservedObject private var settings = Settings.shared
     let connectedDevice: ConnectedDevice
 
     var body: some View {
-      HStack(alignment: .center, spacing: 0) {
-        HStack(spacing: 4.0) {
-          if connectedDevice.isKeyboard {
-            Image(systemName: "keyboard")
-          }
-          if connectedDevice.isPointingDevice {
-            Image(systemName: "computermouse")
-          }
-          if connectedDevice.isGamePad {
-            Image(systemName: "gamecontroller")
-          }
-          if connectedDevice.isConsumer {
-            Image(systemName: "headphones")
+      Text(
+        "\(connectedDevice.localizedProductName(localized)) (\(connectedDevice.localizedManufacturerName(localized)))"
+      )
+      .frame(maxWidth: .infinity, alignment: .leading)
+    }
+  }
+
+  struct DeviceIdentifiers: View {
+    private enum Layout {
+      static let tableWidth: CGFloat = 240.0
+      static let cellPadding: CGFloat = 4.0
+      static let labelWidth: CGFloat = 70.0
+      static let separatorWidth: CGFloat = 1.0
+      static let labelColumnWidth = labelWidth + cellPadding * 2.0
+      static let valueWidth =
+        tableWidth - labelColumnWidth - separatorWidth - cellPadding * 2.0
+    }
+
+    private struct Row {
+      let label: String
+      let value: String
+    }
+
+    @ObservedObject private var settings = Settings.shared
+    let connectedDevice: ConnectedDevice
+
+    private var rows: [Row] {
+      var result: [Row] = []
+
+      if connectedDevice.vendorId != 0 {
+        result.append(
+          Row(
+            label: "settings.devices.vendor_id",
+            value:
+              "\(connectedDevice.vendorId) (\(String(format: "0x%04x", connectedDevice.vendorId)))"
+          ))
+      }
+
+      if connectedDevice.productId != 0 {
+        result.append(
+          Row(
+            label: "settings.devices.product_id",
+            value:
+              "\(connectedDevice.productId) (\(String(format: "0x%04x", connectedDevice.productId)))"
+          ))
+      }
+
+      if !connectedDevice.deviceAddress.isEmpty {
+        result.append(
+          Row(
+            label: "settings.devices.address",
+            value: connectedDevice.deviceAddress))
+      }
+
+      if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
+        "serial_number"), !connectedDevice.serialNumber.isEmpty
+      {
+        result.append(
+          Row(
+            label: "settings.devices.serial_number",
+            value: connectedDevice.serialNumber))
+      }
+
+      if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
+        "transport"), !connectedDevice.transport.isEmpty
+      {
+        result.append(
+          Row(
+            label: "settings.devices.transport",
+            value: connectedDevice.transport))
+      }
+
+      return result
+    }
+
+    var body: some View {
+      if connectedDevice.transport != "FIFO" {
+        VStack(alignment: .leading, spacing: 0.0) {
+          ForEach(Array(rows.enumerated()), id: \.element.label) { index, row in
+            HStack(alignment: .top, spacing: 0.0) {
+              AppLocalizedText(row.label)
+                .frame(width: Layout.labelWidth, alignment: .topTrailing)
+                .padding(Layout.cellPadding)
+
+              Color.clear
+                .frame(width: Layout.separatorWidth, height: 0.0)
+
+              Text(row.value)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(width: Layout.valueWidth, alignment: .topLeading)
+                .padding(Layout.cellPadding)
+            }
+            .overlay(alignment: .topLeading) {
+              Rectangle()
+                .fill(Color(NSColor.separatorColor))
+                .frame(width: Layout.separatorWidth)
+                .frame(maxHeight: .infinity)
+                .offset(x: Layout.labelColumnWidth)
+            }
+            .overlay(alignment: .bottomLeading) {
+              if index < rows.count - 1 {
+                Divider()
+                  .frame(width: Layout.tableWidth)
+              }
+            }
           }
         }
-        .frame(width: 50.0, alignment: .trailing)
-
-        Text(
-          "\(connectedDevice.localizedProductName(localized)) (\(connectedDevice.localizedManufacturerName(localized)))"
+        .font(.caption)
+        .monospaced()
+        .overlay(
+          RoundedRectangle(cornerRadius: 6.0)
+            .stroke(Color(NSColor.separatorColor))
         )
-        .padding(.leading, 12.0)
-        .frame(maxWidth: .infinity, alignment: .leading)
-
-        if connectedDevice.transport != "FIFO" {
-          VStack(alignment: .trailing, spacing: 4.0) {
-            if connectedDevice.vendorId != 0 {
-              AppLocalizedText(
-                "settings.devices.vendor_id",
-                arguments: [
-                  "decimal": String(format: "%5d", connectedDevice.vendorId),
-                  "hex": String(format: "0x%04x", connectedDevice.vendorId),
-                ])
-            }
-
-            if connectedDevice.productId != 0 {
-              AppLocalizedText(
-                "settings.devices.product_id",
-                arguments: [
-                  "decimal": String(format: "%5d", connectedDevice.productId),
-                  "hex": String(format: "0x%04x", connectedDevice.productId),
-                ])
-            }
-
-            if !connectedDevice.deviceAddress.isEmpty {
-              AppLocalizedText(
-                "settings.devices.address", arguments: ["address": connectedDevice.deviceAddress])
-            }
-
-            if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
-              "serial_number"), !connectedDevice.serialNumber.isEmpty
-            {
-              AppLocalizedText(
-                "settings.devices.serial_number",
-                arguments: ["serial_number": connectedDevice.serialNumber])
-            }
-
-            if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
-              "transport"), !connectedDevice.transport.isEmpty
-            {
-              AppLocalizedText(
-                "settings.devices.transport",
-                arguments: ["transport": connectedDevice.transport])
-            }
-          }
-          .font(.callout)
-          .monospaced()
-        }
       }
     }
   }
@@ -291,7 +354,7 @@ struct DevicesView: View {
     @Binding var isOn: Bool
 
     var body: some View {
-      GridRow {
+      HStack(alignment: .firstTextBaseline, spacing: 8.0) {
         AppLocalizedText(title)
           .font(.callout)
 
@@ -383,16 +446,13 @@ struct DevicesView: View {
           title: "settings.devices.ignore_vendor_events",
           isOn: $deviceConfiguration.ignoreVendorEvents)
 
-        GridRow {
-          AppLocalizedLabel(
-            "settings.devices.vendor_events_hint",
-            systemImage: "lightbulb"
-          )
-          .foregroundColor(Color(NSColor.textColor))
-          .font(.caption)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .gridCellColumns(2)
-        }
+        AppLocalizedLabel(
+          "settings.devices.vendor_events_hint",
+          systemImage: "lightbulb"
+        )
+        .foregroundColor(Color(NSColor.textColor))
+        .font(.caption)
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
   }
@@ -403,9 +463,9 @@ struct DevicesView: View {
 
     @ObservedObject private var settings = Settings.shared
 
-    private let columns = Array(
-      repeating: GridItem(.flexible(minimum: 240.0), spacing: 12.0, alignment: .leading),
-      count: 2)
+    private let columns = [
+      GridItem(.adaptive(minimum: 240.0), spacing: 12.0, alignment: .leading)
+    ]
 
     private var controlIds: [UInt16] {
       var result = Set(

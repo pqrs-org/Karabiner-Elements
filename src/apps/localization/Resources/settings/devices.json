@@ -1,8 +1,8 @@
 {
     "settings.devices.address": {
-        "en": "Device Address: {address}"
-        ,"ja": "デバイスアドレス: {address}"
-        ,"zh-Hans": "设备地址：{address}"
+        "en": "Device Address"
+        ,"ja": "デバイスアドレス"
+        ,"zh-Hans": "设备地址"
     },
     "settings.devices.all": {
         "en": "For all devices"
@@ -215,9 +215,9 @@
         ,"zh-Hans": "打开鼠标设置"
     },
     "settings.devices.product_id": {
-        "en": "Product ID: {decimal} ({hex})"
-        ,"ja": "製品ID: {decimal}({hex})"
-        ,"zh-Hans": "产品 ID：{decimal}（{hex}）"
+        "en": "Product ID"
+        ,"ja": "製品ID"
+        ,"zh-Hans": "产品 ID"
     },
     "settings.devices.remove_disconnected": {
         "en": "Remove settings for currently disconnected devices ({count})"
@@ -225,9 +225,9 @@
         ,"zh-Hans": "移除当前未连接设备的设置（{count} 项）"
     },
     "settings.devices.serial_number": {
-        "en": "Serial Number: {serial_number}"
-        ,"ja": "シリアル番号: {serial_number}"
-        ,"zh-Hans": "序列号：{serial_number}"
+        "en": "Serial Number"
+        ,"ja": "シリアル番号"
+        ,"zh-Hans": "序列号"
     },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
@@ -235,9 +235,9 @@
         ,"zh-Hans": "交换 ISO 键盘布局特定按键（例如：`~ / §± / ^° / ² ↔ \\| / <>）"
     },
     "settings.devices.transport": {
-        "en": "Transport: {transport}"
-        ,"ja": "接続方式: {transport}"
-        ,"zh-Hans": "连接方式：{transport}"
+        "en": "Transport"
+        ,"ja": "接続方式"
+        ,"zh-Hans": "连接方式"
     },
     "settings.devices.treat_as_built_in": {
         "en": "Treat as a built-in keyboard"
@@ -250,8 +250,8 @@
         ,"zh-Hans": "建议对非 Apple 设备启用“忽略厂商自定义事件”"
     },
     "settings.devices.vendor_id": {
-        "en": "Vendor ID: {decimal} ({hex})"
-        ,"ja": "ベンダーID: {decimal}({hex})"
-        ,"zh-Hans": "厂商 ID：{decimal}（{hex}）"
+        "en": "Vendor ID"
+        ,"ja": "ベンダーID"
+        ,"zh-Hans": "厂商 ID"
     }
 }

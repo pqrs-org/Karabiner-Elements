@@ -1,5 +1,27 @@
 import SwiftUI
 
+struct ConnectedDeviceIcons: View {
+  let isKeyboard: Bool
+  let isPointingDevice: Bool
+  let isGamePad: Bool
+  let isConsumer: Bool
+  var fallbackSystemImageName: String?
+
+  var body: some View {
+    VStack(spacing: 4.0) {
+      if let fallbackSystemImageName {
+        Image(systemName: fallbackSystemImageName)
+      } else {
+        if isKeyboard { Image(systemName: "keyboard") }
+        if isPointingDevice { Image(systemName: "computermouse") }
+        if isGamePad { Image(systemName: "gamecontroller") }
+        if isConsumer { Image(systemName: "headphones") }
+      }
+    }
+    .frame(width: 20.0, alignment: .center)
+  }
+}
+
 func connectedDeviceLabelTitle(
   productName: String,
   manufacturerName: String,
@@ -35,17 +57,13 @@ struct ConnectedDeviceLabel: View {
         .lineLimit(nil)
         .fixedSize(horizontal: false, vertical: true)
     } icon: {
-      if let fallbackSystemImageName {
-        Image(systemName: fallbackSystemImageName)
-      } else {
-        VStack {
-          if isKeyboard { Image(systemName: "keyboard") }
-          if isPointingDevice { Image(systemName: "computermouse") }
-          if isGamePad { Image(systemName: "gamecontroller") }
-          if isConsumer { Image(systemName: "headphones") }
-        }
-        .frame(width: 20)
-      }
+      ConnectedDeviceIcons(
+        isKeyboard: isKeyboard,
+        isPointingDevice: isPointingDevice,
+        isGamePad: isGamePad,
+        isConsumer: isConsumer,
+        fallbackSystemImageName: fallbackSystemImageName
+      )
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, 8)
