@@ -1,0 +1,8 @@
+[
+    { "keyboard_input": { "keys": [],                                                                    "modifiers": ["left_shift"] }, "time_stamp": 1000, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "grave_accent_and_tilde" }],                            "modifiers": ["left_shift"] }, "time_stamp": 1100, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "grave_accent_and_tilde" }],                            "modifiers": [] },             "time_stamp": 1200, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [ { "key_code": "grave_accent_and_tilde" }, { "key_code": "slash" } ], "modifiers": [] },             "time_stamp": 1205, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "slash" }],                                             "modifiers": [] },             "time_stamp": 1300, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                                                                    "modifiers": [] },             "time_stamp": 1400, "type": "keyboard_input" }
+]

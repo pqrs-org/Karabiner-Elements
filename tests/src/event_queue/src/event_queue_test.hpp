@@ -444,6 +444,72 @@ void run_event_queue_test() {
       PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_down, left_shift_event);
       expect(event_queue.get_entries() == expected);
     }
+    {
+      krbn::event_queue::queue event_queue;
+
+      // A HID report that releases left_shift and presses a.
+      // QMK sends it when a key is pressed while a shifted keycode (e.g., KC_TILD) is held.
+      // macOS delivers the key before the modifier.
+
+      ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_up, left_shift_event);
+
+      event_queue.sort_events();
+
+      std::vector<krbn::event_queue::entry> expected;
+      PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_up, left_shift_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
+      expect(event_queue.get_entries() == expected);
+    }
+    {
+      krbn::event_queue::queue event_queue;
+
+      ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_up, left_shift_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+
+      event_queue.sort_events();
+
+      std::vector<krbn::event_queue::entry> expected;
+      PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_up, left_shift_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
+      expect(event_queue.get_entries() == expected);
+    }
+    {
+      krbn::event_queue::queue event_queue;
+
+      // Keys released in the same report stay before the modifier key_up.
+
+      ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_up, left_shift_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_up, left_control_event);
+
+      event_queue.sort_events();
+
+      std::vector<krbn::event_queue::entry> expected;
+      PUSH_BACK_ENTRY(expected, 1, 100, b_event, key_up, b_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_up, left_shift_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, left_control_event, key_up, left_control_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
+      expect(event_queue.get_entries() == expected);
+    }
+    {
+      krbn::event_queue::queue event_queue;
+
+      // A report that switches from left_shift to left_control and presses a.
+
+      ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+      ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_up, left_shift_event);
+
+      event_queue.sort_events();
+
+      std::vector<krbn::event_queue::entry> expected;
+      PUSH_BACK_ENTRY(expected, 1, 100, left_control_event, key_down, left_control_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_up, left_shift_event);
+      PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
+      expect(event_queue.get_entries() == expected);
+    }
   };
 
   "needs_swap"_test = [] {
@@ -492,6 +558,15 @@ void run_event_queue_test() {
         .original_event = right_shift_event,
         .state = krbn::event_queue::state::original,
     });
+    krbn::event_queue::entry spacebar_down_at_300({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(300)),
+        .event = spacebar_event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = spacebar_event,
+        .state = krbn::event_queue::state::original,
+    });
 
     expect(krbn::event_queue::queue::needs_swap(spacebar_down, spacebar_down) == false);
     expect(krbn::event_queue::queue::needs_swap(spacebar_down, escape_down) == false);
@@ -508,6 +583,10 @@ void run_event_queue_test() {
 
     expect(krbn::event_queue::queue::needs_swap(spacebar_up, right_shift_down) == false);
     expect(krbn::event_queue::queue::needs_swap(right_shift_down, spacebar_up) == false);
+
+    // A modifier released in the report in which a key is pressed must not apply to that key.
+    expect(krbn::event_queue::queue::needs_swap(spacebar_down_at_300, right_shift_up) == true);
+    expect(krbn::event_queue::queue::needs_swap(right_shift_up, spacebar_down_at_300) == false);
   };
 
   "increase_time_stamp_delay"_test = [] {
