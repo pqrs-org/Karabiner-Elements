@@ -284,6 +284,21 @@ public:
     // Devices that exhibit this behavior are:
     // - Logitech Keyboard K480 (the expose key)
     // - RollerMouse (the copy key and the paste key)
+    //
+    // Some devices also release a modifier flag in the HID report that presses another key.
+    // For example, QMK will release shift in the same report as the pressed key while
+    // also reporting the press of another key (e.g., slash). For example, with KC_TILDE
+    // and KC_SLASH:
+    //
+    //   modifiers: 0x2
+    //   keys: 0x35 0x0 0x0 0x0 0x0 0x0
+    //
+    //   modifiers: 0x0
+    //   keys: 0x35 0x38 0x0 0x0 0x0 0x0
+    //
+    // Observed on an ErgoDox, running v25 of QMK.
+    // macOS sends the slash keydown before the shift keyup here too, and the slash would be shifted.
+    // Thus, a modifier keyup is reordered after released keys, but before pressed keys.
 
     if (v1.get_event_time_stamp().get_time_stamp() == v2.get_event_time_stamp().get_time_stamp()) {
       auto e1 = v1.get_event().get_if<momentary_switch_event>();
@@ -298,7 +313,8 @@ public:
         if (!modifier_flag1 && modifier_flag2) {
           // v2 is modifier_flag
           if (v2.get_event_type() == event_type::key_up) {
-            return false;
+            // reorder to v2,v1 if v2 is released and v1 is pressed.
+            return v1.get_event_type() == event_type::key_down;
           } else {
             // reorder to v2,v1 if v2 is pressed.
             return true;
@@ -308,8 +324,8 @@ public:
         if (modifier_flag1 && !modifier_flag2) {
           // v1 is modifier_flag
           if (v1.get_event_type() == event_type::key_up) {
-            // reorder to v2,v1 if v1 is released.
-            return true;
+            // reorder to v2,v1 if v1 is released, unless v2 is pressed.
+            return v2.get_event_type() != event_type::key_down;
           } else {
             return false;
           }

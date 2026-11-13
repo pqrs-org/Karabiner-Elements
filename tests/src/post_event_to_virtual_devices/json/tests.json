@@ -138,6 +138,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_6_result.json"
     },
     {
+        "description": "sort_events_7 (a modifier released in the report that presses a key does not apply to that key)",
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue": "json/test_cases/sort_events_7_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_7_result.json"
+    },
+    {
         "description": "f1 -> f2 (key to key)",
         "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/test_cases/key_to_key_1_input.jsonc",

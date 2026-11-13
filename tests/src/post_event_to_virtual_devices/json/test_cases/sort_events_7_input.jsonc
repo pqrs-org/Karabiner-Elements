@@ -1,0 +1,50 @@
+[
+    { "reorder_same_timestamp_input_events_to_prioritize_modifiers": true },
+    // `~` (KC_TILD on a QMK keyboard): left_shift and grave_accent_and_tilde in separate reports.
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1000 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "grave_accent_and_tilde" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1100 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "grave_accent_and_tilde" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    // `/` is pressed while `~` is held: QMK releases left_shift in the report that presses slash.
+    // macOS delivers the slash value before the left_shift value.
+    { "pause_manipulation": true },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "slash" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1200 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "slash" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1200 },
+        "event_type": "key_up",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    { "pause_manipulation": false },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "grave_accent_and_tilde" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1300 },
+        "event_type": "key_up",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "grave_accent_and_tilde" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "slash" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1400 },
+        "event_type": "key_up",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "slash" }, "type": "momentary_switch_event" }, "validity": true
+    }
+]
