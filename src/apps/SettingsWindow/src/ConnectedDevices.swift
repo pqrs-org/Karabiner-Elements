@@ -37,6 +37,8 @@ private struct ConnectedDevicePayload: Decodable {
   let isBuiltInTouchBar: Bool?
   let isApple: Bool?
   let connectedDeviceCapabilities: ConnectedDeviceCapabilities?
+  // JSONDecoder.convertFromSnakeCase converts the `_ui` suffix to `Ui`.
+  let deviceIdentifierValuesForUi: [DeviceIdentifierValueForUI]?
 }
 
 @MainActor
@@ -73,6 +75,15 @@ final class ConnectedDevices: ObservableObject {
         let product = (payload.product ?? "")
           .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
 
+        let deviceIdentifierValuesForUI =
+          payload.deviceIdentifierValuesForUi ?? [
+            DeviceIdentifierValueForUI(
+              locationId: payload.locationId,
+              deviceAddress: payload.deviceIdentifiers.deviceAddress,
+              serialNumber: payload.serialNumber,
+              transport: payload.transport)
+          ]
+
         return ConnectedDevice(
           id: payload.deviceIdentifiersJsonString,
           index: index,
@@ -84,6 +95,7 @@ final class ConnectedDevices: ObservableObject {
           vendorId: payload.deviceIdentifiers.vendorId ?? 0,
           productId: payload.deviceIdentifiers.productId ?? 0,
           deviceAddress: payload.deviceIdentifiers.deviceAddress ?? "",
+          deviceIdentifierValuesForUI: deviceIdentifierValuesForUI,
           isKeyboard: payload.deviceIdentifiers.isKeyboard ?? false,
           isPointingDevice: payload.deviceIdentifiers.isPointingDevice ?? false,
           isGamePad: payload.deviceIdentifiers.isGamePad ?? false,

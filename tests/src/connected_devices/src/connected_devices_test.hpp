@@ -130,6 +130,62 @@ void run_connected_devices_test() {
       expect(connected_devices.get_devices().size() == 2);
     }
 
+    // Physical properties are aggregated when multiple devices have the same identifiers.
+    {
+      krbn::connected_devices connected_devices;
+
+      connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+          .product_id = pqrs::hid::product_id::value_t(5678),
+          .location_id = krbn::location_id(200),
+          .serial_number = "serial2",
+          .transport = "Bluetooth",
+          .device_address = "aa-bb-cc-dd-ee-02",
+          .is_keyboard = true,
+      }));
+      connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+          .product_id = pqrs::hid::product_id::value_t(5678),
+          .location_id = krbn::location_id(100),
+          .serial_number = "serial1",
+          .transport = "USB",
+          .device_address = "aa-bb-cc-dd-ee-01",
+          .is_keyboard = true,
+      }));
+      connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+          .product_id = pqrs::hid::product_id::value_t(5678),
+          .location_id = krbn::location_id(200),
+          .serial_number = "serial2",
+          .transport = "Bluetooth",
+          .device_address = "aa-bb-cc-dd-ee-02",
+          .is_keyboard = true,
+      }));
+
+      expect(connected_devices.get_devices().size() == 1);
+
+      const auto& device = connected_devices.get_devices()[0];
+      const auto& values = device.get_device_identifier_values_for_ui().get_values();
+      expect(values == std::vector<krbn::connected_device::device_identifier_value_for_ui>{
+                           {
+                               .location_id = krbn::location_id(100),
+                               .device_address = "aa-bb-cc-dd-ee-01",
+                               .serial_number = "serial1",
+                               .transport = "USB",
+                           },
+                           {
+                               .location_id = krbn::location_id(200),
+                               .device_address = "aa-bb-cc-dd-ee-02",
+                               .serial_number = "serial2",
+                               .transport = "Bluetooth",
+                           },
+                       });
+
+      auto restored = nlohmann::json(connected_devices).get<krbn::connected_devices>();
+      const auto& restored_values = restored.get_devices()[0].get_device_identifier_values_for_ui().get_values();
+      expect(restored_values == values);
+    }
+
     {
       std::ifstream ifs("json/connected_devices.json");
       auto expected = krbn::connected_devices(krbn::json_utility::parse_jsonc(ifs));

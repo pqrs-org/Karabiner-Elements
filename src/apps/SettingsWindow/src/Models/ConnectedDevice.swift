@@ -8,6 +8,13 @@ struct ConnectedDeviceCapabilities: Decodable {
   let logitechHidpp: LogitechHidpp?
 }
 
+struct DeviceIdentifierValueForUI: Decodable {
+  let locationId: UInt64?
+  let deviceAddress: String?
+  let serialNumber: String?
+  let transport: String?
+}
+
 @MainActor
 class ConnectedDevice: Identifiable, Equatable, Hashable {
   nonisolated let id: String
@@ -20,6 +27,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
   let vendorId: UInt64
   let productId: UInt64
   let deviceAddress: String
+  let deviceIdentifierValuesForUI: [DeviceIdentifierValueForUI]
   let isKeyboard: Bool
   let isPointingDevice: Bool
   let isGamePad: Bool
@@ -52,6 +60,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
       vendorId: 0,
       productId: 0,
       deviceAddress: "",
+      deviceIdentifierValuesForUI: [],
       isKeyboard: false,
       isPointingDevice: false,
       isGamePad: false,
@@ -74,6 +83,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     vendorId: UInt64,
     productId: UInt64,
     deviceAddress: String,
+    deviceIdentifierValuesForUI: [DeviceIdentifierValueForUI],
     isKeyboard: Bool,
     isPointingDevice: Bool,
     isGamePad: Bool,
@@ -93,6 +103,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     self.vendorId = vendorId
     self.productId = productId
     self.deviceAddress = deviceAddress
+    self.deviceIdentifierValuesForUI = deviceIdentifierValuesForUI
     self.isKeyboard = isKeyboard
     self.isPointingDevice = isPointingDevice
     self.isGamePad = isGamePad

@@ -162,15 +162,32 @@ struct DevicesView: View {
       static let labelColumnWidth = labelWidth + cellPadding * 2.0
       static let valueWidth =
         tableWidth - labelColumnWidth - separatorWidth - cellPadding * 2.0
+      static let valueColumnWidth = valueWidth + cellPadding * 2.0
     }
 
     private struct Row {
       let label: String
-      let value: String
+      let values: [String]
     }
 
-    @ObservedObject private var settings = Settings.shared
     let connectedDevice: ConnectedDevice
+
+    private func uniqueValues<T: Hashable>(_ values: [T]) -> [T] {
+      var seen: Set<T> = []
+      return values.filter { seen.insert($0).inserted }
+    }
+
+    private func displayValues<T: Hashable>(
+      _ values: [T],
+      formatter: (T) -> String
+    ) -> [String] {
+      uniqueValues(values).map(formatter)
+    }
+
+    private var transports: [String] {
+      uniqueValues(
+        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.transport).filter { !$0.isEmpty })
+    }
 
     private var rows: [Row] {
       var result: [Row] = []
@@ -179,8 +196,9 @@ struct DevicesView: View {
         result.append(
           Row(
             label: "settings.devices.vendor_id",
-            value:
+            values: [
               "\(connectedDevice.vendorId) (\(String(format: "0x%04x", connectedDevice.vendorId)))"
+            ]
           ))
       }
 
@@ -188,52 +206,61 @@ struct DevicesView: View {
         result.append(
           Row(
             label: "settings.devices.product_id",
-            value:
+            values: [
               "\(connectedDevice.productId) (\(String(format: "0x%04x", connectedDevice.productId)))"
+            ]
           ))
       }
 
-      if !connectedDevice.deviceAddress.isEmpty {
+      let deviceAddresses = displayValues(
+        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.deviceAddress).filter {
+          !$0.isEmpty
+        },
+        formatter: { $0 }
+      )
+      if !deviceAddresses.isEmpty {
         result.append(
           Row(
             label: "settings.devices.address",
-            value: connectedDevice.deviceAddress))
+            values: deviceAddresses))
       }
 
-      if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
-        "location_id"), connectedDevice.locationId != 0
-      {
+      let locationIds = displayValues(
+        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.locationId).filter { $0 != 0 },
+        formatter: { "\($0) (\(String(format: "0x%08llx", $0)))" }
+      )
+      if !locationIds.isEmpty {
         result.append(
           Row(
             label: "settings.devices.location_id",
-            value:
-              "\(connectedDevice.locationId) (\(String(format: "0x%08llx", connectedDevice.locationId)))"
-          ))
+            values: locationIds))
       }
 
-      if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
-        "serial_number"), !connectedDevice.serialNumber.isEmpty
-      {
+      let serialNumbers = displayValues(
+        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.serialNumber).filter {
+          !$0.isEmpty
+        },
+        formatter: { $0 }
+      )
+      if !serialNumbers.isEmpty {
         result.append(
           Row(
             label: "settings.devices.serial_number",
-            value: connectedDevice.serialNumber))
+            values: serialNumbers))
       }
 
-      if settings.configuration.globalConfiguration.additionalDeviceIdentifierFields.contains(
-        "transport"), !connectedDevice.transport.isEmpty
-      {
+      if !transports.isEmpty {
         result.append(
           Row(
             label: "settings.devices.transport",
-            value: connectedDevice.transport))
+            values: transports))
       }
 
       return result
     }
 
     var body: some View {
-      if connectedDevice.transport != "FIFO" {
+      if transports != ["FIFO"] {
         VStack(alignment: .leading, spacing: 0.0) {
           ForEach(Array(rows.enumerated()), id: \.element.label) { index, row in
             HStack(alignment: .top, spacing: 0.0) {
@@ -244,10 +271,20 @@ struct DevicesView: View {
               Color.clear
                 .frame(width: Layout.separatorWidth, height: 0.0)
 
-              Text(row.value)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(width: Layout.valueWidth, alignment: .topLeading)
-                .padding(Layout.cellPadding)
+              VStack(alignment: .leading, spacing: 0.0) {
+                ForEach(Array(row.values.enumerated()), id: \.offset) { index, value in
+                  Text(value)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(width: Layout.valueWidth, alignment: .topLeading)
+                    .padding(Layout.cellPadding)
+
+                  if index < row.values.count - 1 {
+                    Divider()
+                      .frame(width: Layout.valueColumnWidth)
+                  }
+                }
+              }
             }
             .overlay(alignment: .topLeading) {
               Rectangle()

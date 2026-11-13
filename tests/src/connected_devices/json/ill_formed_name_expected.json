@@ -7,6 +7,11 @@
             "vendor_id": 1234
         },
         "manufacturer": "test !",
+        "device_identifier_values_for_ui": [
+            {
+                "transport": "USB"
+            }
+        ],
         "product": "test !",
         "transport": "USB"
     }

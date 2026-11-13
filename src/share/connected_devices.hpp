@@ -25,17 +25,18 @@ public:
                        });
   }
 
-  void push_back_device(
+  connected_device& push_back_device(
       pqrs::not_null_shared_ptr_t<device_properties> properties,
       const connected_device_capabilities& capabilities = connected_device_capabilities()) {
-    if (contains(properties->get_device_identifiers())) {
-      return;
+    for (auto& device : devices_) {
+      if (device.properties->get_device_identifiers() == properties->get_device_identifiers()) {
+        device.get_device_identifier_values_for_ui().add(*properties);
+        return device;
+      }
     }
 
-    auto device = connected_device{
-        .properties = properties,
-        .capabilities = capabilities,
-    };
+    auto device = connected_device(properties,
+                                   capabilities);
     auto position = std::lower_bound(
         devices_.begin(),
         devices_.end(),
@@ -43,7 +44,8 @@ public:
         [](const auto& a, const auto& b) {
           return a.properties->compare(*b.properties);
         });
-    devices_.insert(position, std::move(device));
+    return *devices_.insert(position,
+                            std::move(device));
   }
 
   void clear() {
@@ -64,8 +66,13 @@ inline void from_json(const nlohmann::json& json, connected_devices& value) {
       capabilities = connected_device_capabilities::make_connected_device_capabilities(*it);
     }
 
-    value.push_back_device(device_properties::make_device_properties(j),
-                           capabilities);
+    auto& device = value.push_back_device(device_properties::make_device_properties(j),
+                                          capabilities);
+
+    if (auto it = j.find("device_identifier_values_for_ui");
+        it != j.end()) {
+      it->get_to(device.get_device_identifier_values_for_ui());
+    }
   }
 }
 
@@ -78,6 +85,11 @@ inline void to_json(nlohmann::json& json, const connected_devices& value) {
     auto capabilities_json = device.capabilities.to_json();
     if (!capabilities_json.empty()) {
       device_json["connected_device_capabilities"] = std::move(capabilities_json);
+    }
+
+    const auto& values = device.get_device_identifier_values_for_ui().get_values();
+    if (!values.empty()) {
+      device_json["device_identifier_values_for_ui"] = device.get_device_identifier_values_for_ui();
     }
 
     json.push_back(std::move(device_json));
