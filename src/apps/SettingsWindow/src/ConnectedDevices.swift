@@ -78,6 +78,8 @@ final class ConnectedDevices: ObservableObject {
         let deviceIdentifierValuesForUI =
           payload.deviceIdentifierValuesForUi ?? [
             DeviceIdentifierValueForUI(
+              vendorId: payload.deviceIdentifiers.vendorId,
+              productId: payload.deviceIdentifiers.productId,
               locationId: payload.locationId,
               deviceAddress: payload.deviceIdentifiers.deviceAddress,
               serialNumber: payload.serialNumber,

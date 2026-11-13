@@ -65,7 +65,8 @@ struct DevicesView: View {
                 }
                 .frame(minWidth: 0.0, maxWidth: .infinity, alignment: .leading)
 
-                DeviceIdentifiers(connectedDevice: connectedDevice)
+                DeviceIdentifiers(
+                  deviceIdentifierValuesForUI: connectedDevice.deviceIdentifierValuesForUI)
               }
               .if(connectedDevice.isVirtualDevice) {
                 $0.foregroundColor(Color(NSColor.placeholderTextColor))
@@ -155,9 +156,9 @@ struct DevicesView: View {
 
   struct DeviceIdentifiers: View {
     private enum Layout {
-      static let tableWidth: CGFloat = 240.0
+      static let tableWidth: CGFloat = 280.0
       static let cellPadding: CGFloat = 4.0
-      static let labelWidth: CGFloat = 70.0
+      static let labelWidth: CGFloat = 90.0
       static let separatorWidth: CGFloat = 1.0
       static let labelColumnWidth = labelWidth + cellPadding * 2.0
       static let valueWidth =
@@ -170,7 +171,7 @@ struct DevicesView: View {
       let values: [String]
     }
 
-    let connectedDevice: ConnectedDevice
+    let deviceIdentifierValuesForUI: [DeviceIdentifierValueForUI]
 
     private func uniqueValues<T: Hashable>(_ values: [T]) -> [T] {
       var seen: Set<T> = []
@@ -186,34 +187,36 @@ struct DevicesView: View {
 
     private var transports: [String] {
       uniqueValues(
-        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.transport).filter { !$0.isEmpty })
+        deviceIdentifierValuesForUI.compactMap(\.transport).filter { !$0.isEmpty })
     }
 
     private var rows: [Row] {
       var result: [Row] = []
 
-      if connectedDevice.vendorId != 0 {
+      let vendorIds = displayValues(
+        deviceIdentifierValuesForUI.compactMap(\.vendorId).filter { $0 != 0 },
+        formatter: { "\($0) (\(String(format: "0x%04x", $0)))" }
+      )
+      if !vendorIds.isEmpty {
         result.append(
           Row(
             label: "settings.devices.vendor_id",
-            values: [
-              "\(connectedDevice.vendorId) (\(String(format: "0x%04x", connectedDevice.vendorId)))"
-            ]
-          ))
+            values: vendorIds))
       }
 
-      if connectedDevice.productId != 0 {
+      let productIds = displayValues(
+        deviceIdentifierValuesForUI.compactMap(\.productId).filter { $0 != 0 },
+        formatter: { "\($0) (\(String(format: "0x%04x", $0)))" }
+      )
+      if !productIds.isEmpty {
         result.append(
           Row(
             label: "settings.devices.product_id",
-            values: [
-              "\(connectedDevice.productId) (\(String(format: "0x%04x", connectedDevice.productId)))"
-            ]
-          ))
+            values: productIds))
       }
 
       let deviceAddresses = displayValues(
-        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.deviceAddress).filter {
+        deviceIdentifierValuesForUI.compactMap(\.deviceAddress).filter {
           !$0.isEmpty
         },
         formatter: { $0 }
@@ -226,7 +229,7 @@ struct DevicesView: View {
       }
 
       let locationIds = displayValues(
-        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.locationId).filter { $0 != 0 },
+        deviceIdentifierValuesForUI.compactMap(\.locationId).filter { $0 != 0 },
         formatter: { "\($0) (\(String(format: "0x%08llx", $0)))" }
       )
       if !locationIds.isEmpty {
@@ -237,7 +240,7 @@ struct DevicesView: View {
       }
 
       let serialNumbers = displayValues(
-        connectedDevice.deviceIdentifierValuesForUI.compactMap(\.serialNumber).filter {
+        deviceIdentifierValuesForUI.compactMap(\.serialNumber).filter {
           !$0.isEmpty
         },
         formatter: { $0 }

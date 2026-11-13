@@ -9,7 +9,9 @@
         "manufacturer": "manufacturer1",
         "device_identifier_values_for_ui": [
             {
-                "transport": "USB"
+                "product_id": 5678,
+                "transport": "USB",
+                "vendor_id": 1234
             }
         ],
         "product": "product1",
@@ -25,7 +27,9 @@
         "manufacturer": "manufacturer2",
         "device_identifier_values_for_ui": [
             {
-                "transport": "USB"
+                "product_id": 5679,
+                "transport": "USB",
+                "vendor_id": 1234
             }
         ],
         "product": "product2",
@@ -41,7 +45,9 @@
         "manufacturer": "manufacturer3",
         "device_identifier_values_for_ui": [
             {
-                "transport": "USB"
+                "product_id": 6789,
+                "transport": "USB",
+                "vendor_id": 2345
             }
         ],
         "product": "product3",
@@ -58,7 +64,9 @@
         "device_identifier_values_for_ui": [
             {
                 "device_address": "ec-ba-73-21-e6-f4",
-                "transport": "Bluetooth"
+                "product_id": 678,
+                "transport": "Bluetooth",
+                "vendor_id": 123
             }
         ],
         "product": "product4",
@@ -75,7 +83,9 @@
         "device_identifier_values_for_ui": [
             {
                 "device_address": "ec-ba-73-21-e6-f4",
-                "transport": "Bluetooth"
+                "product_id": 678,
+                "transport": "Bluetooth",
+                "vendor_id": 123
             }
         ],
         "product": "product4",

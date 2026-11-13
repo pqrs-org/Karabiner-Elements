@@ -13,6 +13,8 @@
 namespace krbn {
 struct connected_device final {
   struct device_identifier_value_for_ui final {
+    pqrs::hid::vendor_id::value_t vendor_id{0};
+    pqrs::hid::product_id::value_t product_id{0};
     location_id location_id{0};
     std::string device_address;
     std::string serial_number;
@@ -21,7 +23,9 @@ struct connected_device final {
     bool operator==(const device_identifier_value_for_ui&) const = default;
 
     [[nodiscard]] bool empty() const {
-      return location_id == krbn::location_id(0) &&
+      return vendor_id == pqrs::hid::vendor_id::value_t(0) &&
+             product_id == pqrs::hid::product_id::value_t(0) &&
+             location_id == krbn::location_id(0) &&
              device_address.empty() &&
              serial_number.empty() &&
              transport.empty();
@@ -37,6 +41,8 @@ struct connected_device final {
   public:
     void add(const device_properties& value) {
       add(device_identifier_value_for_ui{
+          .vendor_id = value.get_device_identifiers().get_vendor_id(),
+          .product_id = value.get_device_identifiers().get_product_id(),
           .location_id = value.get_location_id(),
           .device_address = value.get_device_address(),
           .serial_number = value.get_serial_number(),
@@ -55,6 +61,12 @@ struct connected_device final {
         std::sort(std::begin(values_),
                   std::end(values_),
                   [](const auto& a, const auto& b) {
+                    if (a.vendor_id != b.vendor_id) {
+                      return a.vendor_id < b.vendor_id;
+                    }
+                    if (a.product_id != b.product_id) {
+                      return a.product_id < b.product_id;
+                    }
                     if (a.device_address != b.device_address) {
                       return a.device_address < b.device_address;
                     }
@@ -114,7 +126,15 @@ inline void from_json(const nlohmann::json& json,
     connected_device::device_identifier_value_for_ui identifier_value;
 
     for (const auto& [key, v] : entry.items()) {
-      if (key == "location_id") {
+      if (key == "vendor_id") {
+        pqrs::json::requires_number(v, "`device_identifier_values_for_ui.vendor_id`");
+        identifier_value.vendor_id = v.get<pqrs::hid::vendor_id::value_t>();
+
+      } else if (key == "product_id") {
+        pqrs::json::requires_number(v, "`device_identifier_values_for_ui.product_id`");
+        identifier_value.product_id = v.get<pqrs::hid::product_id::value_t>();
+
+      } else if (key == "location_id") {
         pqrs::json::requires_number(v, "`device_identifier_values_for_ui.location_id`");
         identifier_value.location_id = location_id(v.get<uint64_t>());
 
@@ -146,6 +166,12 @@ inline void to_json(nlohmann::json& json,
   for (const auto& v : value.get_values()) {
     nlohmann::json entry;
 
+    if (v.vendor_id != pqrs::hid::vendor_id::value_t(0)) {
+      entry["vendor_id"] = v.vendor_id;
+    }
+    if (v.product_id != pqrs::hid::product_id::value_t(0)) {
+      entry["product_id"] = v.product_id;
+    }
     if (v.location_id != location_id(0)) {
       entry["location_id"] = type_safe::get(v.location_id);
     }

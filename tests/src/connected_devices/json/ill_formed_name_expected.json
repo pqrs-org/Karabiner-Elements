@@ -9,7 +9,9 @@
         "manufacturer": "test !",
         "device_identifier_values_for_ui": [
             {
-                "transport": "USB"
+                "product_id": 5678,
+                "transport": "USB",
+                "vendor_id": 1234
             }
         ],
         "product": "test !",

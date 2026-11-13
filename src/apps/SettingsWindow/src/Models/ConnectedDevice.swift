@@ -9,6 +9,8 @@ struct ConnectedDeviceCapabilities: Decodable {
 }
 
 struct DeviceIdentifierValueForUI: Decodable {
+  let vendorId: UInt64?
+  let productId: UInt64?
   let locationId: UInt64?
   let deviceAddress: String?
   let serialNumber: String?
