@@ -142,6 +142,9 @@ private let accessibilityObserverCallback: AXObserverCallback = { _, _, _, refco
     return
   }
 
+  // An AX notification only triggers a fresh snapshot; it never applies state
+  // captured from the observed application. A delayed notification from a
+  // previously frontmost application therefore refreshes the current one.
   let callbackGeneration = Int(bitPattern: refcon)
   Task { @MainActor in
     PQRSOSXAccessibility.Monitor.shared.scheduleAccessibilityNotificationRefresh(

@@ -5,6 +5,8 @@
 import AppKit
 import ApplicationServices
 
+typealias AXAttributeReader = (AXUIElement, CFString) -> (AXError, CFTypeRef?)
+
 public enum PQRSOSXAccessibility {
   public typealias MonitorCallback =
     @Sendable @convention(c) (
@@ -125,15 +127,23 @@ struct FocusedUIElement: Sendable, Equatable {
   }
 
   @MainActor
-  init(_ context: FocusedUIElementAXContext, processIdentifier: pid_t?) {
+  init(
+    _ context: FocusedUIElementAXContext,
+    processIdentifier: pid_t?,
+    // Dependency injection for testing.
+    copyValue: AXAttributeReader = copyAttributeValue,
+    // Dependency injection for testing.
+    readFallbackWindowGeometry: @MainActor (pid_t) -> WindowGeometry? = copyFrontmostWindowGeometry
+  ) {
     let element = context.element
 
-    role = copyAttribute(element, kAXRoleAttribute as CFString)
-    subrole = copyAttribute(element, kAXSubroleAttribute as CFString)
-    roleDescription = copyAttribute(element, kAXRoleDescriptionAttribute as CFString)
-    title = copyAttribute(element, kAXTitleAttribute as CFString)
-    description = copyAttribute(element, kAXDescriptionAttribute as CFString)
-    identifier = copyAttribute(element, kAXIdentifierAttribute as CFString)
+    role = copyNonEmptyStringAttribute(element, kAXRoleAttribute as CFString, copyValue: copyValue)
+    subrole = copyAttribute(element, kAXSubroleAttribute as CFString, copyValue: copyValue)
+    roleDescription = copyAttribute(
+      element, kAXRoleDescriptionAttribute as CFString, copyValue: copyValue)
+    title = copyAttribute(element, kAXTitleAttribute as CFString, copyValue: copyValue)
+    description = copyAttribute(element, kAXDescriptionAttribute as CFString, copyValue: copyValue)
+    identifier = copyAttribute(element, kAXIdentifierAttribute as CFString, copyValue: copyValue)
 
     let windowElement = context.elementWindow ?? context.focusedWindow
 
@@ -141,12 +151,12 @@ struct FocusedUIElement: Sendable, Equatable {
 
     let axWindowGeometry =
       windowElement
-      .map(copyWindowGeometry(_:))
+      .map { copyWindowGeometry($0, copyValue: copyValue) }
       .flatMap { $0.isEmpty ? nil : $0 }
 
     let fallbackWindowGeometry: WindowGeometry? =
       if axWindowGeometry == nil, let processIdentifier {
-        copyFrontmostWindowGeometry(processIdentifier)
+        readFallbackWindowGeometry(processIdentifier)
       } else {
         nil
       }
@@ -175,18 +185,25 @@ struct FocusedUIElementAXContext {
   let windowTitle: String?
   let titleNotificationElements: [AXUIElement]
 
-  init(element: AXUIElement, applicationElement: AXUIElement?) {
+  init(
+    element: AXUIElement,
+    applicationElement: AXUIElement?,
+    // Dependency injection for testing.
+    copyValue: AXAttributeReader = copyAttributeValue
+  ) {
     self.element = element
     let topLevelUIElement: AXUIElement? = copyAttribute(
       element,
-      kAXTopLevelUIElementAttribute as CFString
+      kAXTopLevelUIElementAttribute as CFString,
+      copyValue: copyValue
     )
     let elementWindow: AXUIElement? = copyAttribute(
       element,
-      kAXWindowAttribute as CFString
+      kAXWindowAttribute as CFString,
+      copyValue: copyValue
     )
     let focusedWindow: AXUIElement? = applicationElement.flatMap {
-      copyAttribute($0, kAXFocusedWindowAttribute as CFString)
+      copyAttribute($0, kAXFocusedWindowAttribute as CFString, copyValue: copyValue)
     }
 
     self.topLevelUIElement = topLevelUIElement
@@ -204,7 +221,9 @@ struct FocusedUIElementAXContext {
     var windowTitle: String?
     var windowTitleElement: AXUIElement?
     for candidate in titleCandidates {
-      if let title = copyNonEmptyStringAttribute(candidate, kAXTitleAttribute as CFString) {
+      if let title = copyNonEmptyStringAttribute(
+        candidate, kAXTitleAttribute as CFString, copyValue: copyValue)
+      {
         windowTitle = title
         windowTitleElement = candidate
         break
@@ -319,8 +338,13 @@ func resolveFrontmostApplication(
   }
 }
 
-func copyAttribute<T>(_ element: AXUIElement, _ attribute: CFString) -> T? {
-  let (error, value) = copyAttributeValue(element, attribute)
+func copyAttribute<T>(
+  _ element: AXUIElement,
+  _ attribute: CFString,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> T? {
+  let (error, value) = copyValue(element, attribute)
   guard error == .success, let value else {
     return nil
   }
@@ -328,18 +352,29 @@ func copyAttribute<T>(_ element: AXUIElement, _ attribute: CFString) -> T? {
   return value as? T
 }
 
-func copyNonEmptyStringAttribute(_ element: AXUIElement, _ attribute: CFString) -> String? {
-  guard let value: String = copyAttribute(element, attribute), !value.isEmpty else {
+func copyNonEmptyStringAttribute(
+  _ element: AXUIElement,
+  _ attribute: CFString,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> String? {
+  guard let value: String = copyAttribute(element, attribute, copyValue: copyValue), !value.isEmpty
+  else {
     return nil
   }
 
   return value
 }
 
-func copyAXUIElementAttributeValue(_ element: AXUIElement, _ attribute: CFString) -> (
+func copyAXUIElementAttributeValue(
+  _ element: AXUIElement,
+  _ attribute: CFString,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> (
   AXError, AXUIElement?
 ) {
-  let (error, value) = copyAttributeValue(element, attribute)
+  let (error, value) = copyValue(element, attribute)
   guard error == .success, let value else {
     return (error, nil)
   }
@@ -349,6 +384,27 @@ func copyAXUIElementAttributeValue(_ element: AXUIElement, _ attribute: CFString
   }
 
   return (error, unsafeBitCast(value, to: AXUIElement.self))
+}
+
+func copyApplicationFocusedUIElement(
+  _ applicationElement: AXUIElement,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> AXUIElement? {
+  // Chrome activates its native Accessibility interface when the application's
+  // role is requested. Reading the focused element's role cannot initialise an
+  // interface that has not yet supplied a focused element.
+  _ = copyValue(applicationElement, kAXRoleAttribute as CFString)
+
+  // The role request is best effort: applications may still expose focus when
+  // their application role is unavailable. Initialisation may also complete
+  // asynchronously, in which case the monitor retries on later polling ticks.
+  let (_, focusedUIElement) = copyAXUIElementAttributeValue(
+    applicationElement,
+    kAXFocusedUIElementAttribute as CFString,
+    copyValue: copyValue
+  )
+  return focusedUIElement
 }
 
 func copyAttributeValue(_ element: AXUIElement, _ attribute: CFString) -> (AXError, CFTypeRef?) {
@@ -366,8 +422,13 @@ func copyPid(_ element: AXUIElement) -> pid_t? {
   return pid
 }
 
-func copyCGPointAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGPoint? {
-  guard let value: AXValue = copyAttribute(element, attribute) else {
+func copyCGPointAttribute(
+  _ element: AXUIElement,
+  _ attribute: CFString,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> CGPoint? {
+  guard let value: AXValue = copyAttribute(element, attribute, copyValue: copyValue) else {
     return nil
   }
 
@@ -383,8 +444,13 @@ func copyCGPointAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGPo
   return point
 }
 
-func copyCGSizeAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGSize? {
-  guard let value: AXValue = copyAttribute(element, attribute) else {
+func copyCGSizeAttribute(
+  _ element: AXUIElement,
+  _ attribute: CFString,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> CGSize? {
+  guard let value: AXValue = copyAttribute(element, attribute, copyValue: copyValue) else {
     return nil
   }
 
@@ -400,14 +466,18 @@ func copyCGSizeAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGSiz
   return size
 }
 
-func copyWindowGeometry(_ element: AXUIElement) -> WindowGeometry {
+func copyWindowGeometry(
+  _ element: AXUIElement,
+  // Dependency injection for testing.
+  copyValue: AXAttributeReader = copyAttributeValue
+) -> WindowGeometry {
   let position =
-    copyCGPointAttribute(element, kAXPositionAttribute as CFString)
+    copyCGPointAttribute(element, kAXPositionAttribute as CFString, copyValue: copyValue)
     .map {
       WindowPosition(x: Double($0.x), y: Double($0.y))
     }
   let size =
-    copyCGSizeAttribute(element, kAXSizeAttribute as CFString)
+    copyCGSizeAttribute(element, kAXSizeAttribute as CFString, copyValue: copyValue)
     .map {
       WindowSize(width: Double($0.width), height: Double($0.height))
     }
@@ -528,13 +598,7 @@ func copySnapshot(
 
   let applicationFocusedUIElement: AXUIElement? =
     resolvedApplicationElement
-    .flatMap { applicationElement in
-      let (_, focusedUIElement) = copyAXUIElementAttributeValue(
-        applicationElement,
-        kAXFocusedUIElementAttribute as CFString
-      )
-      return focusedUIElement
-    }
+    .flatMap { copyApplicationFocusedUIElement($0) }
 
   let matchingSystemWideFocusedUIElement: AXUIElement?
   if let element = systemWideFocusedUIElement,
@@ -582,5 +646,6 @@ func copySnapshot(
 // Some transient system UIs such as Spotlight do not reliably surface through
 // app-activation or focused-element notifications, so keep a modest fallback poll.
 let fallbackPollingInterval = Duration.milliseconds(500)
+let focusedUIElementRoleRecoveryMaxPolls = 10
 let staleProcessCleanupInterval = Duration.seconds(10)
 let frontmostWindowGeometryCacheLifetime: TimeInterval = 0.5
