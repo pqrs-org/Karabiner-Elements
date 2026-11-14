@@ -23,6 +23,7 @@
     - Fixed an issue where ISO layout-specific keys (e.g., `` `~ `` / `§±` / `^°` / `²` ↔ `\|` / `<>`, depending on the layout) could produce the wrong characters when CGEventTap fallback was enabled.
 - ⚡️ Improvements
     - Improved text and other UI elements for macOS 27.
+    - Improved focused UI element detection in Google Chrome and Electron-based applications by handling delayed Accessibility initialization. (Thanks to @duanyutong)
     - Added markers for enabled rules in the Complex Modifications assets list. (Thanks to @dhffdh)
     - Improved same-timestamp event reordering for QMK/ZMK keyboards. Modifier releases in the same HID report are now processed before key presses, and events are reordered independently for each device. (Thanks to @Leandros)
     - Changed inter-process communication between Karabiner-Elements processes from UNIX domain sockets to XPC.
