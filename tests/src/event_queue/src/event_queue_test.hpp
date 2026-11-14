@@ -510,6 +510,36 @@ void run_event_queue_test() {
       PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
       expect(event_queue.get_entries() == expected);
     }
+    {
+      krbn::event_queue::queue event_queue;
+
+      // Events from different devices are not reordered even if their timestamps match.
+
+      ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+      ENQUEUE_EVENT(event_queue, 2, 100, left_shift_event, key_down, left_shift_event);
+
+      event_queue.sort_events();
+
+      std::vector<krbn::event_queue::entry> expected;
+      PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
+      PUSH_BACK_ENTRY(expected, 2, 100, left_shift_event, key_down, left_shift_event);
+      expect(event_queue.get_entries() == expected);
+    }
+    {
+      krbn::event_queue::queue event_queue;
+
+      // A modifier release from another device is not moved before a key press.
+
+      ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+      ENQUEUE_EVENT(event_queue, 2, 100, left_shift_event, key_up, left_shift_event);
+
+      event_queue.sort_events();
+
+      std::vector<krbn::event_queue::entry> expected;
+      PUSH_BACK_ENTRY(expected, 1, 100, a_event, key_down, a_event);
+      PUSH_BACK_ENTRY(expected, 2, 100, left_shift_event, key_up, left_shift_event);
+      expect(event_queue.get_entries() == expected);
+    }
   };
 
   "needs_swap"_test = [] {

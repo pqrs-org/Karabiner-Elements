@@ -300,7 +300,10 @@ public:
     // macOS sends the slash keydown before the shift keyup here too, and the slash would be shifted.
     // Thus, a modifier keyup is reordered after released keys, but before pressed keys.
 
-    if (v1.get_event_time_stamp().get_time_stamp() == v2.get_event_time_stamp().get_time_stamp()) {
+    // Timestamps from different devices do not establish an ordering between
+    // their events. Reorder only events that belong to the same device.
+    if (v1.get_device_id() == v2.get_device_id() &&
+        v1.get_event_time_stamp().get_time_stamp() == v2.get_event_time_stamp().get_time_stamp()) {
       auto e1 = v1.get_event().get_if<momentary_switch_event>();
       auto e2 = v2.get_event().get_if<momentary_switch_event>();
 
