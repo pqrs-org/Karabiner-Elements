@@ -22,26 +22,41 @@ private func syncMainActorCall(_ operation: @MainActor () -> Void) {
 @_cdecl("pqrs_osx_accessibility_monitor_set_callback")
 func PQRSOSXAccessibilityMonitorSetCallback(
   _ callback: @escaping PQRSOSXAccessibility.MonitorCallback,
-  _ monitoring: UnsafePointer<pqrs_osx_accessibility_monitoring>
+  _ monitoring: UnsafePointer<pqrs_osx_accessibility_monitoring>,
+  _ generation: UInt64
 ) {
   syncMainActorCall {
     PQRSOSXAccessibility.Monitor.shared.setCallback(
       callback,
-      monitoringOptions: AccessibilityMonitoringOptions(monitoring.pointee)
+      monitoringOptions: AccessibilityMonitoringOptions(monitoring.pointee),
+      generation: generation
+    )
+  }
+}
+
+@_cdecl("pqrs_osx_accessibility_monitor_set_monitoring")
+func PQRSOSXAccessibilityMonitorSetMonitoring(
+  _ monitoring: UnsafePointer<pqrs_osx_accessibility_monitoring>,
+  _ generation: UInt64
+) {
+  syncMainActorCall {
+    PQRSOSXAccessibility.Monitor.shared.setMonitoringOptions(
+      AccessibilityMonitoringOptions(monitoring.pointee),
+      generation: generation
     )
   }
 }
 
 @_cdecl("pqrs_osx_accessibility_monitor_unset_callback")
-func PQRSOSXAccessibilityMonitorUnsetCallback() {
+func PQRSOSXAccessibilityMonitorUnsetCallback(_ generation: UInt64) {
   syncMainActorCall {
-    PQRSOSXAccessibility.Monitor.shared.unsetCallback()
+    PQRSOSXAccessibility.Monitor.shared.unsetCallback(generation: generation)
   }
 }
 
 @_cdecl("pqrs_osx_accessibility_monitor_trigger")
-func PQRSOSXAccessibilityMonitorTrigger() {
+func PQRSOSXAccessibilityMonitorTrigger(_ generation: UInt64) {
   syncMainActorCall {
-    PQRSOSXAccessibility.Monitor.shared.trigger()
+    PQRSOSXAccessibility.Monitor.shared.trigger(generation: generation)
   }
 }

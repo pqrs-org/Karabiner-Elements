@@ -49,9 +49,12 @@ typedef struct {
 } pqrs_osx_accessibility_monitoring;
 
 void pqrs_osx_accessibility_monitor_set_callback(pqrs_osx_accessibility_monitor_callback callback,
-                                                 const pqrs_osx_accessibility_monitoring* monitoring);
-void pqrs_osx_accessibility_monitor_unset_callback(void);
-void pqrs_osx_accessibility_monitor_trigger(void);
+                                                 const pqrs_osx_accessibility_monitoring* monitoring,
+                                                 uint64_t generation);
+void pqrs_osx_accessibility_monitor_set_monitoring(const pqrs_osx_accessibility_monitoring* monitoring,
+                                                   uint64_t generation);
+void pqrs_osx_accessibility_monitor_unset_callback(uint64_t generation);
+void pqrs_osx_accessibility_monitor_trigger(uint64_t generation);
 
 #ifdef __cplusplus
 }

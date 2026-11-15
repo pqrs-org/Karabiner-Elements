@@ -296,6 +296,7 @@ extension PQRSOSXAccessibility {
       @MainActor (AccessibilityMonitoringOptions) -> ObservationController?
 
     private var callback: MonitorCallback?
+    private var generation: UInt64?
     private var monitoringOptions: AccessibilityMonitoringOptions = []
     private var accessibilityNotificationRefreshTask: Task<Void, Never>?
     private var accessibilityNotificationRefreshScheduleState =
@@ -330,13 +331,15 @@ extension PQRSOSXAccessibility {
 
     func setCallback(
       _ callback: @escaping MonitorCallback,
-      monitoringOptions: AccessibilityMonitoringOptions
+      monitoringOptions: AccessibilityMonitoringOptions,
+      generation: UInt64
     ) {
       if self.callback == nil {
         callbackGeneration += 1
       }
 
       self.callback = callback
+      self.generation = generation
       self.monitoringOptions = monitoringOptions
 
       if observationController == nil {
@@ -362,9 +365,14 @@ extension PQRSOSXAccessibility {
       }
     }
 
-    func unsetCallback() {
+    func unsetCallback(generation: UInt64) {
+      if self.generation != generation {
+        return
+      }
+
       callbackGeneration += 1
       callback = nil
+      self.generation = nil
       monitoringOptions = []
       cancelScheduledAccessibilityNotificationRefresh()
       fallbackPollingTask?.cancel()
@@ -382,7 +390,39 @@ extension PQRSOSXAccessibility {
       frontmostWindowGeometryCache.removeAll()
     }
 
-    func trigger() {
+    func setMonitoringOptions(
+      _ monitoringOptions: AccessibilityMonitoringOptions,
+      generation: UInt64
+    ) {
+      // Keep the complete transition on MainActor so that it is serialized with
+      // setCallback and unsetCallback. The generation check prevents a delayed
+      // operation from an old C++ monitor from changing a newer monitor.
+      guard let callback else {
+        return
+      }
+
+      if self.generation != generation {
+        return
+      }
+
+      guard self.monitoringOptions != monitoringOptions else {
+        return
+      }
+
+      unsetCallback(generation: generation)
+      setCallback(
+        callback,
+        monitoringOptions: monitoringOptions,
+        generation: generation
+      )
+      trigger(generation: generation)
+    }
+
+    func trigger(generation: UInt64) {
+      if self.generation != generation {
+        return
+      }
+
       requestRefresh(force: true)
     }
 

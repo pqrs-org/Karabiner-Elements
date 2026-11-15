@@ -7,6 +7,7 @@
 #include "application.hpp"
 #include "focused_ui_element.hpp"
 #include "impl/impl.h"
+#include <atomic>
 #include <cstdlib>
 #include <functional>
 #include <memory>
@@ -38,6 +39,8 @@ public:
     // notifications. No per-application AXObserver is created when this and
     // focused_ui_element are both disabled.
     bool focused_window{true};
+
+    bool operator==(const configuration&) const = default;
   };
 
 private:
@@ -65,11 +68,22 @@ private:
         .focused_window = configuration.focused_window,
     };
     pqrs_osx_accessibility_monitor_set_callback(static_cpp_callback,
-                                                &monitoring);
+                                                &monitoring,
+                                                generation_);
   }
 
-  void unregister_callback_and_detach() {
-    pqrs_osx_accessibility_monitor_unset_callback();
+  void unregister_callback() {
+    pqrs_osx_accessibility_monitor_unset_callback(generation_);
+  }
+
+  void activate(const configuration& configuration) {
+    register_callback(configuration);
+    active_.store(true);
+  }
+
+  void terminate_and_detach() {
+    active_.store(false);
+    unregister_callback();
 
     detach_from_dispatcher();
   }
@@ -126,7 +140,7 @@ public:
     // Registering the callback synchronously enters Swift on MainActor. Do not
     // hold shared_monitor_mutex_ here because the callback can re-enter
     // static_cpp_callback and acquire it via get_shared_monitor().
-    m->register_callback(configuration);
+    m->activate(configuration);
   }
 
   static void terminate_shared_monitor() {
@@ -145,7 +159,7 @@ public:
       // monitor alive. Cleanup must not be deferred to the destructor because
       // another shared_ptr could make the destructor run later on an arbitrary
       // thread.
-      m->unregister_callback_and_detach();
+      m->terminate_and_detach();
     }
   }
 
@@ -162,7 +176,29 @@ public:
   // Retrieves a snapshot of the current state, then asynchronously invokes the signals.
   // A typical use is to call this right after setting the signals.
   void trigger() {
-    pqrs_osx_accessibility_monitor_trigger();
+    if (active_.load()) {
+      pqrs_osx_accessibility_monitor_trigger(generation_);
+    }
+  }
+
+  // Rebuilds the Swift monitoring internals while preserving this C++ monitor
+  // and its signal connections. Existing AX observers, Workspace observers,
+  // polling tasks, and cached snapshots are synchronously cleared before the
+  // new configuration is applied.
+  void set_configuration(const configuration& configuration) {
+    // A caller may still hold a shared_ptr after terminate_shared_monitor.
+    // Never let such a stale reference reactivate the process-wide Swift monitor.
+    if (!active_.load()) {
+      return;
+    }
+
+    pqrs_osx_accessibility_monitoring monitoring{
+        .frontmost_application = configuration.frontmost_application,
+        .focused_ui_element = configuration.focused_ui_element,
+        .focused_window = configuration.focused_window,
+    };
+    pqrs_osx_accessibility_monitor_set_monitoring(&monitoring,
+                                                  generation_);
   }
 
 private:
@@ -268,8 +304,12 @@ private:
 
   static inline std::shared_ptr<monitor> shared_monitor_;
   static inline std::mutex shared_monitor_mutex_;
+  // Distinguishes delayed operations from a previous shared monitor instance.
+  static inline std::atomic_uint64_t next_generation_{1};
 
   pqrs::not_null_shared_ptr_t<application> last_application_{std::make_shared<application>()};
   pqrs::not_null_shared_ptr_t<focused_ui_element> last_focused_ui_element_{std::make_shared<focused_ui_element>()};
+  const uint64_t generation_{next_generation_.fetch_add(1)};
+  std::atomic_bool active_{false};
 };
 } // namespace pqrs::osx::accessibility
