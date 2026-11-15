@@ -80,28 +80,64 @@ struct ExpertView: View {
 
         GroupBox(label: AppLocalizedText("settings.expert.additional_device_identifier_fields")) {
           VStack(alignment: .leading, spacing: 8.0) {
-            Toggle(
-              localized("settings.expert.device_identifier_field.device_address"),
-              isOn: additionalDeviceIdentifierFieldBinding("device_address")
-            )
+            Toggle(isOn: additionalDeviceIdentifierFieldBinding("device_address")) {
+              AppLocalizedText([
+                "settings.expert.device_identifier_field.device_address",
+                " ",
+                .init(
+                  "settings.general.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.additionalDeviceIdentifierFields.contains(
+                        "device_address") ? "shared.value.on" : "shared.value.off")
+                  ]),
+              ])
+            }
             .toggleStyle(.checkbox)
 
-            Toggle(
-              localized("settings.expert.device_identifier_field.location_id"),
-              isOn: additionalDeviceIdentifierFieldBinding("location_id")
-            )
+            Toggle(isOn: additionalDeviceIdentifierFieldBinding("location_id")) {
+              AppLocalizedText([
+                "settings.expert.device_identifier_field.location_id",
+                " ",
+                .init(
+                  "settings.general.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.additionalDeviceIdentifierFields.contains(
+                        "location_id") ? "shared.value.on" : "shared.value.off")
+                  ]),
+              ])
+            }
             .toggleStyle(.checkbox)
 
-            Toggle(
-              localized("settings.expert.device_identifier_field.serial_number"),
-              isOn: additionalDeviceIdentifierFieldBinding("serial_number")
-            )
+            Toggle(isOn: additionalDeviceIdentifierFieldBinding("serial_number")) {
+              AppLocalizedText([
+                "settings.expert.device_identifier_field.serial_number",
+                " ",
+                .init(
+                  "settings.general.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.additionalDeviceIdentifierFields.contains(
+                        "serial_number") ? "shared.value.on" : "shared.value.off")
+                  ]),
+              ])
+            }
             .toggleStyle(.checkbox)
 
-            Toggle(
-              localized("settings.expert.device_identifier_field.transport"),
-              isOn: additionalDeviceIdentifierFieldBinding("transport")
-            )
+            Toggle(isOn: additionalDeviceIdentifierFieldBinding("transport")) {
+              AppLocalizedText([
+                "settings.expert.device_identifier_field.transport",
+                " ",
+                .init(
+                  "settings.general.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.additionalDeviceIdentifierFields.contains(
+                        "transport") ? "shared.value.on" : "shared.value.off")
+                  ]),
+              ])
+            }
             .toggleStyle(.checkbox)
 
             AppLocalizedLabel(
@@ -119,11 +155,22 @@ struct ExpertView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(
-                localized("settings.expert.accessibility_monitoring.frontmost_application"),
                 isOn: $settings.configuration.globalConfiguration.accessibilityMonitoring
                   .frontmostApplication
-              )
-              .toggleStyle(.checkbox)
+              ) {
+                AppLocalizedText([
+                  "settings.expert.accessibility_monitoring.frontmost_application",
+                  " ",
+                  .init(
+                    "settings.general.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.globalConfiguration.accessibilityMonitoring.frontmostApplication
+                          ? "shared.value.on" : "shared.value.off")
+                    ]),
+                ])
+              }
+              .switchToggleStyle()
 
               AppLocalizedText(
                 "settings.expert.accessibility_monitoring.frontmost_application_description"
@@ -131,16 +178,26 @@ struct ExpertView: View {
               .font(.caption)
               .foregroundColor(.secondary)
               .fixedSize(horizontal: false, vertical: true)
-              .padding(.leading, 20.0)
             }
 
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(
-                localized("settings.expert.accessibility_monitoring.focused_window"),
                 isOn: $settings.configuration.globalConfiguration.accessibilityMonitoring
                   .focusedWindow
-              )
-              .toggleStyle(.checkbox)
+              ) {
+                AppLocalizedText([
+                  "settings.expert.accessibility_monitoring.focused_window",
+                  " ",
+                  .init(
+                    "settings.general.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.globalConfiguration.accessibilityMonitoring.focusedWindow
+                          ? "shared.value.on" : "shared.value.off")
+                    ]),
+                ])
+              }
+              .switchToggleStyle()
 
               AppLocalizedText(
                 "settings.expert.accessibility_monitoring.focused_window_description"
@@ -148,16 +205,26 @@ struct ExpertView: View {
               .font(.caption)
               .foregroundColor(.secondary)
               .fixedSize(horizontal: false, vertical: true)
-              .padding(.leading, 20.0)
             }
 
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(
-                localized("settings.expert.accessibility_monitoring.focused_ui_element"),
                 isOn: $settings.configuration.globalConfiguration.accessibilityMonitoring
                   .focusedUiElement
-              )
-              .toggleStyle(.checkbox)
+              ) {
+                AppLocalizedText([
+                  "settings.expert.accessibility_monitoring.focused_ui_element",
+                  " ",
+                  .init(
+                    "settings.general.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.globalConfiguration.accessibilityMonitoring.focusedUiElement
+                          ? "shared.value.on" : "shared.value.off")
+                    ]),
+                ])
+              }
+              .switchToggleStyle()
 
               AppLocalizedText(
                 "settings.expert.accessibility_monitoring.focused_ui_element_description"
@@ -165,7 +232,6 @@ struct ExpertView: View {
               .font(.caption)
               .foregroundColor(.secondary)
               .fixedSize(horizontal: false, vertical: true)
-              .padding(.leading, 20.0)
             }
           }
           .padding()
