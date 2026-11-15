@@ -18,6 +18,28 @@
 
 namespace pqrs::osx::accessibility {
 class monitor final : public dispatcher::extra::dispatcher_client {
+public:
+  // Selects the Accessibility features used by the monitor.
+  struct configuration final {
+    // Supplements NSWorkspace frontmost-application detection by polling the
+    // system-wide Accessibility focused application and focused UI element.
+    // When disabled, frontmost-application changes are still detected through
+    // NSWorkspace. If all three features are disabled, the monitor performs no
+    // Accessibility queries and uses NSWorkspace alone.
+    bool frontmost_application{true};
+
+    // Reads focused-element attributes such as role, subrole, title,
+    // description, and identifier, and registers
+    // kAXFocusedUIElementChangedNotification on applications.
+    bool focused_ui_element{true};
+
+    // Reads the focused window's title, position, and size, and registers the
+    // relevant focused-window, main-window, move, resize, and title
+    // notifications. No per-application AXObserver is created when this and
+    // focused_ui_element are both disabled.
+    bool focused_window{true};
+  };
+
 private:
   // Keep the guard first so member initialization failures also detach.
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
@@ -36,8 +58,14 @@ private:
     dispatcher_client_constructor_exception_guard_.initialize();
   }
 
-  void register_callback() {
-    pqrs_osx_accessibility_monitor_set_callback(static_cpp_callback);
+  void register_callback(const configuration& configuration) {
+    pqrs_osx_accessibility_monitoring monitoring{
+        .frontmost_application = configuration.frontmost_application,
+        .focused_ui_element = configuration.focused_ui_element,
+        .focused_window = configuration.focused_window,
+    };
+    pqrs_osx_accessibility_monitor_set_callback(static_cpp_callback,
+                                                &monitoring);
   }
 
   void unregister_callback_and_detach() {
@@ -71,6 +99,12 @@ public:
   // destroy the monitor while its dispatcher callback is still running.
   // Scheduling termination as a separate dispatcher task avoids both issues.
   static void initialize_shared_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) {
+    initialize_shared_monitor(weak_dispatcher,
+                              configuration{});
+  }
+
+  static void initialize_shared_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                                        const configuration& configuration) {
     auto m = std::shared_ptr<monitor>(new monitor(weak_dispatcher));
 
     {
@@ -92,7 +126,7 @@ public:
     // Registering the callback synchronously enters Swift on MainActor. Do not
     // hold shared_monitor_mutex_ here because the callback can re-enter
     // static_cpp_callback and acquire it via get_shared_monitor().
-    m->register_callback();
+    m->register_callback(configuration);
   }
 
   static void terminate_shared_monitor() {

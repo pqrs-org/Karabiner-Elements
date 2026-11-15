@@ -276,6 +276,7 @@ extension PQRSOSXAccessibility {
     typealias SnapshotReader =
       @MainActor (
         _ cachedApplication: FrontmostApplication?,
+        _ monitoringOptions: AccessibilityMonitoringOptions,
         _ resolveProcessIdentifiers: (FrontmostProcessIdentifiers) ->
           FrontmostProcessIdentifierResolution,
         _ handleProcessIdentifier: (pid_t?, DetectionSource) -> Void
@@ -286,13 +287,16 @@ extension PQRSOSXAccessibility {
     // Dependency injection for testing.
     private let readSnapshot: SnapshotReader
     // Dependency injection for testing.
-    private let readProcessIdentifiers: @MainActor () -> FrontmostProcessIdentifiers
+    private let readProcessIdentifiers:
+      @MainActor (AccessibilityMonitoringOptions) -> FrontmostProcessIdentifiers
     // Dependency injection for testing.
     private let readWindowGeometry: @MainActor (pid_t) -> WindowGeometry?
     // Dependency injection for testing.
-    private let makeObservationController: @MainActor () -> ObservationController?
+    private let makeObservationController:
+      @MainActor (AccessibilityMonitoringOptions) -> ObservationController?
 
     private var callback: MonitorCallback?
+    private var monitoringOptions: AccessibilityMonitoringOptions = []
     private var accessibilityNotificationRefreshTask: Task<Void, Never>?
     private var accessibilityNotificationRefreshScheduleState =
       PQRSOSXAccessibility.AccessibilityNotificationRefreshScheduleState()
@@ -308,13 +312,15 @@ extension PQRSOSXAccessibility {
 
     init(
       readSnapshot: @escaping SnapshotReader = copySnapshot,
-      readProcessIdentifiers: @escaping @MainActor () -> FrontmostProcessIdentifiers =
+      readProcessIdentifiers:
+        @escaping @MainActor (AccessibilityMonitoringOptions) -> FrontmostProcessIdentifiers =
         PQRSOSXAccessibility.copyFrontmostProcessIdentifiers,
       readWindowGeometry: @escaping @MainActor (pid_t) -> WindowGeometry? =
         copyFrontmostWindowGeometry,
-      makeObservationController: @escaping @MainActor () -> ObservationController? = {
-        ObservationController()
-      }
+      makeObservationController:
+        @escaping @MainActor (AccessibilityMonitoringOptions) -> ObservationController? = {
+          ObservationController(monitoringOptions: $0)
+        }
     ) {
       self.readSnapshot = readSnapshot
       self.readProcessIdentifiers = readProcessIdentifiers
@@ -322,15 +328,19 @@ extension PQRSOSXAccessibility {
       self.makeObservationController = makeObservationController
     }
 
-    func setCallback(_ callback: @escaping MonitorCallback) {
+    func setCallback(
+      _ callback: @escaping MonitorCallback,
+      monitoringOptions: AccessibilityMonitoringOptions
+    ) {
       if self.callback == nil {
         callbackGeneration += 1
       }
 
       self.callback = callback
+      self.monitoringOptions = monitoringOptions
 
       if observationController == nil {
-        observationController = makeObservationController()
+        observationController = makeObservationController(monitoringOptions)
       }
 
       let callbackGeneration = callbackGeneration
@@ -355,6 +365,7 @@ extension PQRSOSXAccessibility {
     func unsetCallback() {
       callbackGeneration += 1
       callback = nil
+      monitoringOptions = []
       cancelScheduledAccessibilityNotificationRefresh()
       fallbackPollingTask?.cancel()
       fallbackPollingTask = nil
@@ -428,6 +439,7 @@ extension PQRSOSXAccessibility {
         let observationController = observationController
         let result = readSnapshot(
           cachedApplication,
+          monitoringOptions,
           { processIdentifiers in
             self.processIdentifierObservations.observe(processIdentifiers)
               .resolution
@@ -443,10 +455,12 @@ extension PQRSOSXAccessibility {
           frontmostProcessIdentifier: result.snapshot.application?.processIdentifier,
           titleNotificationElements: result.titleNotificationElements
         )
-        focusedUIElementRetryState.update(
-          processIdentifier: result.snapshot.application?.processIdentifier,
-          focusedRole: result.snapshot.focusedUIElement?.role
-        )
+        if monitoringOptions.contains(.focusedUIElement) {
+          focusedUIElementRetryState.update(
+            processIdentifier: result.snapshot.application?.processIdentifier,
+            focusedRole: result.snapshot.focusedUIElement?.role
+          )
+        }
 
         if force || result.snapshot != lastSnapshot {
           commitSnapshotAndEmit(result.snapshot, force: force)
@@ -541,7 +555,7 @@ extension PQRSOSXAccessibility {
         return
       }
 
-      let processIdentifiers = readProcessIdentifiers()
+      let processIdentifiers = readProcessIdentifiers(monitoringOptions)
       // Check for an application switch before consuming a focused-element retry.
       // A refresh reads the current frontmost application, and updating the retry
       // state with its PID cancels the previous application's retry attempt.
@@ -552,7 +566,7 @@ extension PQRSOSXAccessibility {
         return
       }
 
-      if focusedUIElementRetryState.takeRetry() {
+      if monitoringOptions.contains(.focusedUIElement), focusedUIElementRetryState.takeRetry() {
         // A recovery snapshot also acquires geometry and available titles, so
         // it replaces the lightweight checks below at the cost of extra AX work.
         requestRefresh(force: false)
@@ -563,7 +577,8 @@ extension PQRSOSXAccessibility {
       // Compare only the Core Graphics geometry on each polling tick and avoid
       // querying the remaining snapshot fields when it actually changes.
       var geometryUpdatedSnapshot: Snapshot?
-      if let applicationProcessIdentifier = lastSnapshot.application?.processIdentifier,
+      if monitoringOptions.contains(.focusedWindow),
+        let applicationProcessIdentifier = lastSnapshot.application?.processIdentifier,
         let focusedUIElement = lastSnapshot.focusedUIElement,
         focusedUIElement.windowGeometrySource == .coreGraphics
       {
@@ -586,9 +601,11 @@ extension PQRSOSXAccessibility {
       // avoid building a full snapshot until the value actually changes. If title
       // and geometry change in the same tick, the full refresh also incorporates
       // the new geometry from the Core Graphics cache.
-      if observationController?.windowTitleNeedsRefresh(
-        currentWindowTitle: lastSnapshot.focusedUIElement?.windowTitle
-      ) == true {
+      if monitoringOptions.contains(.focusedWindow),
+        observationController?.windowTitleNeedsRefresh(
+          currentWindowTitle: lastSnapshot.focusedUIElement?.windowTitle
+        ) == true
+      {
         requestRefresh(force: false)
         return
       }

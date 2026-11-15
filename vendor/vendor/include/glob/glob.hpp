@@ -213,7 +213,12 @@ bool has_magic(const std::string &pathname) {
 
 static inline 
 bool is_hidden(const std::string &pathname) {
-  return std::regex_match(pathname, std::regex("^(.*\\/)*\\.[^\\.\\/]+\\/*$"));
+  // like Python, a path is hidden when its last component starts with a dot
+  const auto end = pathname.find_last_not_of('/');
+  if (end == std::string::npos)
+    return false;
+  const auto slash = pathname.find_last_of('/', end);
+  return pathname[slash == std::string::npos ? 0 : slash + 1] == '.';
 }
 
 static inline 
@@ -294,8 +299,10 @@ std::vector<fs::path> glob1(const fs::path &dirname, const std::string &pattern,
   // std::cout << "In glob1\n";
   auto names = iter_directory(dirname, dironly);
   std::vector<fs::path> filtered_names;
+  // like Python, a pattern that starts with a dot may match hidden names
+  const bool pattern_is_hidden = !pattern.empty() && pattern[0] == '.';
   for (auto &n : names) {
-    if (!is_hidden(n.string())) {
+    if (pattern_is_hidden || !is_hidden(n.string())) {
       filtered_names.push_back(n.filename());
       // if (n.is_relative()) {
       //   // std::cout << "Filtered (Relative): " << n << "\n";

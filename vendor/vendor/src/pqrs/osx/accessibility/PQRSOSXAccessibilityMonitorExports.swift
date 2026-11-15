@@ -21,10 +21,14 @@ private func syncMainActorCall(_ operation: @MainActor () -> Void) {
 
 @_cdecl("pqrs_osx_accessibility_monitor_set_callback")
 func PQRSOSXAccessibilityMonitorSetCallback(
-  _ callback: @escaping PQRSOSXAccessibility.MonitorCallback
+  _ callback: @escaping PQRSOSXAccessibility.MonitorCallback,
+  _ monitoring: UnsafePointer<pqrs_osx_accessibility_monitoring>
 ) {
   syncMainActorCall {
-    PQRSOSXAccessibility.Monitor.shared.setCallback(callback)
+    PQRSOSXAccessibility.Monitor.shared.setCallback(
+      callback,
+      monitoringOptions: AccessibilityMonitoringOptions(monitoring.pointee)
+    )
   }
 }
 

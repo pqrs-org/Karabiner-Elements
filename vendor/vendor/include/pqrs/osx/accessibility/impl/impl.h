@@ -4,6 +4,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
 
@@ -41,7 +42,14 @@ typedef struct {
 typedef void (*pqrs_osx_accessibility_monitor_callback)(int32_t force,
                                                         const pqrs_osx_accessibility_snapshot* snapshot);
 
-void pqrs_osx_accessibility_monitor_set_callback(pqrs_osx_accessibility_monitor_callback callback);
+typedef struct {
+  bool frontmost_application;
+  bool focused_ui_element;
+  bool focused_window;
+} pqrs_osx_accessibility_monitoring;
+
+void pqrs_osx_accessibility_monitor_set_callback(pqrs_osx_accessibility_monitor_callback callback,
+                                                 const pqrs_osx_accessibility_monitoring* monitoring);
 void pqrs_osx_accessibility_monitor_unset_callback(void);
 void pqrs_osx_accessibility_monitor_trigger(void);
 

@@ -15,6 +15,31 @@ public enum PQRSOSXAccessibility {
     ) -> Void
 }
 
+struct AccessibilityMonitoringOptions: OptionSet, Sendable {
+  let rawValue: UInt32
+
+  static let frontmostApplication = Self(rawValue: 1 << 0)
+  static let focusedUIElement = Self(rawValue: 1 << 1)
+  static let focusedWindow = Self(rawValue: 1 << 2)
+
+  init(rawValue: UInt32) {
+    self.rawValue = rawValue
+  }
+
+  init(_ monitoring: pqrs_osx_accessibility_monitoring) {
+    self = []
+    if monitoring.frontmost_application {
+      insert(.frontmostApplication)
+    }
+    if monitoring.focused_ui_element {
+      insert(.focusedUIElement)
+    }
+    if monitoring.focused_window {
+      insert(.focusedWindow)
+    }
+  }
+}
+
 enum DetectionSource: Int32, Sendable, Equatable {
   case none = 0
   case workspace = 1
@@ -116,6 +141,59 @@ struct FocusedUIElement: Sendable, Equatable {
     windowPosition = windowGeometry?.position
     windowSize = windowGeometry?.size
     windowGeometrySource = windowGeometry?.isEmpty == false ? .coreGraphics : .none
+  }
+
+  @MainActor
+  init(
+    element: AXUIElement,
+    copyValue: AXAttributeReader = copyAttributeValue
+  ) {
+    role = copyNonEmptyStringAttribute(element, kAXRoleAttribute as CFString, copyValue: copyValue)
+    subrole = copyAttribute(element, kAXSubroleAttribute as CFString, copyValue: copyValue)
+    roleDescription = copyAttribute(
+      element, kAXRoleDescriptionAttribute as CFString, copyValue: copyValue)
+    title = copyAttribute(element, kAXTitleAttribute as CFString, copyValue: copyValue)
+    description = copyAttribute(element, kAXDescriptionAttribute as CFString, copyValue: copyValue)
+    identifier = copyAttribute(element, kAXIdentifierAttribute as CFString, copyValue: copyValue)
+    windowTitle = nil
+    windowPosition = nil
+    windowSize = nil
+    windowGeometrySource = .none
+  }
+
+  @MainActor
+  init(
+    windowElement: AXUIElement?,
+    processIdentifier: pid_t?,
+    copyValue: AXAttributeReader = copyAttributeValue,
+    readFallbackWindowGeometry: @MainActor (pid_t) -> WindowGeometry? = copyFrontmostWindowGeometry
+  ) {
+    role = nil
+    subrole = nil
+    roleDescription = nil
+    title = nil
+    description = nil
+    identifier = nil
+    windowTitle = windowElement.flatMap {
+      copyNonEmptyStringAttribute($0, kAXTitleAttribute as CFString, copyValue: copyValue)
+    }
+
+    let axWindowGeometry =
+      windowElement
+      .map { copyWindowGeometry($0, copyValue: copyValue) }
+      .flatMap { $0.isEmpty ? nil : $0 }
+    let fallbackWindowGeometry: WindowGeometry? =
+      if axWindowGeometry == nil, let processIdentifier {
+        readFallbackWindowGeometry(processIdentifier)
+      } else {
+        nil
+      }
+    let windowGeometry = axWindowGeometry ?? fallbackWindowGeometry
+    windowPosition = windowGeometry?.position
+    windowSize = windowGeometry?.size
+    windowGeometrySource =
+      axWindowGeometry != nil
+      ? .ax : (fallbackWindowGeometry != nil ? .coreGraphics : .none)
   }
 
   func updatingCoreGraphicsWindowGeometry(_ windowGeometry: WindowGeometry?) -> Self {
@@ -268,7 +346,16 @@ extension PQRSOSXAccessibility {
   }
 
   @MainActor
-  static func copyFrontmostProcessIdentifiers() -> FrontmostProcessIdentifiers {
+  static func copyFrontmostProcessIdentifiers(
+    monitoringOptions: AccessibilityMonitoringOptions = [.frontmostApplication]
+  ) -> FrontmostProcessIdentifiers {
+    guard monitoringOptions.contains(.frontmostApplication) else {
+      return makeFrontmostProcessIdentifiers(
+        applicationElement: nil,
+        systemWideFocusedUIElement: nil,
+        workspaceFrontmostApplication: NSWorkspace.shared.frontmostApplication
+      )
+    }
     let systemWideElement = AXUIElementCreateSystemWide()
     let (_, applicationElement) = copyAXUIElementAttributeValue(
       systemWideElement,
@@ -560,24 +647,75 @@ struct SnapshotCopyResult {
   let titleNotificationElements: [AXUIElement]
 }
 
+// Dependency injection for testing.
+struct SnapshotCopyDependencies {
+  let readWorkspaceFrontmostApplication: @MainActor () -> NSRunningApplication?
+  let createSystemWideElement: () -> AXUIElement
+  let createApplicationElement: (pid_t) -> AXUIElement
+  let copyValue: AXAttributeReader
+  let readFallbackWindowGeometry: @MainActor (pid_t) -> WindowGeometry?
+
+  static let live = Self(
+    readWorkspaceFrontmostApplication: { NSWorkspace.shared.frontmostApplication },
+    createSystemWideElement: AXUIElementCreateSystemWide,
+    createApplicationElement: AXUIElementCreateApplication,
+    copyValue: copyAttributeValue,
+    readFallbackWindowGeometry: copyFrontmostWindowGeometry
+  )
+}
+
 @MainActor
 func copySnapshot(
   cachedApplication: FrontmostApplication?,
+  monitoringOptions: AccessibilityMonitoringOptions,
   resolveProcessIdentifiers: (
     PQRSOSXAccessibility.FrontmostProcessIdentifiers
   ) -> PQRSOSXAccessibility.FrontmostProcessIdentifierResolution,
   handleProcessIdentifier: (pid_t?, DetectionSource) -> Void
 ) -> SnapshotCopyResult {
-  let systemWideElement = AXUIElementCreateSystemWide()
-  let workspaceFrontmostApplication = NSWorkspace.shared.frontmostApplication
-  let (_, applicationElement) = copyAXUIElementAttributeValue(
-    systemWideElement,
-    kAXFocusedApplicationAttribute as CFString
+  copySnapshot(
+    cachedApplication: cachedApplication,
+    monitoringOptions: monitoringOptions,
+    resolveProcessIdentifiers: resolveProcessIdentifiers,
+    handleProcessIdentifier: handleProcessIdentifier,
+    dependencies: .live
   )
-  let (_, systemWideFocusedUIElement) = copyAXUIElementAttributeValue(
-    systemWideElement,
-    kAXFocusedUIElementAttribute as CFString
-  )
+}
+
+@MainActor
+func copySnapshot(
+  cachedApplication: FrontmostApplication?,
+  monitoringOptions: AccessibilityMonitoringOptions,
+  resolveProcessIdentifiers: (
+    PQRSOSXAccessibility.FrontmostProcessIdentifiers
+  ) -> PQRSOSXAccessibility.FrontmostProcessIdentifierResolution,
+  handleProcessIdentifier: (pid_t?, DetectionSource) -> Void,
+  // Dependency injection for testing.
+  dependencies: SnapshotCopyDependencies
+) -> SnapshotCopyResult {
+  let workspaceFrontmostApplication = dependencies.readWorkspaceFrontmostApplication()
+  let usesAXFrontmostApplication = monitoringOptions.contains(.frontmostApplication)
+  let readsFocusedUIElement = monitoringOptions.contains(.focusedUIElement)
+  let readsFocusedWindow = monitoringOptions.contains(.focusedWindow)
+  let systemWideElement =
+    usesAXFrontmostApplication
+    ? dependencies.createSystemWideElement() : nil
+  let applicationElement =
+    systemWideElement.flatMap {
+      copyAXUIElementAttributeValue(
+        $0,
+        kAXFocusedApplicationAttribute as CFString,
+        copyValue: dependencies.copyValue
+      ).1
+    }
+  let systemWideFocusedUIElement =
+    systemWideElement.flatMap {
+      copyAXUIElementAttributeValue(
+        $0,
+        kAXFocusedUIElementAttribute as CFString,
+        copyValue: dependencies.copyValue
+      ).1
+    }
 
   let processIdentifiers = PQRSOSXAccessibility.makeFrontmostProcessIdentifiers(
     applicationElement: applicationElement,
@@ -593,12 +731,17 @@ func copySnapshot(
   )
 
   let resolvedApplicationElement =
-    resolvedApplication?.processIdentifier
-    .map(AXUIElementCreateApplication)
+    readsFocusedUIElement || readsFocusedWindow
+    ? resolvedApplication?.processIdentifier
+      .map(dependencies.createApplicationElement)
+    : nil
 
   let applicationFocusedUIElement: AXUIElement? =
-    resolvedApplicationElement
-    .flatMap { copyApplicationFocusedUIElement($0) }
+    readsFocusedUIElement
+    ? resolvedApplicationElement.flatMap {
+      copyApplicationFocusedUIElement($0, copyValue: dependencies.copyValue)
+    }
+    : nil
 
   let matchingSystemWideFocusedUIElement: AXUIElement?
   if let element = systemWideFocusedUIElement,
@@ -612,23 +755,41 @@ func copySnapshot(
 
   let focusedElement: FocusedUIElement?
   let titleNotificationElements: [AXUIElement]
-  if let element = applicationFocusedUIElement ?? matchingSystemWideFocusedUIElement {
-    let context = FocusedUIElementAXContext(
-      element: element,
-      applicationElement: resolvedApplicationElement ?? applicationElement
-    )
-    focusedElement = FocusedUIElement(
-      context, processIdentifier: resolvedApplication?.processIdentifier)
-    titleNotificationElements = context.titleNotificationElements
-  } else if let processIdentifier = resolvedApplication?.processIdentifier {
-    let fallbackWindowGeometry = copyFrontmostWindowGeometry(processIdentifier)
-
-    if fallbackWindowGeometry?.isEmpty == false {
-      focusedElement = FocusedUIElement(windowGeometry: fallbackWindowGeometry)
+  if readsFocusedUIElement,
+    let element = applicationFocusedUIElement ?? matchingSystemWideFocusedUIElement
+  {
+    if readsFocusedWindow {
+      let context = FocusedUIElementAXContext(
+        element: element,
+        applicationElement: resolvedApplicationElement ?? applicationElement,
+        copyValue: dependencies.copyValue
+      )
+      focusedElement = FocusedUIElement(
+        context,
+        processIdentifier: resolvedApplication?.processIdentifier,
+        copyValue: dependencies.copyValue,
+        readFallbackWindowGeometry: dependencies.readFallbackWindowGeometry
+      )
+      titleNotificationElements = context.titleNotificationElements
     } else {
-      focusedElement = nil
+      focusedElement = FocusedUIElement(element: element, copyValue: dependencies.copyValue)
+      titleNotificationElements = []
     }
-    titleNotificationElements = []
+  } else if readsFocusedWindow {
+    let focusedWindow: AXUIElement? = resolvedApplicationElement.flatMap {
+      copyAttribute(
+        $0,
+        kAXFocusedWindowAttribute as CFString,
+        copyValue: dependencies.copyValue
+      )
+    }
+    focusedElement = FocusedUIElement(
+      windowElement: focusedWindow,
+      processIdentifier: resolvedApplication?.processIdentifier,
+      copyValue: dependencies.copyValue,
+      readFallbackWindowGeometry: dependencies.readFallbackWindowGeometry
+    )
+    titleNotificationElements = focusedWindow.map { [$0] } ?? []
   } else {
     focusedElement = nil
     titleNotificationElements = []

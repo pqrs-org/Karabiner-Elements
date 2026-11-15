@@ -5,13 +5,23 @@
 import AppKit
 import ApplicationServices
 
-private let observedAccessibilityNotifications: [CFString] = [
-  kAXFocusedUIElementChangedNotification as CFString,
-  kAXFocusedWindowChangedNotification as CFString,
-  kAXMainWindowChangedNotification as CFString,
-  kAXWindowMovedNotification as CFString,
-  kAXWindowResizedNotification as CFString,
-]
+func observedAccessibilityNotifications(
+  monitoringOptions: AccessibilityMonitoringOptions
+) -> [CFString] {
+  var result: [CFString] = []
+  if monitoringOptions.contains(.focusedUIElement) {
+    result.append(kAXFocusedUIElementChangedNotification as CFString)
+  }
+  if monitoringOptions.contains(.focusedWindow) {
+    result.append(contentsOf: [
+      kAXFocusedWindowChangedNotification as CFString,
+      kAXMainWindowChangedNotification as CFString,
+      kAXWindowMovedNotification as CFString,
+      kAXWindowResizedNotification as CFString,
+    ])
+  }
+  return result
+}
 
 private let accessibilityNotificationRetryClock = ContinuousClock()
 private let accessibilityNotificationRetryInterval = Duration.seconds(10)
@@ -99,7 +109,7 @@ func accessibilityNotificationRemoveDisposition(
 private struct AccessibilityObserverRegistration {
   let observer: AXObserver
   let applicationElement: AXUIElement
-  var applicationNotificationsToRetry = observedAccessibilityNotifications
+  var applicationNotificationsToRetry: [CFString]
   var applicationNotificationRetryAfter: ContinuousClock.Instant?
   var requestedTitleNotificationElements: [AXUIElement] = []
   var titleNotificationElements: [AXUIElement] = []
@@ -153,9 +163,18 @@ private let accessibilityObserverCallback: AXObserverCallback = { _, _, _, refco
   }
 }
 
+typealias AXObserverCreator = (
+  pid_t,
+  AXObserverCallback,
+  UnsafeMutablePointer<AXObserver?>
+) -> AXError
+
 extension PQRSOSXAccessibility {
   @MainActor
   final class ObservationController {
+    private let monitoringOptions: AccessibilityMonitoringOptions
+    // Dependency injection for testing.
+    private let createObserver: AXObserverCreator
     private var activationObserver: NSObjectProtocol?
     private var terminationObserver: NSObjectProtocol?
     // PIDs that have been observed through NSWorkspace activation notifications.
@@ -168,6 +187,15 @@ extension PQRSOSXAccessibility {
     private var frontmostProcessIdentifier: pid_t?
     private var frontmostTitleNotificationElements: [AXUIElement] = []
     private var callbackGeneration = 0
+
+    init(
+      monitoringOptions: AccessibilityMonitoringOptions,
+      // Dependency injection for testing.
+      createObserver: @escaping AXObserverCreator = AXObserverCreate
+    ) {
+      self.monitoringOptions = monitoringOptions
+      self.createObserver = createObserver
+    }
 
     func start(callbackGeneration: Int) {
       guard activationObserver == nil, terminationObserver == nil else {
@@ -315,9 +343,14 @@ extension PQRSOSXAccessibility {
       self.frontmostProcessIdentifier = frontmostProcessIdentifier
       frontmostTitleNotificationElements = titleNotificationElements
 
-      var targetPIDs = observerManagedPIDs.subtracting(workspaceKnownPIDs)
+      let observesApplication =
+        monitoringOptions.contains(.focusedUIElement)
+        || monitoringOptions.contains(.focusedWindow)
+      var targetPIDs: Set<pid_t> =
+        observesApplication
+        ? observerManagedPIDs.subtracting(workspaceKnownPIDs) : []
 
-      if let frontmostProcessIdentifier, frontmostProcessIdentifier != 0 {
+      if observesApplication, let frontmostProcessIdentifier, frontmostProcessIdentifier != 0 {
         targetPIDs.insert(frontmostProcessIdentifier)
       }
 
@@ -336,7 +369,8 @@ extension PQRSOSXAccessibility {
         syncApplicationNotifications(processIdentifier: processIdentifier)
         syncTitleNotifications(
           processIdentifier: processIdentifier,
-          elements: processIdentifier == frontmostProcessIdentifier
+          elements: monitoringOptions.contains(.focusedWindow)
+            && processIdentifier == frontmostProcessIdentifier
             ? titleNotificationElements : []
         )
       }
@@ -401,7 +435,7 @@ extension PQRSOSXAccessibility {
       }
 
       var observer: AXObserver?
-      let error = AXObserverCreate(processIdentifier, accessibilityObserverCallback, &observer)
+      let error = createObserver(processIdentifier, accessibilityObserverCallback, &observer)
       guard error == .success, let observer else {
         scheduleObserverAttachmentRetry(processIdentifier: processIdentifier)
         return
@@ -412,7 +446,10 @@ extension PQRSOSXAccessibility {
       let applicationElement = AXUIElementCreateApplication(processIdentifier)
       var registration = AccessibilityObserverRegistration(
         observer: observer,
-        applicationElement: applicationElement
+        applicationElement: applicationElement,
+        applicationNotificationsToRetry: observedAccessibilityNotifications(
+          monitoringOptions: monitoringOptions
+        )
       )
       guard attemptApplicationNotificationRegistration(&registration) else {
         scheduleObserverAttachmentRetry(processIdentifier: processIdentifier)
