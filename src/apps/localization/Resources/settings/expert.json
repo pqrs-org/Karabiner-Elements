@@ -1,4 +1,39 @@
 {
+    "settings.expert.accessibility_monitoring": {
+        "en": "Accessibility monitoring"
+        ,"ja": "アクセシビリティ監視"
+        ,"zh-Hans": "辅助功能监控"
+    },
+    "settings.expert.accessibility_monitoring.focused_ui_element": {
+        "en": "Monitor the focused UI element"
+        ,"ja": "フォーカス中のUI要素を監視"
+        ,"zh-Hans": "监控当前聚焦的界面元素"
+    },
+    "settings.expert.accessibility_monitoring.focused_ui_element_description": {
+        "en": "Uses per-application Accessibility information to monitor changes to the focused UI element, including role, subrole, title, description, and identifier."
+        ,"ja": "アプリケーションごとのアクセシビリティ情報を使用して、フォーカス中のUI要素の変更、およびrole・subrole・title・description・identifierを監視します。"
+        ,"zh-Hans": "使用各应用程序的辅助功能信息来监控聚焦界面元素的变化以及 role、subrole、title、description 和 identifier。"
+    },
+    "settings.expert.accessibility_monitoring.focused_window": {
+        "en": "Monitor the focused window"
+        ,"ja": "フォーカス中のウインドウを監視"
+        ,"zh-Hans": "监控当前聚焦的窗口"
+    },
+    "settings.expert.accessibility_monitoring.focused_window_description": {
+        "en": "Uses per-application Accessibility information to monitor changes to the focused window, including its title, position, and size."
+        ,"ja": "アプリケーションごとのアクセシビリティ情報を使用して、フォーカス中のウインドウの変更、およびタイトル・位置・サイズを監視します。"
+        ,"zh-Hans": "使用各应用程序的辅助功能信息来监控聚焦窗口的变化以及标题、位置和大小。"
+    },
+    "settings.expert.accessibility_monitoring.frontmost_application": {
+        "en": "Improve frontmost application detection using Accessibility"
+        ,"ja": "アクセシビリティを使用して最前面アプリケーションの検出を補完"
+        ,"zh-Hans": "使用辅助功能改进最前端应用程序检测"
+    },
+    "settings.expert.accessibility_monitoring.frontmost_application_description": {
+        "en": "Uses system-wide Accessibility information to detect system overlays such as Spotlight that ordinary application-switch detection may miss."
+        ,"ja": "システム全体のアクセシビリティ情報を使用して、通常のアプリ切り替えでは検出できないことがあるSpotlightなどのシステムオーバーレイを検出します。"
+        ,"zh-Hans": "使用系统范围的辅助功能信息来检测 Spotlight 等可能不会显示为普通应用切换的系统叠加层。"
+    },
     "settings.expert.additional_device_identifier_fields": {
         "en": "Additional device identifier fields"
         ,"ja": "追加のデバイス識別フィールド"

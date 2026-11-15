@@ -50,55 +50,9 @@ public:
             start_core_service_daemon_client();
           });
 
-          //
-          // accessibility_monitor_
-          //
-
-          pqrs::osx::accessibility::monitor::initialize_shared_monitor(pqrs::dispatcher::extra::get_shared_dispatcher());
-          accessibility_monitor_initialized_ = true;
-          if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
-            m->frontmost_application_changed.connect([this](auto&& application_ptr) {
-              if (core_service_daemon_client_) {
-                application a;
-                a.set_bundle_identifier(application_ptr->get_bundle_identifier());
-                a.set_bundle_path(application_ptr->get_bundle_path());
-                a.set_file_path(application_ptr->get_file_path());
-                a.set_pid(application_ptr->get_pid());
-
-                switch (application_ptr->get_detection_source()) {
-                  case pqrs::osx::accessibility::application::detection_source::none:
-                    a.set_detection_source(application::detection_source::none);
-                    break;
-
-                  case pqrs::osx::accessibility::application::detection_source::workspace:
-                    a.set_detection_source(application::detection_source::workspace);
-                    break;
-
-                  case pqrs::osx::accessibility::application::detection_source::ax_observer:
-                    a.set_detection_source(application::detection_source::ax_observer);
-                    break;
-                }
-
-                core_service_daemon_client_->async_frontmost_application_changed(a);
-              }
-            });
-
-            m->focused_ui_element_changed.connect([this](auto&& focused_ui_element_ptr) {
-              if (core_service_daemon_client_) {
-                focused_ui_element e;
-                e.set_role(focused_ui_element_ptr->get_role());
-                e.set_subrole(focused_ui_element_ptr->get_subrole());
-                e.set_title(focused_ui_element_ptr->get_title());
-                e.set_window_title(focused_ui_element_ptr->get_window_title());
-                e.set_window_position_x(focused_ui_element_ptr->get_window_position_x());
-                e.set_window_position_y(focused_ui_element_ptr->get_window_position_y());
-                e.set_window_size_width(focused_ui_element_ptr->get_window_size_width());
-                e.set_window_size_height(focused_ui_element_ptr->get_window_size_height());
-
-                core_service_daemon_client_->async_focused_ui_element_changed(e);
-              }
-            });
-          }
+          // The Accessibility monitor starts after the daemon sends the current
+          // accessibility_monitoring configuration. This avoids briefly attaching
+          // AX observers that the user has disabled.
         },
         [this] {
           cleanup();
@@ -174,6 +128,15 @@ private:
             permission_checker_->enqueue_check_permissions();
             break;
 
+          case operation_type::accessibility_monitoring_changed: {
+            const auto& monitoring = json.at("accessibility_monitoring");
+            set_accessibility_monitoring({
+                .frontmost_application = monitoring.value("frontmost_application", true),
+                .focused_ui_element = monitoring.value("focused_ui_element", true),
+                .focused_window = monitoring.value("focused_window", true),
+            });
+          } break;
+
           default:
             break;
         }
@@ -189,7 +152,76 @@ private:
     core_service_daemon_client_ = nullptr;
   }
 
+  void set_accessibility_monitoring(const pqrs::osx::accessibility::monitor::configuration& value) {
+    if (accessibility_monitor_initialized_) {
+      if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
+        if (accessibility_monitoring_ == std::optional(value)) {
+          return;
+        }
+
+        accessibility_monitoring_ = value;
+        m->set_configuration(value);
+        return;
+      }
+
+      // Recover if the process-wide monitor was unexpectedly terminated.
+      accessibility_monitor_initialized_ = false;
+    }
+
+    accessibility_monitoring_ = value;
+
+    pqrs::osx::accessibility::monitor::initialize_shared_monitor(
+        pqrs::dispatcher::extra::get_shared_dispatcher(),
+        value);
+    accessibility_monitor_initialized_ = true;
+
+    if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
+      m->frontmost_application_changed.connect([this](auto&& application_ptr) {
+        if (core_service_daemon_client_) {
+          application a;
+          a.set_bundle_identifier(application_ptr->get_bundle_identifier());
+          a.set_bundle_path(application_ptr->get_bundle_path());
+          a.set_file_path(application_ptr->get_file_path());
+          a.set_pid(application_ptr->get_pid());
+
+          switch (application_ptr->get_detection_source()) {
+            case pqrs::osx::accessibility::application::detection_source::none:
+              a.set_detection_source(application::detection_source::none);
+              break;
+            case pqrs::osx::accessibility::application::detection_source::workspace:
+              a.set_detection_source(application::detection_source::workspace);
+              break;
+            case pqrs::osx::accessibility::application::detection_source::ax_observer:
+              a.set_detection_source(application::detection_source::ax_observer);
+              break;
+          }
+
+          core_service_daemon_client_->async_frontmost_application_changed(a);
+        }
+      });
+
+      m->focused_ui_element_changed.connect([this](auto&& focused_ui_element_ptr) {
+        if (core_service_daemon_client_) {
+          focused_ui_element e;
+          e.set_role(focused_ui_element_ptr->get_role());
+          e.set_subrole(focused_ui_element_ptr->get_subrole());
+          e.set_title(focused_ui_element_ptr->get_title());
+          e.set_window_title(focused_ui_element_ptr->get_window_title());
+          e.set_window_position_x(focused_ui_element_ptr->get_window_position_x());
+          e.set_window_position_y(focused_ui_element_ptr->get_window_position_y());
+          e.set_window_size_width(focused_ui_element_ptr->get_window_size_width());
+          e.set_window_size_height(focused_ui_element_ptr->get_window_size_height());
+
+          core_service_daemon_client_->async_focused_ui_element_changed(e);
+        }
+      });
+
+      m->trigger();
+    }
+  }
+
   bool accessibility_monitor_initialized_ = false;
+  std::optional<pqrs::osx::accessibility::monitor::configuration> accessibility_monitoring_;
   std::optional<bool> on_console_;
   std::unique_ptr<permission_checker> permission_checker_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;

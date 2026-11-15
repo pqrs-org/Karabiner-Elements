@@ -13,6 +13,10 @@ void run_global_configuration_test() {
                                                                                    krbn::core_configuration::error_handling::strict);
       expect(global_configuration.get_ui_language() == "auto");
       expect(!global_configuration.to_json().contains("ui_language"));
+      expect(global_configuration.get_accessibility_monitoring().get_frontmost_application());
+      expect(global_configuration.get_accessibility_monitoring().get_focused_ui_element());
+      expect(global_configuration.get_accessibility_monitoring().get_focused_window());
+      expect(!global_configuration.to_json().contains("accessibility_monitoring"));
       expect(global_configuration.get_check_for_updates() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -33,6 +37,33 @@ void run_global_configuration_test() {
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(global_configuration.get_enable_cgeventtap_fallback() == false);
       expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 500);
+    }
+
+    // accessibility_monitoring
+    {
+      krbn::core_configuration::details::global_configuration global_configuration(
+          nlohmann::json({
+              {"accessibility_monitoring",
+               {
+                   {"frontmost_application", false},
+                   {"focused_ui_element", false},
+               }},
+          }),
+          krbn::core_configuration::error_handling::strict);
+
+      auto& accessibility_monitoring = global_configuration.get_accessibility_monitoring();
+      expect(!accessibility_monitoring.get_frontmost_application());
+      expect(!accessibility_monitoring.get_focused_ui_element());
+      expect(accessibility_monitoring.get_focused_window());
+      expect(global_configuration.to_json().at("accessibility_monitoring") ==
+             nlohmann::json({
+                 {"frontmost_application", false},
+                 {"focused_ui_element", false},
+             }));
+
+      accessibility_monitoring.set_frontmost_application(true);
+      accessibility_monitoring.set_focused_ui_element(true);
+      expect(!global_configuration.to_json().contains("accessibility_monitoring"));
     }
 
     // additional_device_identifier_fields

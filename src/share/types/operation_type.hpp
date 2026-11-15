@@ -10,6 +10,7 @@ enum class operation_type : uint8_t {
   frontmost_application_changed,
   focused_ui_element_changed,
   // core_service (daemon) -> core_service (agent)
+  accessibility_monitoring_changed,
   refresh_core_service_bundle_permission_check_result,
   // console_user_server -> core_service (daemon)
   console_user_id_changed,
@@ -61,6 +62,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::core_service_bundle_permission_check_result, "core_service_bundle_permission_check_result"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
+        {operation_type::accessibility_monitoring_changed, "accessibility_monitoring_changed"},
         {operation_type::refresh_core_service_bundle_permission_check_result, "refresh_core_service_bundle_permission_check_result"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
         {operation_type::start_device_grabber, "start_device_grabber"},

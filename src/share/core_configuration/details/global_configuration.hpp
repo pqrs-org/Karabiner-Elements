@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../configuration_json_helper.hpp"
+#include "accessibility_monitoring.hpp"
 #include "notification_window_colors.hpp"
 #include <algorithm>
 #include <memory>
@@ -15,7 +16,10 @@ public:
   global_configuration(const nlohmann::json& json,
                        error_handling error_handling)
       : json_(json),
+        accessibility_monitoring_(std::make_shared<accessibility_monitoring>(nlohmann::json::object(), error_handling)),
         notification_window_colors_(std::make_shared<notification_window_colors>(nlohmann::json::object(), error_handling)) {
+    helper_values_.push_back_object<accessibility_monitoring>("accessibility_monitoring",
+                                                              accessibility_monitoring_);
     helper_values_.push_back_value<std::string>("ui_language", ui_language_, "auto");
 
     helper_values_.push_back_value<bool>("check_for_updates",
@@ -113,6 +117,10 @@ public:
 
   [[nodiscard]] const std::string& get_ui_language() const {
     return ui_language_;
+  }
+
+  [[nodiscard]] accessibility_monitoring& get_accessibility_monitoring() const {
+    return *accessibility_monitoring_;
   }
   void set_ui_language(const std::string& value) {
     // Supported languages come from the external localization JSON. Preserve
@@ -245,6 +253,7 @@ public:
 
 private:
   nlohmann::json json_;
+  pqrs::not_null_shared_ptr_t<accessibility_monitoring> accessibility_monitoring_;
   std::string ui_language_;
   bool check_for_updates_;
   bool show_in_menu_bar_;

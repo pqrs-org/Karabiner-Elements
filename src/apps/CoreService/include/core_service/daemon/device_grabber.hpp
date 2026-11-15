@@ -33,6 +33,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/gsl.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
+#include <pqrs/osx/accessibility/monitor.hpp>
 #include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/system_preferences.hpp>
@@ -54,6 +55,7 @@ public:
 
   nod::signal<void()> connected_devices_changed;
   nod::signal<void(const std::string&)> notification_message_changed;
+  nod::signal<void(const pqrs::osx::accessibility::monitor::configuration&)> accessibility_monitoring_changed;
 
   device_grabber(const device_grabber&) = delete;
 
@@ -480,6 +482,13 @@ public:
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {
           core_configuration_ = core_configuration;
+
+          const auto& monitoring = core_configuration_->get_global_configuration().get_accessibility_monitoring();
+          accessibility_monitoring_changed(pqrs::osx::accessibility::monitor::configuration{
+              .frontmost_application = monitoring.get_frontmost_application(),
+              .focused_ui_element = monitoring.get_focused_ui_element(),
+              .focused_window = monitoring.get_focused_window(),
+          });
 
           auto using_system_core_configuration =
               core_configuration_->get_source() == core_configuration::core_configuration::source::system_file;

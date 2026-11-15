@@ -269,6 +269,8 @@ private:
           if (auto m = weak_core_service_daemon_state_manager_.lock()) {
             core_service_agent_peer_id_ = peer_id;
 
+            send_accessibility_monitoring();
+
             // If the required permissions were missing when this process started,
             // and a newly launched process confirms that the permissions are now granted,
             // restart this process.
@@ -573,6 +575,17 @@ private:
       send_notification_message_to_observers();
     });
 
+    accessibility_monitoring_changed_connection_ = device_grabber_->accessibility_monitoring_changed.connect([this](const auto& value) {
+      accessibility_monitoring_ = value;
+      send_accessibility_monitoring();
+
+      if (!value.focused_ui_element &&
+          !value.focused_window) {
+        focused_ui_element_ = focused_ui_element();
+        set_focused_ui_element_variables();
+      }
+    });
+
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     set_focused_ui_element_variables();
@@ -586,12 +599,15 @@ private:
   }
 
   void stop_device_grabber() {
+    accessibility_monitoring_ = std::nullopt;
+
     if (!device_grabber_) {
       return;
     }
 
     connected_devices_changed_connection_.disconnect();
     notification_message_changed_connection_.disconnect();
+    accessibility_monitoring_changed_connection_.disconnect();
     device_grabber_ = nullptr;
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
       m->reset_device_grabber_state();
@@ -766,6 +782,25 @@ private:
         });
   }
 
+  void send_accessibility_monitoring() {
+    if (!core_service_agent_peer_id_ ||
+        !accessibility_monitoring_) {
+      return;
+    }
+
+    async_request(
+        *core_service_agent_peer_id_,
+        nlohmann::json{
+            {"operation_type", operation_type::accessibility_monitoring_changed},
+            {"accessibility_monitoring",
+             {
+                 {"frontmost_application", accessibility_monitoring_->frontmost_application},
+                 {"focused_ui_element", accessibility_monitoring_->focused_ui_element},
+                 {"focused_window", accessibility_monitoring_->focused_window},
+             }},
+        });
+  }
+
   void clear_multitouch_extension_environment_variables() {
     if (device_grabber_) {
       for (const auto& name : multitouch_extension_environment_variable_names) {
@@ -803,6 +838,7 @@ private:
   std::unique_ptr<device_grabber> device_grabber_;
   nod::scoped_connection connected_devices_changed_connection_;
   nod::scoped_connection notification_message_changed_connection_;
+  nod::scoped_connection accessibility_monitoring_changed_connection_;
   std::optional<xpc::peer_id> core_service_agent_peer_id_;
   std::optional<xpc::peer_id> console_user_server_peer_id_;
   std::shared_ptr<console_user_server_peer> console_user_server_peer_;
@@ -814,6 +850,7 @@ private:
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   application frontmost_application_;
   focused_ui_element focused_ui_element_;
+  std::optional<pqrs::osx::accessibility::monitor::configuration> accessibility_monitoring_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
 } // namespace krbn::core_service::daemon

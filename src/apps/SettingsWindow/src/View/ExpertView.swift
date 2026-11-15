@@ -115,6 +115,63 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
+        GroupBox(label: AppLocalizedText("settings.expert.accessibility_monitoring")) {
+          VStack(alignment: .leading, spacing: 12.0) {
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(
+                localized("settings.expert.accessibility_monitoring.frontmost_application"),
+                isOn: $settings.configuration.globalConfiguration.accessibilityMonitoring
+                  .frontmostApplication
+              )
+              .toggleStyle(.checkbox)
+
+              AppLocalizedText(
+                "settings.expert.accessibility_monitoring.frontmost_application_description"
+              )
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .fixedSize(horizontal: false, vertical: true)
+              .padding(.leading, 20.0)
+            }
+
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(
+                localized("settings.expert.accessibility_monitoring.focused_window"),
+                isOn: $settings.configuration.globalConfiguration.accessibilityMonitoring
+                  .focusedWindow
+              )
+              .toggleStyle(.checkbox)
+
+              AppLocalizedText(
+                "settings.expert.accessibility_monitoring.focused_window_description"
+              )
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .fixedSize(horizontal: false, vertical: true)
+              .padding(.leading, 20.0)
+            }
+
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(
+                localized("settings.expert.accessibility_monitoring.focused_ui_element"),
+                isOn: $settings.configuration.globalConfiguration.accessibilityMonitoring
+                  .focusedUiElement
+              )
+              .toggleStyle(.checkbox)
+
+              AppLocalizedText(
+                "settings.expert.accessibility_monitoring.focused_ui_element_description"
+              )
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .fixedSize(horizontal: false, vertical: true)
+              .padding(.leading, 20.0)
+            }
+          }
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
+
         GroupBox(label: AppLocalizedText("settings.expert.cgeventtap_fallback")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {

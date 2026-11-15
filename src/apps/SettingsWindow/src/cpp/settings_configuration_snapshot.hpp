@@ -37,6 +37,7 @@ private:
   // here: it preserves unknown keys, which are not Settings fields.
   [[nodiscard]] nlohmann::json make_json() const {
     const auto& global = core_configuration_.get_global_configuration();
+    const auto& accessibility_monitoring = global.get_accessibility_monitoring();
     const auto& machine_specific = core_configuration_.get_machine_specific().get_entry();
     const auto& selected_profile = core_configuration_.get_selected_profile();
     const auto& complex_modifications = selected_profile.get_complex_modifications();
@@ -58,6 +59,12 @@ private:
         {"global_configuration",
          {
              {"ui_language", global.get_ui_language()},
+             {"accessibility_monitoring",
+              {
+                  {"frontmost_application", accessibility_monitoring.get_frontmost_application()},
+                  {"focused_ui_element", accessibility_monitoring.get_focused_ui_element()},
+                  {"focused_window", accessibility_monitoring.get_focused_window()},
+              }},
              {"check_for_updates", global.get_check_for_updates()},
              {"show_in_menu_bar", global.get_show_in_menu_bar()},
              {"show_profile_name_in_menu_bar", global.get_show_profile_name_in_menu_bar()},

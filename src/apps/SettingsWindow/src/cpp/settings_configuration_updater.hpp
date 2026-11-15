@@ -14,6 +14,20 @@ public:
     if (const auto it = patch.find("global_configuration"); it != patch.end()) {
       auto& global = core_configuration.get_global_configuration();
       const auto& global_json = *it;
+      if (const auto accessibility_it = global_json.find("accessibility_monitoring");
+          accessibility_it != global_json.end()) {
+        auto& accessibility_monitoring = global.get_accessibility_monitoring();
+        const auto& accessibility_json = *accessibility_it;
+        changed |= apply_value<bool>(accessibility_json,
+                                     "frontmost_application",
+                                     [&](auto value) { accessibility_monitoring.set_frontmost_application(value); });
+        changed |= apply_value<bool>(accessibility_json,
+                                     "focused_ui_element",
+                                     [&](auto value) { accessibility_monitoring.set_focused_ui_element(value); });
+        changed |= apply_value<bool>(accessibility_json,
+                                     "focused_window",
+                                     [&](auto value) { accessibility_monitoring.set_focused_window(value); });
+      }
       changed |= apply_value<std::string>(global_json,
                                           "ui_language",
                                           [&](const auto& value) { global.set_ui_language(value); });

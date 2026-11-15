@@ -18,6 +18,7 @@ struct ChangedSettings {
 
   // Keep localization keys explicit so their usages can be found by searching.
   private static let sectionLocalizationKeys: [String: String] = [
+    "accessibility_monitoring": "settings.expert.accessibility_monitoring",
     "complex_modifications": "settings.changed_settings.section.complex_modifications",
     "global": "settings.changed_settings.section.global",
     "machine_specific": "settings.changed_settings.section.machine_specific",
@@ -27,6 +28,15 @@ struct ChangedSettings {
   ]
 
   static let settingLocalizationKeys: [String: [String]] = [
+    "frontmost_application": [
+      "settings.expert.accessibility_monitoring.frontmost_application"
+    ],
+    "focused_ui_element": [
+      "settings.expert.accessibility_monitoring.focused_ui_element"
+    ],
+    "focused_window": [
+      "settings.expert.accessibility_monitoring.focused_window"
+    ],
     "additional_device_identifier_fields": [
       "settings.expert.additional_device_identifier_fields"
     ],

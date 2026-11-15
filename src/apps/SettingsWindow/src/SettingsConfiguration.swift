@@ -19,7 +19,14 @@ struct SettingsConfiguration: Decodable {
   }
 
   struct GlobalConfiguration: Codable {
+    struct AccessibilityMonitoring: Codable {
+      var frontmostApplication: Bool
+      var focusedUiElement: Bool
+      var focusedWindow: Bool
+    }
+
     var uiLanguage: String
+    var accessibilityMonitoring: AccessibilityMonitoring
     enum NotificationWindowPosition: String, Codable {
       case topLeft = "top_left"
       case topRight = "top_right"
