@@ -3,7 +3,9 @@
 #include "application_launcher.hpp"
 #include "logger.hpp"
 #include "services_utility.hpp"
+#include "types/awake_time_point.hpp"
 #include "types/settings_window_guidance_state.hpp"
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -17,6 +19,7 @@ class settings_window_guidance_manager final : public pqrs::dispatcher::extra::d
 public:
   using guidance_context_maker = std::function<settings_window_guidance_context()>;
   using launch_settings_handler = std::function<void()>;
+  using awake_time_point_maker = std::function<awake_time_point()>;
 
   static guidance_context_maker make_default_guidance_context_maker() {
     return [c = settings_window_guidance_context()]() mutable {
@@ -45,12 +48,18 @@ public:
     };
   }
 
+  static awake_time_point_maker make_default_awake_time_point_maker() {
+    return awake_clock::now;
+  }
+
   settings_window_guidance_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                                    guidance_context_maker guidance_context_maker,
-                                   launch_settings_handler launch_settings_handler = make_default_launch_settings_handler())
+                                   launch_settings_handler launch_settings_handler = make_default_launch_settings_handler(),
+                                   awake_time_point_maker awake_time_point_maker = make_default_awake_time_point_maker())
       : dispatcher_client(weak_dispatcher),
         guidance_context_maker_(std::move(guidance_context_maker)),
-        launch_settings_handler_(std::move(launch_settings_handler)) {
+        launch_settings_handler_(std::move(launch_settings_handler)),
+        awake_time_point_maker_(std::move(awake_time_point_maker)) {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -167,7 +176,7 @@ private:
       services_not_running_started_at_ = std::nullopt;
     } else {
       if (!previous_services_not_running) {
-        services_not_running_started_at_ = when_now();
+        services_not_running_started_at_ = awake_time_point_maker_();
       }
     }
 
@@ -186,7 +195,7 @@ private:
       karabiner_json_parse_error_started_at_ = std::nullopt;
     } else {
       if (karabiner_json_parse_error_message_ != state.get_karabiner_json_parse_error_message()) {
-        karabiner_json_parse_error_started_at_ = when_now();
+        karabiner_json_parse_error_started_at_ = awake_time_point_maker_();
       }
     }
     karabiner_json_parse_error_message_ = state.get_karabiner_json_parse_error_message();
@@ -199,7 +208,7 @@ private:
       virtual_hid_device_service_client_not_connected_started_at_ = std::nullopt;
     } else {
       if (virtual_hid_device_service_client_connected_ != state.get_virtual_hid_device_service_client_connected()) {
-        virtual_hid_device_service_client_not_connected_started_at_ = when_now();
+        virtual_hid_device_service_client_not_connected_started_at_ = awake_time_point_maker_();
       }
     }
     virtual_hid_device_service_client_connected_ = state.get_virtual_hid_device_service_client_connected();
@@ -212,7 +221,7 @@ private:
       driver_not_activated_started_at_ = std::nullopt;
     } else {
       if (driver_activated_ != state.get_driver_activated()) {
-        driver_not_activated_started_at_ = when_now();
+        driver_not_activated_started_at_ = awake_time_point_maker_();
       }
     }
     driver_activated_ = state.get_driver_activated();
@@ -225,7 +234,7 @@ private:
       driver_not_connected_started_at_ = std::nullopt;
     } else {
       if (driver_connected_ != state.get_driver_connected()) {
-        driver_not_connected_started_at_ = when_now();
+        driver_not_connected_started_at_ = awake_time_point_maker_();
       }
     }
     driver_connected_ = state.get_driver_connected();
@@ -257,7 +266,7 @@ private:
     }
 
     if (driver_not_activated_started_at_ &&
-        when_now() - *driver_not_activated_started_at_ >= std::chrono::seconds(3)) {
+        awake_time_point_maker_() - *driver_not_activated_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_setup::driver_extension;
     }
 
@@ -271,7 +280,7 @@ private:
     //
 
     if (karabiner_json_parse_error_started_at_ &&
-        when_now() - *karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
+        awake_time_point_maker_() - *karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::doctor;
     }
 
@@ -289,7 +298,7 @@ private:
     //
 
     if (services_not_running_started_at_ &&
-        when_now() - *services_not_running_started_at_ >= std::chrono::seconds(10)) {
+        awake_time_point_maker_() - *services_not_running_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::services_not_running;
     }
 
@@ -298,7 +307,7 @@ private:
     //
 
     if (virtual_hid_device_service_client_not_connected_started_at_ &&
-        when_now() - *virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
+        awake_time_point_maker_() - *virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::virtual_hid_device_service_client_not_connected;
     }
 
@@ -315,7 +324,7 @@ private:
     //
 
     if (driver_not_connected_started_at_ &&
-        when_now() - *driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
+        awake_time_point_maker_() - *driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::driver_not_connected;
     }
 
@@ -333,6 +342,7 @@ private:
 
   guidance_context_maker guidance_context_maker_;
   launch_settings_handler launch_settings_handler_;
+  awake_time_point_maker awake_time_point_maker_;
 
   mutable std::mutex mutex_;
 
@@ -346,22 +356,22 @@ private:
 
   // For settings_window_guidance_alert::doctor
   std::string karabiner_json_parse_error_message_;
-  std::optional<pqrs::dispatcher::time_point> karabiner_json_parse_error_started_at_;
+  std::optional<awake_time_point> karabiner_json_parse_error_started_at_;
 
   // For settings_window_guidance_alert::services_not_running
-  std::optional<pqrs::dispatcher::time_point> services_not_running_started_at_;
+  std::optional<awake_time_point> services_not_running_started_at_;
 
   // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
   std::optional<bool> virtual_hid_device_service_client_connected_;
-  std::optional<pqrs::dispatcher::time_point> virtual_hid_device_service_client_not_connected_started_at_;
+  std::optional<awake_time_point> virtual_hid_device_service_client_not_connected_started_at_;
 
   // For settings_window_guidance_setup::driver_extension
   std::optional<bool> driver_activated_;
-  std::optional<pqrs::dispatcher::time_point> driver_not_activated_started_at_;
+  std::optional<awake_time_point> driver_not_activated_started_at_;
 
   // For settings_window_guidance_alert::driver_not_connected
   std::optional<bool> driver_connected_;
-  std::optional<pqrs::dispatcher::time_point> driver_not_connected_started_at_;
+  std::optional<awake_time_point> driver_not_connected_started_at_;
 
   // Construct after potentially throwing members; destruction requires detach.
   pqrs::dispatcher::extra::timer timer_{*this};

@@ -9,6 +9,7 @@ struct core_service_daemon_state_initialization_parameters final {
   bool iohid_listen_event_allowed;
   bool accessibility_process_trusted;
   std::optional<bool> driver_activated = std::nullopt;
+  std::optional<bool> virtual_hid_device_service_client_connected = std::nullopt;
 };
 
 krbn::settings_window_guidance_context make_guidance_context(std::optional<bool> enabled,
@@ -29,6 +30,7 @@ krbn::core_service_daemon_state make_core_service_daemon_state(const core_servic
   auto core_service_daemon_state = krbn::core_service_daemon_state();
   core_service_daemon_state.set_bundle_permission_check_result(permission_check_result);
   core_service_daemon_state.set_driver_activated(parameters.driver_activated);
+  core_service_daemon_state.set_virtual_hid_device_service_client_connected(parameters.virtual_hid_device_service_client_connected);
 
   return core_service_daemon_state;
 }
@@ -43,14 +45,26 @@ struct manager_test_context final {
   manager_test_context(const initialization_parameters& parameters)
       : current_context(make_guidance_context(parameters.enabled,
                                               parameters.running)),
-        manager(pqrs::make_weak(dispatcher), [this] { return current_context; }, parameters.launch_settings_handler) {
+        manager(pqrs::make_weak(dispatcher), [this] { return current_context; }, parameters.launch_settings_handler, [this] { return awake_time_now(); }) {
     time_source->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
+    awake_time_source->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
   }
 
   void wait_until(std::chrono::milliseconds ms) {
-    auto wait = pqrs::make_thread_wait();
-    auto when = pqrs::dispatcher::time_point(ms + std::chrono::milliseconds(1));
+    wait_until(ms, ms);
+  }
 
+  krbn::awake_time_point awake_time_now() const {
+    return krbn::awake_time_point(
+        awake_time_source->now().time_since_epoch());
+  }
+
+  void wait_until(std::chrono::milliseconds dispatcher_ms,
+                  std::chrono::milliseconds awake_ms) {
+    auto wait = pqrs::make_thread_wait();
+    auto when = pqrs::dispatcher::time_point(dispatcher_ms + std::chrono::milliseconds(1));
+
+    awake_time_source->set_now(pqrs::dispatcher::time_point(awake_ms));
     time_source->set_now(when);
     boost::ut::expect(manager.enqueue_to_dispatcher(
         [wait] {
@@ -61,6 +75,7 @@ struct manager_test_context final {
   }
 
   pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> awake_time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
   pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source.get(),
                                                                                                                         pqrs::osx::autorelease_pool::execute_with_autorelease_pool);
   krbn::settings_window_guidance_context current_context;
@@ -177,6 +192,25 @@ int main() {
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
   };
 
+  "settings_window_guidance_manager services_not_running ignores time spent asleep"_test = [] {
+    auto c = manager_test_context(manager_test_context::initialization_parameters{
+        .enabled = true,
+        .running = false,
+    });
+    c.manager.async_start();
+    c.wait_until(std::chrono::milliseconds(0));
+
+    c.wait_until(std::chrono::minutes(17),
+                 std::chrono::seconds(1));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.wait_until(std::chrono::minutes(17) + std::chrono::seconds(12),
+                 std::chrono::seconds(12));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::services_not_running);
+  };
+
   "settings_window_guidance_manager setup stays none when services state becomes nullopt"_test = [] {
     auto c = manager_test_context(manager_test_context::initialization_parameters{
         .enabled = true,
@@ -291,6 +325,32 @@ int main() {
 
     expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::none);
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+  };
+
+  "settings_window_guidance_manager virtual HID device disconnection ignores time spent asleep"_test = [] {
+    auto c = manager_test_context(manager_test_context::initialization_parameters{
+        .enabled = true,
+        .running = true,
+    });
+    c.manager.async_start();
+    c.wait_until(std::chrono::milliseconds(0));
+
+    c.manager.async_update_core_service_daemon_state(make_core_service_daemon_state(core_service_daemon_state_initialization_parameters{
+        .iohid_listen_event_allowed = true,
+        .accessibility_process_trusted = true,
+        .virtual_hid_device_service_client_connected = false,
+    }));
+    c.wait_until(std::chrono::milliseconds(0));
+
+    c.wait_until(std::chrono::minutes(17),
+                 std::chrono::seconds(1));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.wait_until(std::chrono::minutes(17) + std::chrono::seconds(12),
+                 std::chrono::seconds(12));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::virtual_hid_device_service_client_not_connected);
   };
 
   "settings_window_guidance_manager doctor alert"_test = [] {
