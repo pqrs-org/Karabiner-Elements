@@ -128,7 +128,7 @@ private:
     // the required setup may never be completed. A karabiner.json parse error is the
     // exception because Settings cannot load the configuration or show the setup UI.
     if (new_current_setup != settings_window_guidance_setup::none &&
-        new_current_alert != settings_window_guidance_alert::doctor) {
+        new_current_alert != settings_window_guidance_alert::karabiner_json_parse_error) {
       new_current_alert = settings_window_guidance_alert::none;
     }
     auto previous_setup = settings_window_guidance_setup::none;
@@ -279,12 +279,12 @@ private:
   // This method is executed in the dedicated dispatcher thread.
   settings_window_guidance_alert make_current_alert() const {
     //
-    // doctor
+    // karabiner_json_parse_error
     //
 
     if (karabiner_json_parse_error_started_at_ &&
         awake_time_point_maker_() - *karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
-      return settings_window_guidance_alert::doctor;
+      return settings_window_guidance_alert::karabiner_json_parse_error;
     }
 
     //
@@ -357,7 +357,7 @@ private:
 
   bool needs_to_launch_settings_ = false;
 
-  // For settings_window_guidance_alert::doctor
+  // For settings_window_guidance_alert::karabiner_json_parse_error
   std::string karabiner_json_parse_error_message_;
   std::optional<awake_time_point> karabiner_json_parse_error_started_at_;
 

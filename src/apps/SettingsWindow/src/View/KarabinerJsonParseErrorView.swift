@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DoctorAlertView: View {
+struct KarabinerJsonParseErrorView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   let debugParseErrorMessageOverride: String?
@@ -31,6 +31,5 @@ struct DoctorAlertView: View {
     }
     .padding()
     .frame(width: 850)
-
   }
 }

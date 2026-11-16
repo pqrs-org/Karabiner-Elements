@@ -353,7 +353,7 @@ int main() {
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::virtual_hid_device_service_client_not_connected);
   };
 
-  "settings_window_guidance_manager doctor alert"_test = [] {
+  "settings_window_guidance_manager karabiner.json parse error alert"_test = [] {
     auto c = manager_test_context(manager_test_context::initialization_parameters{
         .enabled = true,
         .running = true,
@@ -371,10 +371,10 @@ int main() {
 
     c.wait_until(std::chrono::milliseconds(3000));
 
-    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::doctor);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::karabiner_json_parse_error);
   };
 
-  "settings_window_guidance_manager doctor alert takes priority over setup"_test = [] {
+  "settings_window_guidance_manager karabiner.json parse error alert takes priority over setup"_test = [] {
     auto c = manager_test_context(manager_test_context::initialization_parameters{
         .enabled = true,
         .running = true,
@@ -397,7 +397,7 @@ int main() {
     c.wait_until(std::chrono::milliseconds(3000));
 
     expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::accessibility);
-    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::doctor);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::karabiner_json_parse_error);
   };
 
   "settings_window_guidance_manager karabiner.json permission errors"_test = [] {

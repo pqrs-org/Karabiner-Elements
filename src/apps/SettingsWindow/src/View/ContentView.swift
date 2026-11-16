@@ -18,11 +18,11 @@ struct ContentView: View {
     ZStack(alignment: .top) {
       if karabinerJsonPermissionError {
         KarabinerJsonPermissionErrorView()
-      } else if contentViewStates.displayedAlert == .doctor {
-        // `.doctor` is published only after a parse error persists for three seconds of
+      } else if contentViewStates.displayedAlert == .karabinerJsonParseError {
+        // `.karabinerJsonParseError` is published only after a parse error persists for three seconds of
         // awake time, so transient errors while an external process rewrites
         // karabiner.json do not show an alert.
-        DoctorAlertView()
+        KarabinerJsonParseErrorView()
       } else if settings.configurationLoaded {
         ContentMainView()
 
@@ -55,8 +55,8 @@ struct ContentView: View {
         // Keep the settings UI unavailable until karabiner.json has loaded successfully.
         // A core_configuration created after a parse error contains fallback default values;
         // exposing and editing those values could overwrite karabiner.json and discard the
-        // user's existing settings. A persistent parse error becomes the `.doctor` alert and
-        // is displayed by DoctorAlertView after a three-second grace period. Until then, show
+        // user's existing settings. A persistent parse error becomes the `.karabinerJsonParseError` alert and
+        // is displayed by KarabinerJsonParseErrorView after a three-second grace period. Until then, show
         // progress instead of stale or fallback settings.
         ProgressView()
       }

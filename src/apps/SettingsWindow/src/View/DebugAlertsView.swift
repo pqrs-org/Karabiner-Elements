@@ -372,7 +372,7 @@ struct DebugAlertsView: View {
   private static func alertView(_ alert: PreviewAlert) -> some View {
     switch alert {
     case .parseError:
-      DoctorAlertView(
+      KarabinerJsonParseErrorView(
         debugParseErrorMessageOverride:
           "karabiner.json: parse error at line 12, column 3: unexpected '}'; expected a value.")
     case .permissionError:

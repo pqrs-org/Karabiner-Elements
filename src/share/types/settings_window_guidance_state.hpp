@@ -25,7 +25,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 
 enum class settings_window_guidance_alert : uint8_t {
   none,
-  doctor,
+  karabiner_json_parse_error,
   settings,
   services_not_running,
   virtual_hid_device_service_client_not_connected,
@@ -37,7 +37,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     settings_window_guidance_alert,
     {
         {settings_window_guidance_alert::none, "none"},
-        {settings_window_guidance_alert::doctor, "doctor"},
+        {settings_window_guidance_alert::karabiner_json_parse_error, "karabiner_json_parse_error"},
         {settings_window_guidance_alert::settings, "settings"},
         {settings_window_guidance_alert::services_not_running, "services_not_running"},
         {settings_window_guidance_alert::virtual_hid_device_service_client_not_connected, "virtual_hid_device_service_client_not_connected"},

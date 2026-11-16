@@ -10,7 +10,7 @@ enum SettingsWindowGuidanceSetup: String, Codable {
 
 enum SettingsWindowGuidanceAlert: String, Codable {
   case none
-  case doctor
+  case karabinerJsonParseError = "karabiner_json_parse_error"
   case settings
   case consoleUserServerNotConnected = "console_user_server_not_connected"
   case servicesNotRunning = "services_not_running"
