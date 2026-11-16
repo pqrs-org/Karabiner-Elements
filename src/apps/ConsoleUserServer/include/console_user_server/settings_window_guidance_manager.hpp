@@ -123,11 +123,14 @@ private:
   // This method is executed in the dedicated dispatcher thread.
   void update_current_guidance() {
     auto new_current_setup = make_current_setup();
-    // Do not show alerts until setup is complete.
-    // If alerts take priority in the UI, the required setup may never be completed.
-    auto new_current_alert = new_current_setup == settings_window_guidance_setup::none
-                                 ? make_current_alert()
-                                 : settings_window_guidance_alert::none;
+    auto new_current_alert = make_current_alert();
+    // Do not show alerts until setup is complete. If alerts take priority in the UI,
+    // the required setup may never be completed. A karabiner.json parse error is the
+    // exception because Settings cannot load the configuration or show the setup UI.
+    if (new_current_setup != settings_window_guidance_setup::none &&
+        new_current_alert != settings_window_guidance_alert::doctor) {
+      new_current_alert = settings_window_guidance_alert::none;
+    }
     auto previous_setup = settings_window_guidance_setup::none;
     auto previous_alert = settings_window_guidance_alert::none;
     auto setup_changed = false;

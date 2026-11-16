@@ -18,12 +18,17 @@ struct ContentView: View {
     ZStack(alignment: .top) {
       if karabinerJsonPermissionError {
         KarabinerJsonPermissionErrorView()
+      } else if contentViewStates.displayedAlert == .doctor {
+        // `.doctor` is published only after a parse error persists for three seconds of
+        // awake time, so transient errors while an external process rewrites
+        // karabiner.json do not show an alert.
+        DoctorAlertView()
       } else if settings.configurationLoaded {
         ContentMainView()
 
-        if contentViewStates.displayedAlert == .doctor {
+        if contentViewStates.displayedAlert == .consoleUserServerNotConnected {
           OverlayAlertView {
-            DoctorAlertView()
+            ConsoleUserServerNotConnectedAlertView()
           }
         } else if contentViewStates.displayedAlert == .servicesNotRunning {
           OverlayAlertView {
@@ -32,10 +37,6 @@ struct ContentView: View {
         } else if contentViewStates.displayedAlert == .settings {
           OverlayAlertView {
             SettingsAlertView()
-          }
-        } else if contentViewStates.displayedAlert == .consoleUserServerNotConnected {
-          OverlayAlertView {
-            ConsoleUserServerNotConnectedAlertView()
           }
         } else if contentViewStates.displayedAlert == .virtualHidDeviceServiceClientNotConnected {
           OverlayAlertView {
@@ -51,6 +52,12 @@ struct ContentView: View {
           }
         }
       } else {
+        // Keep the settings UI unavailable until karabiner.json has loaded successfully.
+        // A core_configuration created after a parse error contains fallback default values;
+        // exposing and editing those values could overwrite karabiner.json and discard the
+        // user's existing settings. A persistent parse error becomes the `.doctor` alert and
+        // is displayed by DoctorAlertView after a three-second grace period. Until then, show
+        // progress instead of stale or fallback settings.
         ProgressView()
       }
 

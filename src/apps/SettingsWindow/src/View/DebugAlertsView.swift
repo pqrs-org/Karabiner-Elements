@@ -357,8 +357,8 @@ struct DebugAlertsView: View {
 
   @ViewBuilder
   static func previewView(_ alert: PreviewAlert) -> some View {
-    if alert == .permissionError {
-      KarabinerJsonPermissionErrorView()
+    if alert == .permissionError || alert == .parseError {
+      alertView(alert)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(nsColor: .windowBackgroundColor))
     } else {
@@ -385,9 +385,11 @@ struct DebugAlertsView: View {
           coreDaemonsRunning: alert == .agentsStopped,
           coreAgentsRunning: alert == .daemonsStopped))
     case .agentWaiting:
-      ConsoleUserServerNotConnectedAlertView(debugDisconnectedForAWhileOverride: false)
+      ConsoleUserServerNotConnectedAlertView(
+        debugDisconnectedForAWhileOverride: false)
     case .agentRetry:
-      ConsoleUserServerNotConnectedAlertView(debugDisconnectedForAWhileOverride: true)
+      ConsoleUserServerNotConnectedAlertView(
+        debugDisconnectedForAWhileOverride: true)
     case .virtualHidWaiting:
       VirtualHidDeviceServiceClientNotConnectedAlertView()
     case .driverWaiting:

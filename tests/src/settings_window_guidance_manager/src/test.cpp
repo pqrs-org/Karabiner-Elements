@@ -374,6 +374,32 @@ int main() {
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::doctor);
   };
 
+  "settings_window_guidance_manager doctor alert takes priority over setup"_test = [] {
+    auto c = manager_test_context(manager_test_context::initialization_parameters{
+        .enabled = true,
+        .running = true,
+    });
+    c.manager.async_start();
+    c.wait_until(std::chrono::milliseconds(0));
+
+    auto core_service_daemon_state = make_core_service_daemon_state(core_service_daemon_state_initialization_parameters{
+        .iohid_listen_event_allowed = false,
+        .accessibility_process_trusted = false,
+    });
+    core_service_daemon_state.set_karabiner_json_parse_error_message("parse error");
+    c.manager.async_update_core_service_daemon_state(core_service_daemon_state);
+
+    c.wait_until(std::chrono::milliseconds(0));
+
+    expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::accessibility);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.wait_until(std::chrono::milliseconds(3000));
+
+    expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::accessibility);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::doctor);
+  };
+
   "settings_window_guidance_manager karabiner.json permission errors"_test = [] {
     auto c = manager_test_context(manager_test_context::initialization_parameters{
         .enabled = true,
