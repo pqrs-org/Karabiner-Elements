@@ -2,6 +2,7 @@
 #include "monitor/configuration_monitor.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <boost/ut.hpp>
+#include <future>
 
 namespace {
 class test_configuration_monitor final {
@@ -63,6 +64,52 @@ int main() {
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::abort);
+
+  "configuration_monitor retries unchanged files after access is restored"_test = [] {
+    // root bypasses discretionary read permissions.
+    if (geteuid() == 0) {
+      return;
+    }
+    std::filesystem::create_directories("target");
+    const auto path = std::filesystem::path("target/retry.json");
+    std::ofstream(path) << "{}";
+    expect(chmod(path.c_str(), 0000) == 0);
+    {
+      krbn::configuration_monitor monitor(path.string(), geteuid(),
+                                          krbn::core_configuration::error_handling::loose,
+                                          "target/unused-system.json");
+      std::promise<void> failed;
+      std::promise<void> loaded;
+      std::atomic<size_t> updates{0};
+      monitor.load_state_changed.connect([&](auto state) {
+        if (state == krbn::core_configuration::core_configuration::load_state::permission_error) {
+          failed.set_value();
+        }
+      });
+      monitor.core_configuration_updated.connect([&](auto configuration) {
+        if (++updates == 1) {
+          expect(!configuration.expired());
+          loaded.set_value();
+        }
+      });
+      // Do not start file watching: recovery must come from the explicit retry,
+      // without depending on a filesystem event or a change to the JSON contents.
+      monitor.async_retry_failed_load();
+      expect(failed.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
+      expect(updates.load() == 0_u);
+      expect(chmod(path.c_str(), 0600) == 0);
+      monitor.async_retry_failed_load();
+      expect(loaded.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
+
+      // Further retries must not publish a replacement for an already loaded configuration.
+      monitor.async_retry_failed_load();
+      std::promise<void> drained;
+      monitor.enqueue_to_dispatcher([&] { drained.set_value(); });
+      expect(drained.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
+      expect(updates.load() == 1_u);
+    }
+    std::filesystem::remove(path);
+  };
 
   "configuration_monitor rejects FIFO and oversized files"_test = [] {
     std::filesystem::create_directories("target");

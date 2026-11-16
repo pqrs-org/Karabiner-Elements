@@ -90,6 +90,17 @@ public:
     file_monitor_->async_start();
   }
 
+  // Retry metadata-only changes (such as ownership fixes) even when the file
+  // monitor sees unchanged contents. Never replace an already loaded configuration.
+  void async_retry_failed_load() {
+    enqueue_to_dispatcher([this] {
+      if (!load_state_ || *load_state_ != core_configuration::core_configuration::load_state::loaded) {
+        file_removal_task_.cancel();
+        handle_file_changed(user_core_configuration_file_path_.value_or(system_core_configuration_file_path_));
+      }
+    });
+  }
+
 private:
   void handle_file_changed(const std::string& changed_file_path) {
     auto file_path = changed_file_path;
