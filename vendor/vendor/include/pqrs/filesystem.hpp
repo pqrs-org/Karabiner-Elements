@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::filesystem v4.0.0
+// pqrs::filesystem v4.1.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -23,6 +23,13 @@
 #include <unistd.h>
 #include <utility>
 #include <vector>
+
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if TARGET_OS_OSX
+#include "filesystem/osx.hpp"
+#endif
+#endif
 
 namespace pqrs::filesystem {
 
@@ -66,6 +73,38 @@ namespace pqrs::filesystem {
 [[nodiscard]] inline bool is_symlink_owned(const std::filesystem::path& path,
                                            uid_t uid) noexcept {
   return pqrs::filesystem::symlink_uid(path) == uid;
+}
+
+//
+// Access checks
+//
+
+// Check effective credentials (including ACLs) without writing to the path.
+// A denied operation is false; other failures (for example ENOENT) preserve errno.
+[[nodiscard]] inline std::expected<bool, std::error_code> check_access_by_current_process(const std::filesystem::path& path, int mode) {
+  if (::faccessat(AT_FDCWD, path.c_str(), mode, AT_EACCESS) == 0) {
+    return true;
+  }
+
+  const auto error = errno;
+  if (error == EACCES || error == EPERM || error == EROFS) {
+    return false;
+  }
+
+  return std::unexpected(std::error_code(error, std::generic_category()));
+}
+
+[[nodiscard]] inline std::expected<bool, std::error_code> is_readable_by_current_process(const std::filesystem::path& path) {
+  return check_access_by_current_process(path, R_OK);
+}
+
+[[nodiscard]] inline std::expected<bool, std::error_code> is_writable_by_current_process(const std::filesystem::path& path) {
+  return check_access_by_current_process(path, W_OK);
+}
+
+// X_OK means execution for files and search/traversal for directories.
+[[nodiscard]] inline std::expected<bool, std::error_code> is_executable_by_current_process(const std::filesystem::path& path) {
+  return check_access_by_current_process(path, X_OK);
 }
 
 //
