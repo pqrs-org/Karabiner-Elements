@@ -5,6 +5,8 @@
 #include "event_queue.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <IOKit/hidsystem/IOLLEvent.h>
+#include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <pqrs/osx/cg_event.hpp>
 
@@ -110,6 +112,16 @@ public:
     return event;
   }
 
+  // kCGMouseEventButtonNumber is 0-based (0 left, 1 right, 2 middle, 3 back, ...)
+  // while HID button usages are 1-based, so a side button reports 3:button_4 and 4:button_5.
+  [[nodiscard]] static momentary_switch_event make_pointing_button_event(int64_t cg_button_number) {
+    auto button_number = std::clamp<int64_t>(cg_button_number + 1, 1, 32);
+    auto usage = pqrs::hid::usage::value_t(type_safe::get(pqrs::hid::usage::button::button_1) +
+                                           static_cast<uint32_t>(button_number - 1));
+
+    return momentary_switch_event(pqrs::hid::usage_page::button, usage);
+  }
+
   [[nodiscard]] static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
     if (!event) {
       return std::nullopt;
@@ -184,14 +196,13 @@ public:
                                                                         pqrs::hid::usage::button::button_2)));
 
       case kCGEventOtherMouseDown:
-        return std::make_pair(event_type::key_down,
-                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
-                                                                        pqrs::hid::usage::button::button_3)));
-
       case kCGEventOtherMouseUp:
-        return std::make_pair(event_type::key_up,
-                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
-                                                                        pqrs::hid::usage::button::button_3)));
+        if (!event) {
+          break;
+        }
+        return std::make_pair(type == kCGEventOtherMouseDown ? event_type::key_down : event_type::key_up,
+                              event_queue::event(make_pointing_button_event(CGEventGetIntegerValueField(event,
+                                                                                                        kCGMouseEventButtonNumber))));
 
       case kCGEventMouseMoved:
       case kCGEventLeftMouseDragged:

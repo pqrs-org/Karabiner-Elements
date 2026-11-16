@@ -67,11 +67,30 @@ int main() {
                                                                                      pqrs::hid::usage::button::button_1)));
     }
     {
-      auto actual = krbn::event_tap_utility::make_event(kCGEventOtherMouseUp, nullptr);
-      expect(actual->first == krbn::event_type::key_up);
-      expect(actual->second == krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                                                     pqrs::hid::usage::button::button_3)));
+      // The button number is only available from the event, so a null event cannot identify it.
+      expect(!krbn::event_tap_utility::make_event(kCGEventOtherMouseUp, nullptr));
     }
+  };
+
+  "make_pointing_button_event maps kCGMouseEventButtonNumber to a HID button usage"_test = [] {
+    for (const auto& [cg_button_number, usage] : std::vector<std::pair<int64_t, pqrs::hid::usage::value_t>>{
+             {0, pqrs::hid::usage::button::button_1}, // left
+             {1, pqrs::hid::usage::button::button_2}, // right
+             {2, pqrs::hid::usage::button::button_3}, // middle
+             {3, pqrs::hid::usage::button::button_4}, // back
+             {4, pqrs::hid::usage::button::button_5}, // forward
+         }) {
+      auto actual = krbn::event_tap_utility::make_pointing_button_event(cg_button_number);
+      expect(actual == krbn::momentary_switch_event(pqrs::hid::usage_page::button, usage));
+    }
+
+    // Out-of-range values are clamped to the supported button range.
+    expect(krbn::event_tap_utility::make_pointing_button_event(-1) ==
+           krbn::momentary_switch_event(pqrs::hid::usage_page::button, pqrs::hid::usage::button::button_1));
+    expect(krbn::event_tap_utility::make_pointing_button_event(31) ==
+           krbn::momentary_switch_event(pqrs::hid::usage_page::button, pqrs::hid::usage::button::button_32));
+    expect(krbn::event_tap_utility::make_pointing_button_event(1000) ==
+           krbn::momentary_switch_event(pqrs::hid::usage_page::button, pqrs::hid::usage::button::button_32));
   };
 
   "make flags changed event for side-specific modifiers"_test = [] {
