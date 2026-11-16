@@ -9,23 +9,23 @@
 #include <mutex>
 
 namespace krbn {
-// keyboard_suppression keeps a short-lived set of keyboard events that should
-// be ignored when they come back through the event tap.
+// keyboard_suppression keeps a short-lived set of events that should be ignored
+// when they come back through the event tap.
 //
 // Why this is needed:
-// In cgeventtap input mode, Karabiner-Elements posts transformed key events via virtual HID.
+// In cgeventtap input mode, Karabiner-Elements posts transformed events via virtual HID.
 // Those posted events can be observed again by event tap.
 // Without this suppression, Karabiner-Elements may treat its own posted events as new physical input
 // and send them through the manipulation pipeline again.
 //
 // Behavior:
 // - enqueue(event, event_type, now):
-//   Registers a keyboard event to suppress for a short TTL window.
-//   Invalid events and pointing-button events are ignored.
+//   Registers an event to suppress for a short TTL window.
+//   Invalid events are ignored.
 //   Caps Lock registers only key_down, representing one lock state change.
 // - consume(event, event_type, now):
 //   Returns true when a matching queued entry exists (and removes it).
-//   Caps Lock matches either key_down or key_up; other keys require the same event type.
+//   Caps Lock matches either key_down or key_up; other events require the same event type.
 //   Returns false if not found.
 // - purge_expired(now):
 //   Drops expired entries.
@@ -75,7 +75,7 @@ public:
   void enqueue(const momentary_switch_event& event,
                event_type event_type,
                absolute_time_point now) {
-    if (!event.valid() || event.pointing_button()) {
+    if (!event.valid()) {
       return;
     }
 

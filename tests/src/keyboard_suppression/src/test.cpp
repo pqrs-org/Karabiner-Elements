@@ -148,20 +148,31 @@ int main() {
     expect(suppression.consume(key_b, krbn::event_type::key_down, now));
   };
 
-  "invalid_or_pointing_event_is_ignored"_test = [] {
+  "invalid_event_is_ignored"_test = [] {
     krbn::keyboard_suppression suppression;
 
     auto now = krbn::absolute_time_point(100);
     auto invalid = krbn::momentary_switch_event();
-    auto pointing = krbn::momentary_switch_event(
-        pqrs::hid::usage_page::button,
-        pqrs::hid::usage::button::button_1);
 
     suppression.enqueue(invalid, krbn::event_type::key_down, now);
-    suppression.enqueue(pointing, krbn::event_type::key_down, now);
 
     expect(!suppression.consume(invalid, krbn::event_type::key_down, now));
-    expect(!suppression.consume(pointing, krbn::event_type::key_down, now));
+  };
+
+  "pointing_button_is_suppressed_like_a_key"_test = [] {
+    krbn::keyboard_suppression suppression;
+
+    auto now = krbn::absolute_time_point(100);
+    auto back = krbn::momentary_switch_event(
+        pqrs::hid::usage_page::button,
+        pqrs::hid::usage::button::button_4);
+
+    suppression.enqueue(back, krbn::event_type::key_down, now);
+
+    // A button requires the same event type, exactly like an ordinary key.
+    expect(!suppression.consume(back, krbn::event_type::key_up, now));
+    expect(suppression.consume(back, krbn::event_type::key_down, now));
+    expect(!suppression.consume(back, krbn::event_type::key_down, now));
   };
 
   return 0;

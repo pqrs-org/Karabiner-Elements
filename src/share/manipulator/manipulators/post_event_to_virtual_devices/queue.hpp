@@ -602,7 +602,7 @@ public:
             }
             if (auto pointing_input = e.get_pointing_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
-                // `handle_posted_momentary_switch_event` only targets keyboard events, so there is no need to call it.
+                handle_posted_pointing_input(*pointing_input);
                 client->async_post_report(*pointing_input);
               }
             }
@@ -729,10 +729,38 @@ private:
     }
   }
 
+  // Registers the buttons that this report changes.
+  //
+  // A pointing report carries the entire button state, so only the buttons whose bit
+  // differs from the previous report are new input. Registering the unchanged ones would
+  // let an unrelated physical event consume a stale entry and skip remapping.
+  void handle_posted_pointing_input(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& report) {
+    auto changed = report.buttons.get_raw_value() ^ previous_posted_pointing_buttons_.get_raw_value();
+    previous_posted_pointing_buttons_ = report.buttons;
+
+    if (!cgeventtap_fallback_enabled_) {
+      return;
+    }
+
+    auto now = pqrs::osx::chrono::mach_absolute_time_point();
+    for (uint8_t button = 1; button <= 32; ++button) {
+      if ((changed & (0x1u << (button - 1))) == 0) {
+        continue;
+      }
+
+      auto usage = pqrs::hid::usage::value_t(type_safe::get(pqrs::hid::usage::button::button_1) +
+                                             static_cast<uint32_t>(button - 1));
+      keyboard_suppression_->enqueue(momentary_switch_event(pqrs::hid::usage_page::button, usage),
+                                     report.buttons.exists(button) ? event_type::key_down : event_type::key_up,
+                                     now);
+    }
+  }
+
   std::vector<event> events_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   bool cgeventtap_fallback_enabled_{false};
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons previous_posted_pointing_buttons_;
 
   keyboard_repeat_detector keyboard_repeat_detector_;
 

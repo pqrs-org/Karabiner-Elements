@@ -198,6 +198,10 @@ public:
               virtual_hid_devices_state_.set_virtual_hid_pointing_ready(ready);
               async_post_virtual_hid_devices_state_changed_event();
 
+              if (event_tap_monitor_) {
+                event_tap_monitor_->set_virtual_hid_pointing_ready(ready);
+              }
+
               // The virtual_hid_pointing might have been terminated or become unavailable.
               // We try to reinitialize the device.
               if (!ready) {
@@ -1006,6 +1010,12 @@ private:
   }
 
   [[nodiscard]] bool needs_prepare_virtual_hid_pointing_device() const {
+    // The CGEventTap fallback reposts side buttons through the virtual pointing device.
+    // Without it those buttons would be dropped and never delivered.
+    if (cgeventtap_fallback_enabled_) {
+      return true;
+    }
+
     //
     // Check if there is a pointing device to grab
     // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
@@ -1172,6 +1182,17 @@ private:
     create_pending_event_tap_monitor();
   }
 
+  // Whether the event tap is expected to drop this event instead of passing it through.
+  // Must agree with `event_tap_monitor::can_drop_pointing_button`, otherwise a button
+  // would either be delivered twice or not at all.
+  static bool is_dropped_by_event_tap(const event_queue::event& event) {
+    if (auto m = event.get_if<momentary_switch_event>()) {
+      return event_tap_utility::is_side_button(*m);
+    }
+
+    return false;
+  }
+
   void create_pending_event_tap_monitor() {
     if (!pending_event_tap_monitor_configuration_) {
       return;
@@ -1187,16 +1208,33 @@ private:
 
     auto t = core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_iokit_keyboard_type();
     event_tap_monitor_->set_virtual_hid_keyboard_is_iso(t == pqrs::osx::iokit_keyboard_type::iso);
+    event_tap_monitor_->set_virtual_hid_pointing_ready(virtual_hid_devices_state_.get_virtual_hid_pointing_ready());
 
     event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
-      auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
+      // In CGEventTap fallback mode, the event tap drops side buttons and hands them over
+      // so that `from.pointing_button` can match them; the pipeline re-posts them through
+      // the virtual pointing device.
+      //
+      // Left and right buttons, motion and wheel are left in the CGEvent stream, so for
+      // those the tap only reports that something happened. They stay passive marker
+      // events, and notably motion and wheel still drive modifier housekeeping in
+      // `post_event_to_virtual_devices::handle_pointing_device_event_from_event_tap`.
+      auto e = event;
+      auto state = event_queue::state::original;
+
+      if (!cgeventtap_fallback_enabled_ ||
+          !is_dropped_by_event_tap(event)) {
+        e = event_queue::event::make_pointing_device_event_from_event_tap_event();
+        state = event_queue::state::virtual_event;
+      }
+
       event_queue::entry entry({
           .device_id = device_id(0),
           .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
           .event = e,
           .event_type = event_type,
           .original_event = event,
-          .state = event_queue::state::virtual_event,
+          .state = state,
       });
 
       merged_input_event_queue_->push_back_entry(entry);

@@ -122,6 +122,18 @@ public:
     return momentary_switch_event(pqrs::hid::usage_page::button, usage);
   }
 
+  // Left and right buttons are left in the CGEvent stream. Every other button is dropped
+  // and re-posted through the virtual pointing device, so it can be used as `from.pointing_button`.
+  [[nodiscard]] static bool is_side_button(const momentary_switch_event& event) {
+    auto usage_pair = event.get_usage_pair();
+    if (usage_pair.get_usage_page() != pqrs::hid::usage_page::button) {
+      return false;
+    }
+
+    return usage_pair.get_usage() != pqrs::hid::usage::button::button_1 &&
+           usage_pair.get_usage() != pqrs::hid::usage::button::button_2;
+  }
+
   [[nodiscard]] static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
     if (!event) {
       return std::nullopt;

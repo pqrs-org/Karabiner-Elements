@@ -74,6 +74,10 @@ public:
     virtual_hid_keyboard_is_iso_.store(value);
   }
 
+  void set_virtual_hid_pointing_ready(bool value) {
+    virtual_hid_pointing_ready_.store(value);
+  }
+
   void async_stop(std::function<void()> completion) {
     // The owner of event_tap_monitor may be destroyed while the run loop is
     // finishing a callback. Disconnect the signals first so that callbacks
@@ -346,6 +350,42 @@ private:
     CGEventSetFlags(event, synchronized_flags);
   }
 
+  // True when the event is our own virtual HID pointing output coming back through the tap.
+  // It must reach the apps as-is, and must not re-enter the manipulator pipeline.
+  bool is_virtual_hid_pointing_event(const std::pair<event_type, event_queue::event>& pair) {
+    if (!cgeventtap_fallback_enabled_) {
+      return false;
+    }
+
+    if (auto m = pair.second.get_if<momentary_switch_event>()) {
+      return keyboard_suppression_->consume(*m,
+                                            pair.first,
+                                            pqrs::osx::chrono::mach_absolute_time_point());
+    }
+
+    return false;
+  }
+
+  // Physical side buttons are dropped from the CGEvent stream and re-posted through the
+  // virtual HID pointing device, so that `from.pointing_button` rules can match them.
+  // Left and right buttons and motion keep passing through.
+  //
+  // Dropping requires the virtual pointing device: a dropped click that is never re-posted
+  // would be lost, and the user would see the button stop working. It also requires the
+  // fallback, because only kCGEventTapOptionDefault can drop an event.
+  bool can_drop_pointing_button(const std::pair<event_type, event_queue::event>& pair) const {
+    if (!cgeventtap_fallback_enabled_ ||
+        !virtual_hid_pointing_ready_.load()) {
+      return false;
+    }
+
+    if (auto m = pair.second.get_if<momentary_switch_event>()) {
+      return event_tap_utility::is_side_button(*m);
+    }
+
+    return false;
+  }
+
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
     switch (type) {
       case kCGEventTapDisabledByTimeout:
@@ -379,10 +419,21 @@ private:
         // Example: left_control is remapped to left_shift, but a click is still interpreted as a control-click.
         // Align pointing-event modifier flags with the modifiers currently pressed on the virtual HID device.
         sync_pointing_event_modifier_flags(event);
+
         if (auto pair = event_tap_utility::make_event(type, event)) {
+          // Our own virtual HID output must reach the apps untouched and must not
+          // re-enter the pipeline.
+          if (is_virtual_hid_pointing_event(*pair)) {
+            break;
+          }
+
           enqueue_to_dispatcher([this, pair] {
             pointing_device_event_arrived(pair->first, pair->second);
           });
+
+          if (can_drop_pointing_button(*pair)) {
+            return nullptr;
+          }
         }
         break;
 
@@ -462,6 +513,7 @@ private:
   bool cgeventtap_fallback_enabled_;
   // Written by the dispatcher and read by the event tap run-loop thread.
   std::atomic<bool> virtual_hid_keyboard_is_iso_{false};
+  std::atomic<bool> virtual_hid_pointing_ready_{false};
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   // event_tap_mutex_ needs synchronization because it is accessed from both the run loop thread and the dispatcher thread.
