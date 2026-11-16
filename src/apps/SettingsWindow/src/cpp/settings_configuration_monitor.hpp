@@ -85,6 +85,14 @@ public:
     monitor_ = nullptr;
   }
 
+  void async_retry_failed_load() {
+    enqueue_to_dispatcher([this] {
+      if (monitor_) {
+        monitor_->async_retry_failed_load();
+      }
+    });
+  }
+
   [[nodiscard]] pqrs::not_null_shared_ptr_t<settings_configuration_store> get_configuration_store() const {
     return configuration_store_;
   }

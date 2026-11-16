@@ -10,6 +10,7 @@
 #include "run_loop_thread_utility.hpp"
 #include "services_utility.hpp"
 #include "settings_components_manager.hpp"
+#include "settings_configuration_file_access.hpp"
 #include "settings_cpp.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
@@ -212,6 +213,16 @@ void krbn_launch_uninstaller() {
 
 bool krbn_system_core_configuration_file_path_exists() {
   return krbn::filesystem_utility::exists(krbn::constants::get_system_core_configuration_file_path());
+}
+
+krbn_configuration_file_access krbn_check_configuration_file_access() {
+  return check_configuration_file_access(krbn::constants::get_user_core_configuration_file_path());
+}
+
+void krbn_async_retry_failed_configuration_load() {
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->async_retry_failed_configuration_load();
+  }
 }
 
 bool krbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists() {

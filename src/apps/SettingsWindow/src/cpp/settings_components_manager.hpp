@@ -58,6 +58,10 @@ public:
     return configuration_monitor_.get_configuration_store();
   }
 
+  void async_retry_failed_configuration_load() {
+    configuration_monitor_.async_retry_failed_load();
+  }
+
   [[nodiscard]] bool console_user_server_client_connected() const {
     return console_user_server_client_.connected();
   }

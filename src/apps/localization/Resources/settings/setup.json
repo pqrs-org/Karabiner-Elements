@@ -71,6 +71,26 @@
         ,"ja": "バックグラウンドサービスは有効です。"
         ,"zh-Hans": "后台服务已启用。"
     },
+    "settings.setup.configuration.directory_not_writable": {
+        "en": "Allow writing and access to the directory containing karabiner.json. Saving requires creating a temporary file in that directory and replacing karabiner.json."
+        ,"ja": "karabiner.jsonを置いているディレクトリへの書き込みとアクセスを許可してください。保存時には、そのディレクトリに一時ファイルを作成してkarabiner.jsonを置き換えます。"
+        ,"zh-Hans": "请允许写入和访问 karabiner.json 所在的目录。保存时需要在该目录中创建临时文件并替换 karabiner.json。"
+    },
+    "settings.setup.configuration.file_not_writable": {
+        "en": "Allow Karabiner-Elements to write to karabiner.json. This warning will clear automatically after access is restored."
+        ,"ja": "karabiner.jsonへの書き込みを許可してください。アクセス権が修正されると、この警告は自動的に消えます。"
+        ,"zh-Hans": "请允许 Karabiner-Elements 写入 karabiner.json。恢复访问权限后，此警告将自动消失。"
+    },
+    "settings.setup.configuration.not_writable": {
+        "en": "karabiner.json cannot be saved safely"
+        ,"ja": "karabiner.jsonを安全に保存できません"
+        ,"zh-Hans": "无法安全保存 karabiner.json"
+    },
+    "settings.setup.configuration.ownership_ignored": {
+        "en": "Ownership is ignored on the volume containing karabiner.json. Enable ownership on that volume, or move the configuration to a volume where ownership is enabled."
+        ,"ja": "karabiner.jsonが置かれているボリュームでは所有者情報が無視されています。そのボリュームの所有者情報を有効にするか、所有者情報が有効なボリュームに設定ファイルを移動してください。"
+        ,"zh-Hans": "karabiner.json 所在的宗卷忽略了所有权。请在该宗卷上启用所有权，或将配置移至已启用所有权的宗卷。"
+    },
     "settings.setup.configuration.parse_error": {
         "en": "karabiner.json couldn't be loaded due to a parse error"
         ,"ja": "構文エラーのためkarabiner.jsonを読み込めませんでした"
@@ -102,6 +122,11 @@
             "或为 Karabiner-Elements 及其后台服务授予“完全磁盘访问权限”。",
             "然后重启 Karabiner-Elements。"
         ]
+    },
+    "settings.setup.configuration.permissions_unsupported": {
+        "en": "The volume containing karabiner.json does not support file permissions. Move the configuration to a volume that supports ownership and permissions, such as APFS."
+        ,"ja": "karabiner.jsonが置かれているボリュームはファイルのアクセス権に対応していません。APFSなど、所有者情報とアクセス権に対応したボリュームに設定ファイルを移動してください。"
+        ,"zh-Hans": "karabiner.json 所在的宗卷不支持文件权限。请将配置移至支持所有权和权限的宗卷，例如 APFS。"
     },
     "settings.setup.connection.agent_retry": {
         "en": [

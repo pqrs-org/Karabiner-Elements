@@ -6,6 +6,7 @@ struct ContentView: View {
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
+  @State private var configurationFileAccess = krbn_configuration_file_access_ok
 
   private let padding = 6.0
 
@@ -18,6 +19,8 @@ struct ContentView: View {
     ZStack(alignment: .top) {
       if karabinerJsonPermissionError {
         KarabinerJsonPermissionErrorView()
+      } else if configurationFileAccess != krbn_configuration_file_access_ok {
+        KarabinerJsonWriteErrorView(error: configurationFileAccess)
       } else if contentViewStates.displayedAlert == .karabinerJsonParseError {
         // `.karabinerJsonParseError` is published only after a parse error persists for three seconds of
         // awake time, so transient errors while an external process rewrites
@@ -92,6 +95,28 @@ struct ContentView: View {
       }
     }
     .modifier(SettingsLanguage())
+    .task {
+      // Poll off MainActor: configuration paths may point to external or network volumes.
+      // Rechecking also lets the user fix permissions without restarting Settings.
+      while !Task.isCancelled {
+        let result = await Task.detached(priority: .utility) {
+          krbn_check_configuration_file_access()
+        }.value
+        guard !Task.isCancelled else { return }
+        configurationFileAccess = result
+        if result == krbn_configuration_file_access_ok && !settings.configurationLoaded {
+          // Permission/ownership fixes may not change file contents, so the file monitor
+          // can suppress their notifications. Retry until loading has recovered; C++ only
+          // retries failed loads and leaves an already loaded configuration untouched.
+          krbn_async_retry_failed_configuration_load()
+        }
+        do {
+          try await Task.sleep(for: .seconds(3))
+        } catch {
+          return
+        }
+      }
+    }
     .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
     .animation(.easeInOut(duration: 0.2), value: debugPreview.alert?.isToast)
     .frame(

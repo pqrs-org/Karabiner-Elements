@@ -63,6 +63,15 @@ typedef void (*krbn_json_output_callback_with_context)(const char* _Nonnull json
 
 void krbn_get_user_configuration_directory(char* _Nonnull buffer,
                                            size_t length);
+typedef enum {
+  krbn_configuration_file_access_ok,
+  krbn_configuration_file_access_file_not_writable,
+  krbn_configuration_file_access_directory_not_writable,
+  krbn_configuration_file_access_permissions_unsupported,
+  krbn_configuration_file_access_ownership_ignored,
+} krbn_configuration_file_access;
+krbn_configuration_file_access krbn_check_configuration_file_access(void);
+void krbn_async_retry_failed_configuration_load(void);
 void krbn_get_user_complex_modifications_assets_directory(char* _Nonnull buffer,
                                                           size_t length);
 void krbn_get_user_tmp_directory(char* _Nonnull buffer,
