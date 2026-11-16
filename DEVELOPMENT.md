@@ -413,6 +413,8 @@ The event flow is therefore as follows:
 - Send the modified events to the virtual device.
 - Since events sent via the virtual device re-enter through `CGEventTap`, ignore events that have already been sent.
 
+Side buttons follow the same flow once they are routed through the pipeline. See [Pointing buttons](#pointing-buttons).
+
 The most challenging part is filtering out re-entrant events.
 `CGEventTap` does not provide reliable information about which device generated an event, so there is no stable way to detect events originating from the virtual device. (`kCGEventSourceUnixProcessID` and `kCGEventSourceUserData` both become `0` after passing through the virtual device.)
 
@@ -422,6 +424,21 @@ In theory, using `CGEventCreateKeyboardEvent` would simplify this, since re-entr
 However, key events generated with `CGEventCreateKeyboardEvent` and posted via `CGEventPost` have behavioral limitations. For example, `fn` key events are not treated by macOS in the same way as true hardware `fn` key presses for certain system-level behaviors, such as tapping `fn` by itself or using `fn+control+arrow keys` for window tiling.
 
 Because of this, using a virtual device is still necessary in order to generate key events that behave naturally.
+
+### Pointing buttons
+
+Side buttons (HID `button_3` and above) follow the same principle as key events when the CGEventTap fallback is enabled:
+
+- The event tap drops `kCGEventOtherMouseDown`/`kCGEventOtherMouseUp` and passes them to the manipulator pipeline, so `from.pointing_button` rules can match them.
+- The pipeline re-posts them through the virtual HID pointing device.
+
+Events from left and right buttons (`button_1`, `button_2`), pointer motion, and scroll wheel are left untouched in the CGEvent stream. The tap reports them later so that modifier-flag housekeeping still works.
+
+Caveats:
+
+- The virtual pointing device must be ready before dropping events. Otherwise, the dropped events will get lost permanently.
+- Re-entrant detection uses TTL rather than source identifier. `kCGEventSourceUnixProcessID` and `kCGEventSourceUserData` will be `0` after passing through the virtual device. This is the same as keyboard events.
+- `device_if` cannot match these events. Same as keyboard events too.
 
 ### Handling internal state before and after Secure Event Input
 
