@@ -341,7 +341,7 @@ struct DevicesView: View {
 
             if settings.configuration.globalConfiguration.enableCgeventtapFallback
               && !deviceConfiguration.modifyEvents
-              && connectedDevice.isKeyboard
+              && (connectedDevice.isKeyboard || connectedDevice.isPointingDevice)
             {
               Label(
                 title: {
