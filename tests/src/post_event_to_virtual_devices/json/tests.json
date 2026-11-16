@@ -567,6 +567,18 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_from_event_tap_3_result.json"
     },
     {
+        "description": "event tap side button matched by from.pointing_button",
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue": "json/test_cases/event_tap_side_button_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/event_tap_side_button_1_result.json"
+    },
+    {
+        "description": "event tap side button without a matching rule is posted unchanged",
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue": "json/test_cases/event_tap_side_button_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/event_tap_side_button_2_result.json"
+    },
+    {
         "description": "control+p to up_arrow (from modifiers.optional) / control-p, tab",
         "rules": ["json/rules/complex_modifications.json"],
         "input_event_queue": "json/test_cases/from_modifiers_optional_1_input.jsonc",

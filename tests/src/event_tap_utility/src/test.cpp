@@ -93,6 +93,30 @@ int main() {
            krbn::momentary_switch_event(pqrs::hid::usage_page::button, pqrs::hid::usage::button::button_32));
   };
 
+  "is_side_button covers exactly the buttons the event tap drops"_test = [] {
+    using krbn::event_tap_utility;
+    namespace hid = pqrs::hid;
+
+    auto button = [](pqrs::hid::usage::value_t usage) {
+      return krbn::momentary_switch_event(hid::usage_page::button, usage);
+    };
+
+    // Left and right stay in the CGEvent stream.
+    expect(!event_tap_utility::is_side_button(button(hid::usage::button::button_1)));
+    expect(!event_tap_utility::is_side_button(button(hid::usage::button::button_2)));
+
+    // Everything else is dropped and re-posted through the virtual pointing device.
+    for (auto usage : {hid::usage::button::button_3, hid::usage::button::button_4, hid::usage::button::button_5}) {
+      expect(event_tap_utility::is_side_button(button(usage)));
+    }
+
+    // Other usage pages are never treated as buttons.
+    expect(!event_tap_utility::is_side_button(
+        krbn::momentary_switch_event(hid::usage_page::keyboard_or_keypad,
+                                     hid::usage::keyboard_or_keypad::keyboard_a)));
+    expect(!event_tap_utility::is_side_button(krbn::momentary_switch_event()));
+  };
+
   "make flags changed event for side-specific modifiers"_test = [] {
     struct modifier final {
       pqrs::hid::usage::value_t usage;
