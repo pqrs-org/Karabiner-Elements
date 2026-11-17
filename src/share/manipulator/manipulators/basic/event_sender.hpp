@@ -17,6 +17,33 @@ enum class to_if_alone_cancellation {
   required,
 };
 
+// Expand `${key_code}` in `shell_command` and `set_notification_message.text`
+// using the key that triggered the manipulator (the first momentary switch event of the `from` events).
+// `to` is returned as it is if there is nothing to expand.
+inline pqrs::not_null_shared_ptr_t<to_event_definition> expand_variables(
+    const pqrs::not_null_shared_ptr_t<to_event_definition>& to,
+    manipulated_original_event::manipulated_original_event& current_manipulated_original_event) {
+  switch (to->get_event_definition().get_type()) {
+    case event_definition::type::shell_command:
+    case event_definition::type::set_notification_message:
+      break;
+
+    default:
+      return to;
+  }
+
+  for (const auto& from_event : current_manipulated_original_event.get_from_events()) {
+    if (auto e = from_event.get_event().get_if<momentary_switch_event>()) {
+      if (auto expanded = to_event_definition::make_with_expanded_variables(*to, *e)) {
+        return *expanded;
+      }
+      break;
+    }
+  }
+
+  return to;
+}
+
 inline to_event_definitions filter_and_replace_events(const to_event_definitions& to_events,
                                                       const conditions::condition_context& condition_context,
                                                       manipulator_environment& manipulator_environment,
@@ -37,9 +64,10 @@ inline to_event_definitions filter_and_replace_events(const to_event_definitions
     // Replace
     //
 
-    // If no replacement is needed, copy it as-is.
+    // If no replacement is needed, copy it as-is
+    // (after expanding variables in string parameters, if any).
     if (to->get_event_definition().get_type() != event_definition::type::from_event) {
-      result.push_back(to);
+      result.push_back(expand_variables(to, current_manipulated_original_event));
       continue;
     }
 

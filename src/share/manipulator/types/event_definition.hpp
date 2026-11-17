@@ -56,6 +56,20 @@ public:
     return result;
   }
 
+  static event_definition make_shell_command(const std::string& value) {
+    event_definition result;
+    result.type_ = type::shell_command;
+    result.value_ = value;
+    return result;
+  }
+
+  static event_definition make_set_notification_message(const notification_message& value) {
+    event_definition result;
+    result.type_ = type::set_notification_message;
+    result.value_ = value;
+    return result;
+  }
+
   [[nodiscard]] type get_type() const {
     return type_;
   }
