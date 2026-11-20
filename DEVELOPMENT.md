@@ -390,55 +390,7 @@ Example:
 
 ## CGEventTap fallback behavior
 
-The following describes the behavior when the CGEventTap fallback is enabled via `enable_cgeventtap_fallback`.
-
-Even when the CGEventTap fallback is enabled, devices that can be handled through `IOHIDDeviceOpen` are still processed through that path in preference to `CGEventTap`.
-Therefore, only devices that meet one of the following conditions are handled via `CGEventTap`:
-
-- Devices for which `IOHIDDeviceOpen` fails for some reason.
-- Devices for which `Modify events` is turned off.
-  (This is not a typo. Since `CGEventTap` doesn't provide a way to determine the source device of an event, all events received through `CGEventTap` must be processed.
-  This means it is not possible to enable or disable processing on a per-device basis.)
-
-### Avoid processing events sent via the virtual device in CGEventTap
-
-As described above, `CGEventPost` has several limitations.
-For that reason, even when device events are captured via the CGEventTap fallback, the processed key events are still sent through the virtual device.
-(In addition, events processed through HID are also sent via the virtual device.)
-
-The event flow is therefore as follows:
-
-- Capture key events using `CGEventTap`.
-- Modify them through the manipulator pipeline.
-- Send the modified events to the virtual device.
-- Since events sent via the virtual device re-enter through `CGEventTap`, ignore events that have already been sent.
-
-The most challenging part is filtering out re-entrant events.
-`CGEventTap` does not provide reliable information about which device generated an event, so there is no stable way to detect events originating from the virtual device. (`kCGEventSourceUnixProcessID` and `kCGEventSourceUserData` both become `0` after passing through the virtual device.)
-
-To work around this, we keep track of the events sent to the virtual device and ignore matching events when they reappear.
-
-In theory, using `CGEventCreateKeyboardEvent` would simplify this, since re-entrant events could be identified and ignored via `kCGEventSourceUnixProcessID`.
-However, key events generated with `CGEventCreateKeyboardEvent` and posted via `CGEventPost` have behavioral limitations. For example, `fn` key events are not treated by macOS in the same way as true hardware `fn` key presses for certain system-level behaviors, such as tapping `fn` by itself or using `fn+control+arrow keys` for window tiling.
-
-Because of this, using a virtual device is still necessary in order to generate key events that behave naturally.
-
-### Handling internal state before and after Secure Event Input
-
-Another challenge with CGEventTap is how it behaves when Secure Event Input is enabled, for example while entering a password.
-In this state, no events are delivered to CGEventTap.
-While this is correct from a security perspective, it complicates things for software that relies on CGEventTap.
-
-Because events are suppressed during Secure Event Input, once it is disabled,
-the internal state of modifiers and pressed keys can suddenly become inconsistent.
-To avoid this, key states must be reset properly when Secure Event Input is enabled and disabled;
-otherwise, keys may be incorrectly treated as still being pressed.
-
-There is also a related issue: if Secure Event Input becomes active while a key is being held down, the corresponding key_up event is never observed.
-This can result in unintended key repeats.
-This can be easily reproduced by running a command such as sudo ls in Terminal.
-
-To mitigate this, all currently pressed keys must be forcibly released by emitting key_up events when Secure Event Input is detected.
+See [CGEventTap fallback behavior](docs/cgeventtap-fallback.md) for the input flow, re-entry handling, Secure Event Input behavior, and the design decision not to manipulate pointing events through the fallback.
 
 ---
 
