@@ -46,6 +46,13 @@ final class NotificationWindowManager: NSObject {
     }
 
     if screenWindows.count > screens.count {
+      // Hide windows before dropping them.
+      // Otherwise a window that is visible at this moment (e.g., the lid is closed while a notification is shown)
+      // is no longer managed by updateWindowsVisibility and stays on screen forever.
+      for window in screenWindows.suffix(screenWindows.count - screens.count) {
+        window.delegate = nil
+        window.orderOut(self)
+      }
       screenWindows.removeLast(screenWindows.count - screens.count)
     }
 
