@@ -5,36 +5,35 @@ struct InputEventHistoryActions: View {
   @ObservedObject private var eventHistory = EventHistory.shared
   @EnvironmentObject private var userSettings: UserSettings
 
-  private var visibleEntries: [EventHistoryEntry] {
-    eventHistory.visibleEntries(showUnknownEvents: userSettings.captureUnknownEvents)
-  }
-
   var body: some View {
     HStack(alignment: .center, spacing: 12) {
       Menu {
         Button("JSON") {
-          eventHistory.copyToPasteboardJSON(
-            showUnknownEvents: userSettings.captureUnknownEvents)
+          eventHistory.copyToPasteboardJSON()
         }
 
         Button("TSV") {
-          eventHistory.copyToPasteboardTSV(
-            showUnknownEvents: userSettings.captureUnknownEvents)
+          eventHistory.copyToPasteboardTSV()
         }
       } label: {
         AppLocalizedConstrainedLabel(
           "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
       }
-      .disabled(visibleEntries.isEmpty)
+      .disabled(eventHistory.entries.isEmpty)
 
       Button {
         eventHistory.clear()
       } label: {
         AppLocalizedConstrainedLabel("shared.action.clear", systemImage: "clear")
       }
-      .disabled(visibleEntries.isEmpty)
+      .disabled(eventHistory.entries.isEmpty)
 
       Spacer()
+
+      Toggle(
+        localized("event_viewer.capture.mouse_wheels"), isOn: $userSettings.captureMouseWheels
+      )
+      .toggleStyle(.checkbox)
 
       Toggle(
         localized("event_viewer.capture.unknown_events"), isOn: $userSettings.captureUnknownEvents
@@ -47,23 +46,18 @@ struct InputEventHistoryActions: View {
 struct InputEventHistoryList: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var eventHistory = EventHistory.shared
-  @EnvironmentObject private var userSettings: UserSettings
   let emptyMessage: String
-
-  private var visibleEntries: [EventHistoryEntry] {
-    eventHistory.visibleEntries(showUnknownEvents: userSettings.captureUnknownEvents)
-  }
 
   var body: some View {
     ScrollViewReader { proxy in
       ScrollView {
-        if visibleEntries.isEmpty {
+        if eventHistory.entries.isEmpty {
           Text(emptyMessage)
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(visibleEntries) { entry in
+            ForEach(eventHistory.entries) { entry in
               HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
                   Text(entry.isUnknownEvent ? "unknown" : entry.eventType)
@@ -150,19 +144,12 @@ struct InputEventHistoryList: View {
       .background(Color(NSColor.textBackgroundColor))
       .border(Color(NSColor.separatorColor), width: 2)
       .onAppear {
-        if let last = visibleEntries.last {
+        if let last = eventHistory.entries.last {
           proxy.scrollTo("divider \(last.id)", anchor: .bottom)
         }
       }
       .onChange(of: eventHistory.entries) { _ in
-        if let last = eventHistory.visibleEntries(
-          showUnknownEvents: userSettings.captureUnknownEvents
-        ).last {
-          proxy.scrollTo("divider \(last.id)", anchor: .bottom)
-        }
-      }
-      .onChange(of: userSettings.captureUnknownEvents) { _ in
-        if let last = visibleEntries.last {
+        if let last = eventHistory.entries.last {
           proxy.scrollTo("divider \(last.id)", anchor: .bottom)
         }
       }

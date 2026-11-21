@@ -56,6 +56,7 @@ void krbn_finalize(void);
 void krbn_core_service_async_get_manipulator_environment(void);
 void krbn_core_service_async_clear_user_variables(void);
 void krbn_set_hid_capture_target(bool active, uint64_t device_id);
+void krbn_set_hid_capture_mouse_wheels(bool enabled);
 void krbn_set_hid_input_report_capture_device(uint64_t device_id);
 
 void krbn_console_user_server_async_get_frontmost_application_history(void);

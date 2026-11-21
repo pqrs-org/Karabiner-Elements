@@ -6,5 +6,14 @@ final class UserSettings: ObservableObject {
 
   @AppStorage("kForceStayTop") var forceStayTop = false
   @AppStorage("kShowInAllSpaces") var showInAllSpaces = false
-  @AppStorage("captureUnknownEvents") var captureUnknownEvents = true
+  @Published var captureMouseWheels = false {
+    didSet {
+      krbn_set_hid_capture_mouse_wheels(captureMouseWheels)
+    }
+  }
+  @Published var captureUnknownEvents = true
+
+  private init() {
+    krbn_set_hid_capture_mouse_wheels(captureMouseWheels)
+  }
 }

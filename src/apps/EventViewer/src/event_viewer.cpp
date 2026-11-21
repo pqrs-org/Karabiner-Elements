@@ -32,6 +32,7 @@ std::atomic<krbn_hid_value_arrived_callback> hid_value_arrived_callback;
 std::atomic<krbn_hid_input_report_arrived_callback> hid_input_report_arrived_callback;
 std::atomic<krbn_hid_device_open_state_changed_callback> hid_device_open_state_changed_callback;
 std::atomic<krbn_secure_event_input_enabled_changed_callback> secure_event_input_enabled_changed_callback;
+std::atomic<bool> hid_capture_mouse_wheels{false};
 std::atomic<uint64_t> hid_input_report_capture_device_id{0};
 
 std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client;
@@ -276,6 +277,18 @@ private:
     }
 
     for (const auto& v : values) {
+      auto is_mouse_wheel =
+          v.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                        pqrs::hid::usage::generic_desktop::wheel) ||
+          v.conforms_to(pqrs::hid::usage_page::consumer,
+                        pqrs::hid::usage::consumer::ac_pan);
+      if (is_mouse_wheel) {
+        if (!hid_capture_mouse_wheels.load() ||
+            v.get_integer_value() == 0) {
+          continue;
+        }
+      }
+
       auto usage_page = v.get_usage_page();
       auto usage = v.get_usage();
       auto logical_max = v.get_logical_max();
@@ -532,6 +545,7 @@ bool krbn_async_request_termination(void) {
 }
 
 void krbn_finalize() {
+  hid_capture_mouse_wheels = false;
   hid_input_report_capture_device_id = 0;
   krbn::process_lifecycle_manager::terminate_shared_instance();
   scoped_run_loop_thread_manager = nullptr;
@@ -568,6 +582,10 @@ void krbn_set_hid_capture_target(bool active, uint64_t device_id) {
   } else {
     update_core_service();
   }
+}
+
+void krbn_set_hid_capture_mouse_wheels(bool enabled) {
+  hid_capture_mouse_wheels = enabled;
 }
 
 void krbn_set_hid_input_report_capture_device(uint64_t device_id) {

@@ -14,6 +14,11 @@
         ,"ja": "「取得を開始」を押すと、入力イベントの取得が始まります。"
         ,"zh-Hans": "点击“开始捕获”，即可开始捕获输入事件。"
     },
+    "event_viewer.capture.mouse_wheels": {
+        "en": "Capture mouse wheels"
+        ,"ja": "マウスホイールを取得"
+        ,"zh-Hans": "捕获鼠标滚轮"
+    },
     "event_viewer.capture.raw_events": {
         "en": "raw input events"
         ,"ja": "未加工の入力イベント"

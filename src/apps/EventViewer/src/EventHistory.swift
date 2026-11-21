@@ -54,11 +54,6 @@ func hidValueArrivedCallback(
     return
   }
 
-  // usage::generic_desktop::wheel
-  if usagePage == 0x1, usage == 0x38 {
-    return
-  }
-
   // usage::generic_desktop::hat_switch
   if usagePage == 0x1, usage == 0x39 {
     return
@@ -84,11 +79,6 @@ func hidValueArrivedCallback(
     return
   }
 
-  // usage::consumer::ac_pan (Horizontal mouse wheel)
-  if usagePage == 0xC, usage == 0x238 {
-    return
-  }
-
   // usage::consumer unknown
   if usagePage == 0xC, usage == -1 {
     return
@@ -107,8 +97,18 @@ func hidValueArrivedCallback(
   let momentarySwitchEventJsonString = momentarySwitchEventJsonStringPointer.map {
     String(cString: $0)
   }
+
   let modifierFlagName = modifierFlagNamePointer.map {
     String(cString: $0)
+  }
+
+  let mouseWheelName: String?
+  if usagePage == 0x1, usage == 0x38 {
+    mouseWheelName = "vertical_wheel"
+  } else if usagePage == 0xC, usage == 0x238 {
+    mouseWheelName = "horizontal_wheel"
+  } else {
+    mouseWheelName = nil
   }
 
   //
@@ -159,6 +159,24 @@ func hidValueArrivedCallback(
       entry.eventType = integerValue != 0 ? "on" : "off"
       entry.misc = "State notification (cannot be remapped)"
       entry.isStateNotification = true
+      EventHistory.shared.append(entry, captureToken: captureToken)
+      return
+    }
+
+    //
+    // Handle mouse wheels
+    //
+
+    if let mouseWheelName {
+      entry.eventType = "scroll"
+      entry.name = mouseWheelName
+      entry.nameJSON = "\"\(mouseWheelName)\""
+      entry.isMouseWheel = true
+
+      if !EventHistory.shared.lastPointingButtonModifierFlags.isEmpty {
+        entry.misc = "flags \(EventHistory.shared.lastPointingButtonModifierFlags)"
+      }
+
       EventHistory.shared.append(entry, captureToken: captureToken)
       return
     }
@@ -242,6 +260,7 @@ public class EventHistoryEntry: Identifiable, Equatable {
   public var name = ""
   public var nameJSON = ""
   public var misc = ""
+  public var isMouseWheel = false
   public var isUnknownEvent = false
   public var isStateNotification = false
 
@@ -282,6 +301,10 @@ public class EventHistory: ObservableObject {
   }
 
   func append(_ entry: EventHistoryEntry, captureToken: CaptureEventToken) {
+    if entry.isMouseWheel && !UserSettings.shared.captureMouseWheels {
+      return
+    }
+
     if entry.isUnknownEvent && !UserSettings.shared.captureUnknownEvents {
       return
     }
@@ -300,17 +323,10 @@ public class EventHistory: ObservableObject {
     entries.removeAll()
   }
 
-  public func visibleEntries(showUnknownEvents: Bool) -> [EventHistoryEntry] {
-    if showUnknownEvents {
-      return entries
-    }
-    return entries.filter { !$0.isUnknownEvent }
-  }
-
-  public func copyToPasteboardJSON(showUnknownEvents: Bool) {
+  public func copyToPasteboardJSON() {
     var string = "[\n"
 
-    visibleEntries(showUnknownEvents: showUnknownEvents).forEach { entry in
+    entries.forEach { entry in
       if string != "[\n" {
         string += ",\n"
       }
@@ -341,10 +357,10 @@ public class EventHistory: ObservableObject {
     copyToPasteboard(string)
   }
 
-  public func copyToPasteboardTSV(showUnknownEvents: Bool) {
+  public func copyToPasteboardTSV() {
     var lines = ["Timestamp\tType\tName\tUsage page\tUsage\tMisc"]
 
-    for entry in visibleEntries(showUnknownEvents: showUnknownEvents) {
+    for entry in entries {
       let columns = [
         entry.iso8601TimestampString,
         entry.isUnknownEvent ? "unknown" : entry.eventType,
