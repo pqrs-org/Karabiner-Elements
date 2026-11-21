@@ -7,7 +7,6 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case frontmostApplication
   case variables
   case devices
-  case settings
   case debug
 
   var id: Self { self }
@@ -20,7 +19,6 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .frontmostApplication: return "event_viewer.sidebar.frontmost_application"
     case .variables: return "event_viewer.sidebar.variables"
     case .devices: return "event_viewer.sidebar.devices"
-    case .settings: return "event_viewer.sidebar.settings"
     case .debug: return "settings.debug.title"
     }
   }
@@ -33,7 +31,6 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .frontmostApplication: return "triangle.circle"
     case .variables: return "cube"
     case .devices: return "keyboard"
-    case .settings: return "gear"
     case .debug: return "ladybug"
     }
   }
@@ -57,10 +54,6 @@ struct ContentMainView: View {
     SidebarSection(
       title: "event_viewer.sidebar.section.state",
       items: [.frontmostApplication, .variables, .devices]
-    ),
-    SidebarSection(
-      title: "event_viewer.sidebar.section.settings",
-      items: [.settings]
     ),
   ]
 
@@ -108,8 +101,6 @@ struct ContentMainView: View {
             VariablesView()
           case .devices:
             DevicesView()
-          case .settings:
-            SettingsView()
           case .debug:
             DebugAlertsView()
           }

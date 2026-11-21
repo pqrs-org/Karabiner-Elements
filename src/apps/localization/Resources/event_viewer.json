@@ -220,20 +220,10 @@
         ,"ja": "他のアプリでキーボード入力のセキュリティが保護されています。"
         ,"zh-Hans": "其他应用已启用“安全键盘输入”"
     },
-    "event_viewer.settings.all_spaces": {
-        "en": "Show EventViewer in all spaces"
-        ,"ja": "イベントビューアをすべての操作スペースに表示"
-        ,"zh-Hans": "在所有桌面空间显示事件查看器"
-    },
     "event_viewer.settings.stay_on_top": {
         "en": "Force EventViewer to stay on top of other windows"
         ,"ja": "イベントビューアを他のウィンドウより手前に表示"
         ,"zh-Hans": "始终将事件查看器窗口置于其他窗口上方"
-    },
-    "event_viewer.settings.window_behavior": {
-        "en": "Window behavior"
-        ,"ja": "ウィンドウの動作"
-        ,"zh-Hans": "窗口显示方式"
     },
     "event_viewer.sidebar.devices": {
         "en": "Devices"
@@ -265,20 +255,10 @@
         ,"ja": "キャプチャ"
         ,"zh-Hans": "捕获"
     },
-    "event_viewer.sidebar.section.settings": {
-        "en": "Settings"
-        ,"ja": "設定"
-        ,"zh-Hans": "设置"
-    },
     "event_viewer.sidebar.section.state": {
         "en": "State"
         ,"ja": "状態"
         ,"zh-Hans": "状态"
-    },
-    "event_viewer.sidebar.settings": {
-        "en": "Settings"
-        ,"ja": "設定"
-        ,"zh-Hans": "设置"
     },
     "event_viewer.sidebar.variables": {
         "en": "Variables"

@@ -4,7 +4,6 @@ import SwiftUI
 final class UserSettings: ObservableObject {
   static let shared = UserSettings()
 
-  @AppStorage("kShowInAllSpaces") var showInAllSpaces = false
   @Published var captureMouseWheels = false {
     didSet {
       krbn_set_hid_capture_mouse_wheels(captureMouseWheels)

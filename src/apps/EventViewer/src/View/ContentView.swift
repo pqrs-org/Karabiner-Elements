@@ -7,7 +7,6 @@ struct ContentView: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
-  @EnvironmentObject private var userSettings: UserSettings
 
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var inputMonitoringAlertData = InputMonitoringAlertData.shared
@@ -57,11 +56,6 @@ struct ContentView: View {
       setWindowProperty()
       if secureEventInputWarningShowing {
         stopRawInputCaptureIfNeeded()
-      }
-    }
-    .onReceive(userSettings.objectWillChange) { _ in
-      Task { @MainActor in
-        setWindowProperty()
       }
     }
     .onChange(of: staysOnTop) { _ in
@@ -166,16 +160,6 @@ struct ContentView: View {
       window.level = .normal
     }
 
-    // ----------------------------------------
-    if userSettings.showInAllSpaces {
-      window.collectionBehavior.insert(.canJoinAllSpaces)
-    } else {
-      window.collectionBehavior.remove(.canJoinAllSpaces)
-    }
-
-    window.collectionBehavior.insert(.managed)
-    window.collectionBehavior.remove(.moveToActiveSpace)
-    window.collectionBehavior.remove(.transient)
   }
 }
 
