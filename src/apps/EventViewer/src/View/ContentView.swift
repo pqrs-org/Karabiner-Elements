@@ -3,12 +3,19 @@ import SwiftUI
 struct ContentView: View {
   static let defaultContentSize = NSSize(width: 1300, height: 650)
 
+  @AppStorage("uiLanguage") private var language = "auto"
+  @AppLocalizationContext private var localized
+  @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @EnvironmentObject private var userSettings: UserSettings
 
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var inputMonitoringAlertData = InputMonitoringAlertData.shared
   @ObservedObject private var secureEventInputState = SecureEventInputState.shared
+  @StateObject private var windowReference = WindowReference()
+
+  @State private var staysOnTop = false
+  @State private var staysOnTopStatusID: UUID?
 
   var body: some View {
     ZStack {
@@ -34,6 +41,17 @@ struct ContentView: View {
               debugPreview.alert = nil
             })
       }
+
+    }
+    .background {
+      IconOnlyToolbarConfigurator().frame(width: 0, height: 0)
+      WindowAccessor { window in
+        windowReference.window = window
+        if window != nil {
+          setWindowProperty()
+        }
+      }
+      .frame(width: 0, height: 0)
     }
     .onAppear {
       setWindowProperty()
@@ -46,6 +64,10 @@ struct ContentView: View {
         setWindowProperty()
       }
     }
+    .onChange(of: staysOnTop) { _ in
+      setWindowProperty()
+      staysOnTopStatusID = UUID()
+    }
     .onChange(of: secureEventInputWarningShowing) { showing in
       if showing {
         stopRawInputCaptureIfNeeded()
@@ -55,7 +77,44 @@ struct ContentView: View {
       minWidth: Self.defaultContentSize.width,
       maxWidth: .infinity,
       minHeight: Self.defaultContentSize.height,
-      maxHeight: .infinity)
+      maxHeight: .infinity
+    )
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        HStack(spacing: 2) {
+          StayOnTopButton(
+            enabled: $staysOnTop,
+            statusPresentationID: staysOnTopStatusID,
+            statusMessage: localized(
+              "event_viewer.stay_on_top.status",
+              arguments: [
+                "value": localized(staysOnTop ? "shared.value.on" : "shared.value.off")
+              ]),
+            accessibilityLabel: localized("event_viewer.settings.stay_on_top")
+          )
+          .task(id: staysOnTopStatusID) {
+            guard let id = staysOnTopStatusID else { return }
+
+            do {
+              try await Task.sleep(for: .seconds(2))
+            } catch {
+              return
+            }
+
+            if staysOnTopStatusID == id {
+              staysOnTopStatusID = nil
+            }
+          }
+
+          Rectangle()
+            .fill(Color(NSColor.separatorColor))
+            .frame(width: 1, height: 16)
+
+          LanguagePicker(selection: $language, languages: localization.catalog.languages)
+            .fixedSize()
+        }
+      }
+    }
   }
 
   private var secureEventInputWarningShowing: Bool {
@@ -99,23 +158,144 @@ struct ContentView: View {
   }
 
   private func setWindowProperty() {
-    if let window = NSApp.windows.first {
-      if userSettings.forceStayTop {
-        window.level = .floating
-      } else {
-        window.level = .normal
-      }
+    guard let window = windowReference.window else { return }
 
-      // ----------------------------------------
-      if userSettings.showInAllSpaces {
-        window.collectionBehavior.insert(.canJoinAllSpaces)
-      } else {
-        window.collectionBehavior.remove(.canJoinAllSpaces)
-      }
+    if staysOnTop {
+      window.level = .floating
+    } else {
+      window.level = .normal
+    }
 
-      window.collectionBehavior.insert(.managed)
-      window.collectionBehavior.remove(.moveToActiveSpace)
-      window.collectionBehavior.remove(.transient)
+    // ----------------------------------------
+    if userSettings.showInAllSpaces {
+      window.collectionBehavior.insert(.canJoinAllSpaces)
+    } else {
+      window.collectionBehavior.remove(.canJoinAllSpaces)
+    }
+
+    window.collectionBehavior.insert(.managed)
+    window.collectionBehavior.remove(.moveToActiveSpace)
+    window.collectionBehavior.remove(.transient)
+  }
+}
+
+@MainActor
+private final class WindowReference: ObservableObject {
+  weak var window: NSWindow?
+}
+
+private struct WindowAccessor: NSViewRepresentable {
+  let onWindowChange: @MainActor (NSWindow?) -> Void
+
+  func makeNSView(context: Context) -> AccessorView {
+    AccessorView(onWindowChange: onWindowChange)
+  }
+
+  func updateNSView(_ view: AccessorView, context: Context) {
+    view.onWindowChange = onWindowChange
+  }
+
+  static func dismantleNSView(_ view: AccessorView, coordinator: ()) {
+    view.onWindowChange(nil)
+  }
+
+  @MainActor
+  final class AccessorView: NSView {
+    var onWindowChange: @MainActor (NSWindow?) -> Void
+
+    init(onWindowChange: @escaping @MainActor (NSWindow?) -> Void) {
+      self.onWindowChange = onWindowChange
+      super.init(frame: .zero)
+    }
+
+    required init?(coder: NSCoder) {
+      fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidMoveToWindow() {
+      super.viewDidMoveToWindow()
+      onWindowChange(window)
+    }
+  }
+}
+
+private struct StayOnTopButton: NSViewRepresentable {
+  @Binding var enabled: Bool
+  let statusPresentationID: UUID?
+  let statusMessage: String
+  let accessibilityLabel: String
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(enabled: $enabled)
+  }
+
+  func makeNSView(context: Context) -> NSButton {
+    let button = NSButton()
+    button.setButtonType(.toggle)
+    button.bezelStyle = .toolbar
+    button.imagePosition = .imageOnly
+    button.image = NSImage(systemSymbolName: "pin", accessibilityDescription: nil)
+    button.target = context.coordinator
+    button.action = #selector(Coordinator.buttonPressed(_:))
+    button.setContentHuggingPriority(.required, for: .horizontal)
+    button.setContentCompressionResistancePriority(.required, for: .horizontal)
+    return button
+  }
+
+  func updateNSView(_ button: NSButton, context: Context) {
+    context.coordinator.enabled = $enabled
+
+    button.state = enabled ? .on : .off
+    button.image = NSImage(
+      systemSymbolName: enabled ? "pin.fill" : "pin",
+      accessibilityDescription: accessibilityLabel)
+    button.toolTip = accessibilityLabel
+    button.setAccessibilityLabel(accessibilityLabel)
+
+    context.coordinator.updateStatusPanel(
+      presentationID: statusPresentationID,
+      message: statusMessage,
+      systemImage: enabled ? "pin.fill" : "pin",
+      relativeTo: button)
+  }
+
+  func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSButton, context: Context) -> CGSize? {
+    nsView.intrinsicContentSize
+  }
+
+  static func dismantleNSView(_ button: NSButton, coordinator: Coordinator) {
+    coordinator.dismiss()
+  }
+
+  @MainActor
+  final class Coordinator: NSObject {
+    var enabled: Binding<Bool>
+
+    private let statusPanel = TransientStatusPanel()
+
+    init(enabled: Binding<Bool>) {
+      self.enabled = enabled
+    }
+
+    @objc func buttonPressed(_ button: NSButton) {
+      enabled.wrappedValue = button.state == .on
+    }
+
+    func updateStatusPanel(
+      presentationID: UUID?,
+      message: String,
+      systemImage: String,
+      relativeTo button: NSButton
+    ) {
+      statusPanel.update(
+        presentationID: presentationID,
+        message: message,
+        systemImage: systemImage,
+        relativeTo: button)
+    }
+
+    func dismiss() {
+      statusPanel.dismiss()
     }
   }
 }

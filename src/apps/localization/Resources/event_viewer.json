@@ -285,6 +285,11 @@
         ,"ja": "変数"
         ,"zh-Hans": "变量"
     },
+    "event_viewer.stay_on_top.status": {
+        "en": "Stay on top: {value}"
+        ,"ja": "常に手前に表示: {value}"
+        ,"zh-Hans": "窗口置顶：{value}"
+    },
     "event_viewer.variables.clear": {
         "en": "Clear user variables"
         ,"ja": "ユーザー変数を消去"

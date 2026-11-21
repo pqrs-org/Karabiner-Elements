@@ -95,6 +95,7 @@ struct ContentView: View {
       }
     }
     .modifier(SettingsLanguage())
+    .background(IconOnlyToolbarConfigurator().frame(width: 0, height: 0))
     .task {
       // Poll off MainActor: configuration paths may point to external or network volumes.
       // Rechecking also lets the user fix permissions without restarting Settings.

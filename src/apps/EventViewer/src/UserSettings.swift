@@ -4,7 +4,6 @@ import SwiftUI
 final class UserSettings: ObservableObject {
   static let shared = UserSettings()
 
-  @AppStorage("kForceStayTop") var forceStayTop = false
   @AppStorage("kShowInAllSpaces") var showInAllSpaces = false
   @Published var captureMouseWheels = false {
     didSet {

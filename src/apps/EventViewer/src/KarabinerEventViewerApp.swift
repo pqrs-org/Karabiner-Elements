@@ -42,7 +42,7 @@ struct KarabinerEventViewerApp: App {
       content: {
         ContentView()
           .environmentObject(userSettings)
-          .modifier(StoredAppLanguage())
+          .modifier(StoredAppLanguage(pickerPlacement: .none))
       }
     )
     .commands {

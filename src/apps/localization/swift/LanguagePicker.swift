@@ -1,5 +1,38 @@
 import SwiftUI
 
+@MainActor
+struct IconOnlyToolbarConfigurator: NSViewRepresentable {
+  func makeNSView(context: Context) -> ConfiguratorView {
+    ConfiguratorView()
+  }
+
+  func updateNSView(_ view: ConfiguratorView, context: Context) {
+    view.configureToolbar()
+  }
+
+  @MainActor
+  final class ConfiguratorView: NSView {
+    override func viewDidMoveToWindow() {
+      super.viewDidMoveToWindow()
+
+      // SwiftUI can attach the toolbar after the content view enters the window.
+      DispatchQueue.main.async { [weak self] in
+        self?.configureToolbar()
+      }
+    }
+
+    func configureToolbar() {
+      guard let toolbar = window?.toolbar else { return }
+
+      toolbar.displayMode = .iconOnly
+
+      if #available(macOS 15.0, *) {
+        toolbar.allowsDisplayModeCustomization = false
+      }
+    }
+  }
+}
+
 // Use AppKit's native text rendering: SwiftUI's toolbar menu Picker can render
 // the selected text white on a light background on macOS 27.
 @MainActor
