@@ -301,11 +301,11 @@ public class EventHistory: ObservableObject {
   }
 
   func append(_ entry: EventHistoryEntry, captureToken: CaptureEventToken) {
-    if entry.isMouseWheel && !UserSettings.shared.captureMouseWheels {
+    if entry.isMouseWheel && !CaptureSettings.shared.captureMouseWheels {
       return
     }
 
-    if entry.isUnknownEvent && !UserSettings.shared.captureUnknownEvents {
+    if entry.isUnknownEvent && !CaptureSettings.shared.captureUnknownEvents {
       return
     }
 

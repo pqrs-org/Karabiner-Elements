@@ -1,8 +1,8 @@
 import SwiftUI
 
 @MainActor
-final class UserSettings: ObservableObject {
-  static let shared = UserSettings()
+final class CaptureSettings: ObservableObject {
+  static let shared = CaptureSettings()
 
   @Published var captureMouseWheels = false {
     didSet {

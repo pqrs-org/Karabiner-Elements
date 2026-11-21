@@ -6,7 +6,7 @@ struct KarabinerEventViewerApp: App {
   @AppStorage("uiLanguage") private var language = "auto"
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-  @StateObject private var userSettings: UserSettings
+  @StateObject private var captureSettings: CaptureSettings
 
   init() {
     _ = EVCoreServiceDaemonClient.shared
@@ -25,8 +25,8 @@ struct KarabinerEventViewerApp: App {
       secureEventInputEnabledChanged: secureEventInputEnabledChangedCallback,
       terminationCompleted: completePendingApplicationTermination)
 
-    let userSettings = UserSettings.shared
-    _userSettings = StateObject(wrappedValue: userSettings)
+    let captureSettings = CaptureSettings.shared
+    _captureSettings = StateObject(wrappedValue: captureSettings)
 
     if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
       InputMonitoringAlertData.shared.showing = true
@@ -41,7 +41,7 @@ struct KarabinerEventViewerApp: App {
       id: "main",
       content: {
         ContentView()
-          .environmentObject(userSettings)
+          .environmentObject(captureSettings)
           .modifier(StoredAppLanguage(pickerPlacement: .none))
       }
     )

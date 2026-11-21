@@ -3,7 +3,7 @@ import SwiftUI
 struct InputEventHistoryActions: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var eventHistory = EventHistory.shared
-  @EnvironmentObject private var userSettings: UserSettings
+  @EnvironmentObject private var captureSettings: CaptureSettings
 
   var body: some View {
     HStack(alignment: .center, spacing: 12) {
@@ -31,12 +31,12 @@ struct InputEventHistoryActions: View {
       Spacer()
 
       Toggle(
-        localized("event_viewer.capture.mouse_wheels"), isOn: $userSettings.captureMouseWheels
+        localized("event_viewer.capture.mouse_wheels"), isOn: $captureSettings.captureMouseWheels
       )
       .toggleStyle(.checkbox)
 
       Toggle(
-        localized("event_viewer.capture.unknown_events"), isOn: $userSettings.captureUnknownEvents
+        localized("event_viewer.capture.unknown_events"), isOn: $captureSettings.captureUnknownEvents
       )
       .toggleStyle(.checkbox)
     }
