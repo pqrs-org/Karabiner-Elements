@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: xcode-27
     env:
       PQRS_ORG_ALLOW_MISSING_CODE_SIGN_IDENTITIES: "true"
       PQRS_ORG_CODE_SIGN_IDENTITY: "dummy"
@@ -25,6 +25,8 @@ jobs:
         with:
           fetch-depth: 1
           submodules: recursive
+      - name: select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
       - name: brew install
         run: brew install xcodegen
       - name: package

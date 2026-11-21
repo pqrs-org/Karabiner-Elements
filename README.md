@@ -47,7 +47,7 @@ To edit translations or add a language, see the [localization guide](src/apps/lo
 ### System requirements to build Karabiner-Elements
 
 - macOS 15+
-- Xcode 26+
+- Xcode 27+
 - Command Line Tools for Xcode (`xcode-select --install`)
 - xz (`brew install xz`)
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
