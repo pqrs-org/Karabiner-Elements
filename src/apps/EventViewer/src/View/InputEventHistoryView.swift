@@ -36,7 +36,8 @@ struct InputEventHistoryActions: View {
       .toggleStyle(.checkbox)
 
       Toggle(
-        localized("event_viewer.capture.unknown_events"), isOn: $captureSettings.captureUnknownEvents
+        localized("event_viewer.capture.unknown_events"),
+        isOn: $captureSettings.captureUnknownEvents
       )
       .toggleStyle(.checkbox)
     }
