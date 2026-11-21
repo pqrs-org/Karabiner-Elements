@@ -123,6 +123,9 @@ private struct TransientStatusPanelContent: View {
 
   var body: some View {
     Label(message, systemImage: systemImage)
+      // macOS 13 may choose an icon-only automatic label style in an NSPanel,
+      // so explicitly include the title.
+      .labelStyle(.titleAndIcon)
       .padding(.horizontal, 10)
       .padding(.vertical, 7)
       .background(
