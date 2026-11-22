@@ -3030,9 +3030,9 @@
         ,"zh-Hans": "向上滚动（慢速）"
     },
     "settings.key_picker.search": {
-        "en": "Search keys"
-        ,"ja": "キーを検索"
-        ,"zh-Hans": "搜索按键"
+        "en": "Search"
+        ,"ja": "検索"
+        ,"zh-Hans": "搜索"
     },
     "settings.key_picker.shift_key.0": {
         "en": "shift + 0"
