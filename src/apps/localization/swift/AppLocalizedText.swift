@@ -117,5 +117,9 @@ struct AppLocalizationContext: DynamicProperty {
     func callAsFunction(_ key: String, arguments: [String: String] = [:]) -> String {
       AppLanguage.text(key, locale: locale, catalog: catalog, arguments: arguments)
     }
+
+    func allLocalizedStrings(for key: String) -> [String] {
+      catalog.strings[key].map { Array($0.values) } ?? [key]
+    }
   }
 }

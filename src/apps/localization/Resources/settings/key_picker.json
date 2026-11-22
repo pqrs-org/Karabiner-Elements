@@ -1644,6 +1644,11 @@
         ,"ja": "マウス移動: 上（遅い）"
         ,"zh-Hans": "鼠标向上移动（慢速）"
     },
+    "settings.key_picker.no_search_results": {
+        "en": "No matching results."
+        ,"ja": "一致する結果はありません。"
+        ,"zh-Hans": "没有匹配的结果。"
+    },
     "settings.key_picker.numbers": {
         "en": "Number keys"
         ,"ja": "数字キー"
@@ -3023,6 +3028,11 @@
         "en": "scroll up (slow)"
         ,"ja": "スクロール: 上（遅い）"
         ,"zh-Hans": "向上滚动（慢速）"
+    },
+    "settings.key_picker.search": {
+        "en": "Search keys"
+        ,"ja": "キーを検索"
+        ,"zh-Hans": "搜索按键"
     },
     "settings.key_picker.shift_key.0": {
         "en": "shift + 0"

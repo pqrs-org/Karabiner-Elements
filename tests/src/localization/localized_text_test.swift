@@ -10,6 +10,10 @@ struct LocalizedTextTests {
           .utf8))
     let en = Locale(identifier: "en")
     let ja = Locale(identifier: "ja")
+    let lookup = AppLocalizationContext.Lookup(locale: en, catalog: catalog)
+
+    precondition(Set(lookup.allLocalizedStrings(for: "label")) == Set(["Feature", "機能"]))
+    precondition(lookup.allLocalizedStrings(for: "unknown") == ["unknown"])
 
     let combined = AppLocalizedText([
       "label",
