@@ -13,7 +13,7 @@ struct SimpleModificationPickerView: View {
     }
   }
 
-  private enum PickerItem: Hashable {
+  private enum PickerRow: Hashable {
     case category(UUID)
     case entry(categoryID: UUID, entryID: UUID)
   }
@@ -31,7 +31,7 @@ struct SimpleModificationPickerView: View {
   @State private var listFocusRequest = 0
   @State private var presented = false
   @State private var searchText = ""
-  @State private var selectedItem: PickerItem?
+  @State private var selectedRow: PickerRow?
   private(set) var categories: SimpleModificationDefinitionCategories
   private(set) var label: String
   private(set) var action: (_ json: String) -> Void
@@ -42,7 +42,7 @@ struct SimpleModificationPickerView: View {
       Button {
         expandedCategoryIDs.removeAll()
         searchText = ""
-        selectedItem = nil
+        selectedRow = nil
         presented = true
       } label: {
         GeometryReader { labelGeometry in
@@ -78,7 +78,7 @@ struct SimpleModificationPickerView: View {
           }
           .padding(10)
           .onChange(of: searchText) { _ in
-            selectedItem = visibleItems.first
+            updateSearchResults()
           }
 
           Divider()
@@ -89,38 +89,30 @@ struct SimpleModificationPickerView: View {
               .frame(maxWidth: .infinity, maxHeight: .infinity)
           } else {
             ScrollViewReader { proxy in
-              List(selection: $selectedItem) {
+              List(selection: $selectedRow) {
                 ForEach(filteredCategories) { category in
-                  if normalizedSearchText.isEmpty {
-                    Button {
-                      toggleCategory(category.id)
-                    } label: {
-                      categoryLabel(
-                        category,
-                        expanded: expandedCategoryIDs.contains(category.id)
-                      )
-                    }
-                    .buttonStyle(.plain)
-                    .id(PickerItem.category(category.id))
-                    .tag(PickerItem.category(category.id))
+                  Button {
+                    toggleCategory(category.id)
+                  } label: {
+                    categoryLabel(
+                      category,
+                      expanded: expandedCategoryIDs.contains(category.id)
+                    )
+                  }
+                  .buttonStyle(.plain)
+                  .id(PickerRow.category(category.id))
+                  .tag(PickerRow.category(category.id))
 
-                    if expandedCategoryIDs.contains(category.id) {
-                      entryRows(category.entries, categoryID: category.id, indented: true)
-                    }
-                  } else {
-                    Section {
-                      entryRows(category.entries, categoryID: category.id)
-                    } header: {
-                      Text(verbatim: localizedLabel(category.name))
-                    }
+                  if expandedCategoryIDs.contains(category.id) {
+                    entryRows(category.entries, categoryID: category.id)
                   }
                 }
               }
               .listStyle(.inset)
               .animation(Self.categoryExpansionAnimation, value: expandedCategoryIDs)
-              .onChange(of: selectedItem) { item in
-                guard let item else { return }
-                proxy.scrollTo(item)
+              .onChange(of: selectedRow) { row in
+                guard let row else { return }
+                proxy.scrollTo(row)
               }
             }
           }
@@ -133,7 +125,7 @@ struct SimpleModificationPickerView: View {
             rowClickHandler: handleRowClick)
         }
         .onAppear {
-          selectedItem = visibleItems.first
+          selectedRow = visibleRows.first
         }
       }
     }
@@ -165,27 +157,26 @@ struct SimpleModificationPickerView: View {
     .contentShape(Rectangle())
   }
 
-  @ViewBuilder
   private func categoryLabel(
     _ category: SimpleModificationDefinitionCategory,
-    expanded: Bool? = nil
+    expanded: Bool
   ) -> some View {
-    HStack {
-      if let expanded {
-        Image(systemName: "chevron.right")
-          .frame(width: 12)
-          .foregroundStyle(.secondary)
-          .rotationEffect(.degrees(expanded ? 90 : 0))
-      }
+    let isSelected = category.include(label: label)
+
+    return HStack {
+      Image(systemName: "chevron.right")
+        .frame(width: 12)
+        .foregroundStyle(.secondary)
+        .rotationEffect(.degrees(expanded ? 90 : 0))
 
       Label {
         Text(verbatim: localizedLabel(category.name))
       } icon: {
         Image(
-          systemName: category.include(label: label)
+          systemName: isSelected
             ? "checkmark.circle" : "circle"
         )
-        .foregroundStyle(category.include(label: label) ? Color.accentColor : Color.secondary)
+        .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
       }
       .labelStyle(.titleAndIcon)
 
@@ -193,13 +184,13 @@ struct SimpleModificationPickerView: View {
     }
   }
 
-  @ViewBuilder
   private func entryRows(
     _ entries: [SimpleModificationDefinitionEntry],
-    categoryID: UUID,
-    indented: Bool = false
+    categoryID: UUID
   ) -> some View {
-    ForEach(entries) { entry in
+    return ForEach(entries) { entry in
+      let isSelected = entry.label == label
+
       Button {
         _ = selectEntry(entry.id)
       } label: {
@@ -207,39 +198,33 @@ struct SimpleModificationPickerView: View {
           Text(verbatim: localizedLabel(entry.label))
         } icon: {
           Image(
-            systemName: entry.label == label
+            systemName: isSelected
               ? "checkmark.circle.fill" : "circle"
           )
-          .foregroundStyle(entry.label == label ? Color.accentColor : Color.secondary)
+          .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
         }
         .labelStyle(.titleAndIcon)
         .frame(maxWidth: .infinity, alignment: .leading)
         // The disclosure indicator offsets the category checkmark by about 20 points.
         // Indent one level beyond that checkmark so the child hierarchy is visible.
-        .padding(.leading, indented ? 40 : 0)
+        .padding(.leading, 40)
       }
       .buttonStyle(.plain)
-      .id(PickerItem.entry(categoryID: categoryID, entryID: entry.id))
-      .tag(PickerItem.entry(categoryID: categoryID, entryID: entry.id))
+      .id(PickerRow.entry(categoryID: categoryID, entryID: entry.id))
+      .tag(PickerRow.entry(categoryID: categoryID, entryID: entry.id))
     }
   }
 
-  private var visibleItems: [PickerItem] {
+  private var visibleRows: [PickerRow] {
     filteredCategories.flatMap { category in
-      if normalizedSearchText.isEmpty {
-        var items: [PickerItem] = [.category(category.id)]
-        if expandedCategoryIDs.contains(category.id) {
-          items.append(
-            contentsOf: category.entries.map {
-              .entry(categoryID: category.id, entryID: $0.id)
-            })
-        }
-        return items
+      var rows: [PickerRow] = [.category(category.id)]
+      if expandedCategoryIDs.contains(category.id) {
+        rows.append(
+          contentsOf: category.entries.map {
+            .entry(categoryID: category.id, entryID: $0.id)
+          })
       }
-
-      return category.entries.map {
-        .entry(categoryID: category.id, entryID: $0.id)
-      }
+      return rows
     }
   }
 
@@ -250,20 +235,18 @@ struct SimpleModificationPickerView: View {
     case .down:
       moveSelectionVertically(by: 1)
     case .left:
-      switch selectedItem {
+      switch selectedRow {
       case .category(let categoryID):
         setExpanded(false, categoryID: categoryID)
-      case .entry(let categoryID, _) where normalizedSearchText.isEmpty:
-        selectedItem = .category(categoryID)
-      case .entry:
-        break
+      case .entry(let categoryID, _):
+        selectedRow = .category(categoryID)
       case nil:
         break
       }
     case .right:
-      let item = selectedItem ?? visibleItems.first
-      selectedItem = item
-      if case .category(let categoryID) = item {
+      let row = selectedRow ?? visibleRows.first
+      selectedRow = row
+      if case .category(let categoryID) = row {
         setExpanded(true, categoryID: categoryID)
       }
     default:
@@ -272,22 +255,22 @@ struct SimpleModificationPickerView: View {
   }
 
   private func moveSelectionVertically(by offset: Int) {
-    let items = visibleItems
-    guard !items.isEmpty else { return }
+    let rows = visibleRows
+    guard !rows.isEmpty else { return }
 
-    guard let selectedItem, let index = items.firstIndex(of: selectedItem) else {
-      self.selectedItem = offset > 0 ? items.first : items.last
+    guard let selectedRow, let index = rows.firstIndex(of: selectedRow) else {
+      self.selectedRow = offset > 0 ? rows.first : rows.last
       return
     }
 
-    let nextIndex = min(max(index + offset, items.startIndex), items.index(before: items.endIndex))
-    self.selectedItem = items[nextIndex]
+    let nextIndex = min(max(index + offset, rows.startIndex), rows.index(before: rows.endIndex))
+    self.selectedRow = rows[nextIndex]
   }
 
   private func handleRowClick(_ row: Int) -> Bool {
-    guard visibleItems.indices.contains(row) else { return false }
+    guard visibleRows.indices.contains(row) else { return false }
 
-    switch visibleItems[row] {
+    switch visibleRows[row] {
     case .category(let categoryID):
       toggleCategory(categoryID)
       return true
@@ -350,7 +333,7 @@ struct SimpleModificationPickerView: View {
   }
 
   private func activateSelectedItem() {
-    switch selectedItem {
+    switch selectedRow {
     case .category(let categoryID):
       setExpanded(!expandedCategoryIDs.contains(categoryID), categoryID: categoryID)
     case .entry(_, let entryID):
@@ -361,9 +344,19 @@ struct SimpleModificationPickerView: View {
   }
 
   private func toggleCategory(_ categoryID: UUID) {
-    selectedItem = .category(categoryID)
+    selectedRow = .category(categoryID)
     setExpanded(!expandedCategoryIDs.contains(categoryID), categoryID: categoryID)
     listFocusRequest += 1
+  }
+
+  private func updateSearchResults() {
+    if normalizedSearchText.isEmpty {
+      expandedCategoryIDs.removeAll()
+    } else {
+      expandedCategoryIDs = Set(filteredCategories.map(\.id))
+    }
+
+    selectedRow = visibleRows.first
   }
 
   private func selectEntry(_ entryID: UUID) -> Bool {
@@ -529,8 +522,8 @@ private struct SimpleModificationPickerInteractionMonitor: NSViewRepresentable {
 
           if event.type == .leftMouseDown {
             guard event.window === window else { return false }
-            if let itemIndex = self.itemIndex(at: event.locationInWindow, in: window) {
-              return self.rowClickHandler(itemIndex)
+            if let row = self.row(at: event.locationInWindow, in: window) {
+              return self.rowClickHandler(row)
             }
             return false
           }
@@ -543,21 +536,12 @@ private struct SimpleModificationPickerInteractionMonitor: NSViewRepresentable {
       }
     }
 
-    private func itemIndex(at windowPoint: NSPoint, in window: NSWindow) -> Int? {
+    private func row(at windowPoint: NSPoint, in window: NSWindow) -> Int? {
       if let tableView = MonitorView.firstListView(in: window.contentView) as? NSTableView {
         let point = tableView.convert(windowPoint, from: nil)
         guard tableView.bounds.contains(point) else { return nil }
         let row = tableView.row(at: point)
-        guard row >= 0 else { return nil }
-
-        // SwiftUI List represents Section headers as group rows. Exclude those rows so
-        // the resulting index matches the flattened PickerItem array.
-        guard !isGroupRow(row, in: tableView) else { return nil }
-        return (0..<row).reduce(into: 0) { itemIndex, precedingRow in
-          if !isGroupRow(precedingRow, in: tableView) {
-            itemIndex += 1
-          }
-        }
+        return row >= 0 ? row : nil
       }
 
       if let collectionView = MonitorView.firstListView(in: window.contentView) as? NSCollectionView
@@ -572,10 +556,6 @@ private struct SimpleModificationPickerInteractionMonitor: NSViewRepresentable {
       }
 
       return nil
-    }
-
-    private func isGroupRow(_ row: Int, in tableView: NSTableView) -> Bool {
-      tableView.delegate?.tableView?(tableView, isGroupRow: row) ?? false
     }
 
     func removeMonitor() {
