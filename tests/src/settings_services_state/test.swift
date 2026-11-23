@@ -46,9 +46,12 @@ import Foundation
         #"{"core_daemons_running":true,"core_agents_running":null}"#.utf8))
     precondition(remoteContext.coreDaemonsRunning == true)
     precondition(remoteContext.coreAgentsRunning == nil)
-    let encodedContext =
-      try JSONSerialization.jsonObject(
-        with: JSONEncoder().encode(remoteContext)) as! [String: Any]
+    guard
+      let encodedContext = try JSONSerialization.jsonObject(
+        with: JSONEncoder().encode(remoteContext)) as? [String: Any]
+    else {
+      preconditionFailure("Expected an encoded guidance context object")
+    }
     precondition(Set(encodedContext.keys) == ["core_daemons_running"])
     let stoppedContext = try JSONDecoder().decode(
       SettingsWindowGuidanceContext.self,

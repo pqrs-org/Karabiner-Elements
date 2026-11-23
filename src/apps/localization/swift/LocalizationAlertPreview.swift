@@ -51,10 +51,11 @@ private struct PreviewInputObserver: NSViewRepresentable {
 
     func start(view: NSView) {
       guard monitor == nil else { return }
-      monitor = NSEvent.addLocalMonitorForEvents(matching: [
-        .keyDown, .keyUp, .leftMouseDown, .rightMouseDown, .otherMouseDown,
-      ]) {
-        [weak self, weak view] event in
+      monitor = NSEvent.addLocalMonitorForEvents(
+        matching: [
+          .keyDown, .keyUp, .leftMouseDown, .rightMouseDown, .otherMouseDown,
+        ]
+      ) { [weak self, weak view] event in
         let intercepted = MainActor.assumeIsolated {
           guard let self, let window = view?.window, event.window === window else {
             return false

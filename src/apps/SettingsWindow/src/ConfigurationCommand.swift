@@ -71,13 +71,17 @@ func sendConfigurationCommand(
     var command = parameters
     command["action"] = action.rawValue
     let data = try JSONSerialization.data(withJSONObject: command)
-    let json = String(decoding: data, as: UTF8.self)
+    guard let json = String(bytes: data, encoding: .utf8) else {
+      throw CocoaError(.fileReadInapplicableStringEncoding)
+    }
     let context = Unmanaged.passRetained(ConfigurationCommandCompletion(completion)).toOpaque()
     json.withCString {
       krbn_async_configuration_command($0, configurationCommandCompleted, context)
     }
   } catch {
-    let data = try! JSONSerialization.data(withJSONObject: ["error": error.localizedDescription])
+    let data =
+      (try? JSONSerialization.data(withJSONObject: ["error": error.localizedDescription]))
+      ?? Data(#"{"error":"Failed to serialize error"}"#.utf8)
     completion(data)
   }
 }

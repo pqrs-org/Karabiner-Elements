@@ -33,8 +33,9 @@ struct OptionKeyObserver: NSViewRepresentable {
       guard eventMonitor == nil else { return }
       // Defer the first update until after SwiftUI finishes installing the view.
       Task { @MainActor [weak self] in self?.refresh() }
-      eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) {
-        [weak self] event in
+      eventMonitor = NSEvent.addLocalMonitorForEvents(
+        matching: .flagsChanged
+      ) { [weak self] event in
         MainActor.assumeIsolated {
           self?.isPressed.wrappedValue = event.modifierFlags.contains(.option)
         }
@@ -44,8 +45,11 @@ struct OptionKeyObserver: NSViewRepresentable {
         NSApplication.didBecomeActiveNotification, NSApplication.didResignActiveNotification,
       ] {
         notificationObservers.append(
-          NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) {
-            [weak self] _ in
+          NotificationCenter.default.addObserver(
+            forName: name,
+            object: nil,
+            queue: .main
+          ) { [weak self] _ in
             MainActor.assumeIsolated { self?.refresh() }
           })
       }

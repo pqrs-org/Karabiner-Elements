@@ -180,14 +180,17 @@ struct ChangedSettings {
     guard let root = object as? [String: Any] else {
       throw CocoaError(.propertyListReadCorrupt)
     }
+
     func text(_ key: String) -> String {
       AppLanguage.text(key, locale: locale, catalog: catalog)
     }
+
     func label(_ key: String, localizationKey: String?) -> String {
       guard let localizationKey else { return key }
       let translated = text(localizationKey)
       return translated == localizationKey ? key : translated
     }
+
     func valueText(_ value: Any, key: String? = nil) -> String {
       if let number = value as? NSNumber {
         if CFGetTypeID(number) == CFBooleanGetTypeID() {
@@ -262,6 +265,7 @@ struct ChangedSettings {
             rows: [Row(id: path, label: titles.last ?? path, value: valueText(value))]))
       }
     }
+
     walk(root, path: "", titles: [])
     self.sections = sections
   }
@@ -319,9 +323,14 @@ struct ChangedSettings {
       profile["complex_modifications"] = complex
       result["selected_profile"] = profile
     }
+
     let data = try JSONSerialization.data(
       withJSONObject: result, options: [.sortedKeys, .prettyPrinted])
-    return String(decoding: data, as: UTF8.self)
+    guard let json = String(bytes: data, encoding: .utf8) else {
+      throw CocoaError(.fileReadInapplicableStringEncoding)
+    }
+
+    return json
   }
 
   private static func object(_ value: Any?) throws -> [String: Any] {
@@ -350,9 +359,10 @@ struct ChangedSettings {
         let to = try? JSONSerialization.jsonObject(with: Data(toString.utf8)) as? [Any],
         !to.isEmpty
       else { continue }
-      let key = String(
-        decoding: try JSONSerialization.data(withJSONObject: from, options: .sortedKeys),
-        as: UTF8.self)
+      let data = try JSONSerialization.data(withJSONObject: from, options: .sortedKeys)
+      guard let key = String(bytes: data, encoding: .utf8) else {
+        throw CocoaError(.fileReadInapplicableStringEncoding)
+      }
       if result[key] == nil { result[key] = to }
     }
     return result

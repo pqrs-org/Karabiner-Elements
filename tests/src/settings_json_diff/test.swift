@@ -20,7 +20,10 @@ struct SettingsJSONDiffTests {
       "added": "ja",
     ]
     precondition(SettingsJSONDiff.make(from: oldSettings, to: oldSettings) == nil)
-    let patch = SettingsJSONDiff.make(from: oldSettings, to: newSettings) as! [String: Any]
+    guard let patch = SettingsJSONDiff.make(from: oldSettings, to: newSettings) as? [String: Any]
+    else {
+      preconditionFailure("Expected a settings JSON patch")
+    }
     precondition(
       NSDictionary(dictionary: patch).isEqual(to: [
         "nested": ["value": 2], "array": [2], "added": "ja",

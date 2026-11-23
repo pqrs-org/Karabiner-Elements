@@ -26,6 +26,10 @@ struct ContentView: View {
         // awake time, so transient errors while an external process rewrites
         // karabiner.json do not show an alert.
         KarabinerJsonParseErrorView()
+      } else if settings.configurationLoadState
+        == krbn_core_configuration_load_state_other_error
+      {
+        UnexpectedSettingsLoadErrorView(message: settings.settingsSnapshotProcessingErrorMessage)
       } else if settings.configurationLoaded {
         ContentMainView()
 
@@ -126,6 +130,28 @@ struct ContentView: View {
       minHeight: Self.defaultContentSize.height,
       maxHeight: .infinity
     )
+  }
+}
+
+private struct UnexpectedSettingsLoadErrorView: View {
+  let message: String
+
+  var body: some View {
+    VStack(spacing: 20) {
+      AppLocalizedLabel(
+        "settings.setup.configuration.load_error",
+        systemImage: ErrorBorder.icon
+      )
+      .font(.title)
+
+      if !message.isEmpty {
+        Text(message)
+          .modifier(ErrorBorder())
+      }
+    }
+    .padding()
+    .frame(width: 850)
+    .textSelection(.enabled)
   }
 }
 

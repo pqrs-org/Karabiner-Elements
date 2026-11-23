@@ -1,5 +1,12 @@
 import Foundation
 
+private func requiredValue<T>(_ value: Any?) -> T {
+  guard let value = value as? T else {
+    preconditionFailure("Unexpected JSON value: \(String(describing: value))")
+  }
+  return value
+}
+
 @main
 @MainActor
 struct SimpleModificationDefinitionsTests {
@@ -13,7 +20,7 @@ struct SimpleModificationDefinitionsTests {
     let en = Locale(identifier: "en")
     let ja = Locale(identifier: "ja")
     let zhHans = Locale(identifier: "zh-Hans")
-    let rows = try JSONSerialization.jsonObject(with: data) as! [[String: Any]]
+    let rows: [[String: Any]] = requiredValue(try JSONSerialization.jsonObject(with: data))
 
     // Every key referenced by the bundled picker definitions must have a translation.
     for row in rows {
@@ -28,8 +35,8 @@ struct SimpleModificationDefinitionsTests {
 
     // Moving labels into the catalog must preserve from/to eligibility and unsafe flags.
     for row in rows where row["data"] != nil {
-      let values = row["data"] as! [Any]
-      let label = (row["label_localization_key"] ?? row["label"]) as! String
+      let values: [Any] = requiredValue(row["data"])
+      let label: String = requiredValue(row["label_localization_key"] ?? row["label"])
       if row["not_from"] as? Bool != true, let first = values.first {
         let json = CanonicalJSON.string(fromJSONObject: first)!
         let entries = definitions.fromCategories.categories.flatMap(\.entries)

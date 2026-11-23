@@ -38,6 +38,28 @@ private let settingsJSONEncoder: JSONEncoder = {
   return encoder
 }()
 
+private enum CoreConfigurationLoadState {
+  case loaded
+  case permissionError
+  case jsonError
+  case otherError
+
+  init(_ state: krbn_core_configuration_load_state) {
+    switch state {
+    case krbn_core_configuration_load_state_loaded:
+      self = .loaded
+    case krbn_core_configuration_load_state_permission_error:
+      self = .permissionError
+    case krbn_core_configuration_load_state_json_error:
+      self = .jsonError
+    case krbn_core_configuration_load_state_other_error:
+      self = .otherError
+    default:
+      self = .otherError
+    }
+  }
+}
+
 @MainActor
 final class Settings: ObservableObject {
   static let shared = Settings()
@@ -62,6 +84,7 @@ final class Settings: ObservableObject {
   @Published private(set) var isStructuralChangePending = false
 
   @Published var saveErrorMessage = ""
+  @Published private(set) var settingsSnapshotProcessingErrorMessage = ""
   @Published private var loadingState = ConfigurationLoadingState.stopped
   @Published private var configurationStorage: SettingsConfiguration?
 
@@ -232,14 +255,20 @@ final class Settings: ObservableObject {
   }
 
   func coreConfigurationLoadStateChanged(_ state: krbn_core_configuration_load_state) {
-    switch state {
-    case krbn_core_configuration_load_state_loaded:
+    switch CoreConfigurationLoadState(state) {
+    case .loaded:
+      // The load-state and snapshot callbacks can arrive in either order. Do not let a
+      // late successful load-state callback hide an error applying the snapshot.
+      guard settingsSnapshotProcessingErrorMessage.isEmpty else { return }
       transitionLoadingState(.loadSucceeded)
-    case krbn_core_configuration_load_state_permission_error:
+    case .permissionError:
+      settingsSnapshotProcessingErrorMessage = ""
       transitionLoadingState(.loadFailed(.permission))
-    case krbn_core_configuration_load_state_json_error:
+    case .jsonError:
+      settingsSnapshotProcessingErrorMessage = ""
       transitionLoadingState(.loadFailed(.json))
-    default:
+    case .otherError:
+      settingsSnapshotProcessingErrorMessage = ""
       transitionLoadingState(.loadFailed(.other))
     }
   }
@@ -251,12 +280,14 @@ final class Settings: ObservableObject {
       snapshot.changedSettingsJson = try ChangedSettings.makeJSON(snapshotData: data)
     } catch {
       print("Failed to decode settings configuration snapshot JSON: \(error)")
+      settingsSnapshotProcessingErrorMessage = error.localizedDescription
       transitionLoadingState(.loadFailed(.other))
       return false
     }
 
     // Retain the last snapshot during loading/stopping for views that are being dismissed.
     // This path must not send the received configuration back as a UI edit.
+    settingsSnapshotProcessingErrorMessage = ""
     configurationStorage = snapshot
     updateSystemDefaultProfileExists()
     transitionLoadingState(.snapshotApplied)

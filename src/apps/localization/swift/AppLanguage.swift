@@ -38,7 +38,8 @@ enum AppLanguage {
     // specifiers, localization keys, or additional placeholders to expand.
     guard !arguments.isEmpty else { return template }
     let result = NSMutableString(string: template)
-    let pattern = try! NSRegularExpression(pattern: #"\{([A-Za-z][A-Za-z0-9_]*)\}"#)
+    guard let pattern = try? NSRegularExpression(pattern: #"\{([A-Za-z][A-Za-z0-9_]*)\}"#)
+    else { return template }
     for match in pattern.matches(in: template, range: NSRange(template.startIndex..., in: template))
       .reversed()
     {

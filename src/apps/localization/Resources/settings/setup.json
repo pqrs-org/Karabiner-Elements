@@ -81,6 +81,11 @@
         ,"ja": "karabiner.jsonへの書き込みを許可してください。アクセス権が修正されると、この警告は自動的に消えます。"
         ,"zh-Hans": "请允许 Karabiner-Elements 写入 karabiner.json。恢复访问权限后，此警告将自动消失。"
     },
+    "settings.setup.configuration.load_error": {
+        "en": "An unexpected error occurred while loading the settings"
+        ,"ja": "設定の読み込み中に予期しないエラーが発生しました"
+        ,"zh-Hans": "加载设置时发生意外错误"
+    },
     "settings.setup.configuration.not_writable": {
         "en": "karabiner.json cannot be saved safely"
         ,"ja": "karabiner.jsonを安全に保存できません"

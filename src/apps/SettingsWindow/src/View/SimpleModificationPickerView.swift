@@ -515,8 +515,9 @@ private struct SimpleModificationPickerInteractionMonitor: NSViewRepresentable {
     }
 
     func install(for view: NSView) {
-      monitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .leftMouseDown]) {
-        [weak self, weak view] event in
+      monitor = NSEvent.addLocalMonitorForEvents(
+        matching: [.keyDown, .leftMouseDown]
+      ) { [weak self, weak view] event in
         let handled = MainActor.assumeIsolated {
           guard let self, let window = view?.window else { return false }
 
