@@ -38,6 +38,12 @@ struct DebugAlertsView: View {
     //
     case parseError
     case permissionError
+    case fileNotWritable
+    case directoryNotWritable
+    case permissionsUnsupported
+    case ownershipIgnored
+    case coreLoadError
+    case snapshotProcessingError
     case keyboardType
     //
     // .services
@@ -88,7 +94,9 @@ struct DebugAlertsView: View {
 
     fileprivate var category: PreviewCategory {
       switch self {
-      case .parseError, .permissionError, .keyboardType:
+      case .parseError, .permissionError, .fileNotWritable, .directoryNotWritable,
+        .permissionsUnsupported, .ownershipIgnored, .coreLoadError, .snapshotProcessingError,
+        .keyboardType:
         return .configuration
       case .servicesStopped, .agentsStopped, .daemonsStopped, .agentWaiting, .agentRetry:
         return .services
@@ -205,6 +213,14 @@ struct DebugAlertsView: View {
       switch self {
       case .parseError: return "settings.setup.configuration.parse_error"
       case .permissionError: return "settings.setup.configuration.permission_error"
+      case .fileNotWritable: return "settings.debug.configuration.file_not_writable"
+      case .directoryNotWritable: return "settings.debug.configuration.directory_not_writable"
+      case .permissionsUnsupported:
+        return "settings.debug.configuration.permissions_unsupported"
+      case .ownershipIgnored: return "settings.debug.configuration.ownership_ignored"
+      case .coreLoadError: return "settings.debug.configuration.core_load_error"
+      case .snapshotProcessingError:
+        return "settings.debug.configuration.snapshot_processing_error"
       case .keyboardType: return "settings.setup.keyboard_type.select_prompt"
       case .servicesStopped: return "settings.debug.services_stopped"
       case .agentsStopped: return "settings.debug.agents_stopped"
@@ -357,7 +373,7 @@ struct DebugAlertsView: View {
 
   @ViewBuilder
   static func previewView(_ alert: PreviewAlert) -> some View {
-    if alert == .permissionError || alert == .parseError {
+    if alert.usesFullScreenPresentation {
       alertView(alert)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(nsColor: .windowBackgroundColor))
@@ -377,6 +393,19 @@ struct DebugAlertsView: View {
           "karabiner.json: parse error at line 12, column 3: unexpected '}'; expected a value.")
     case .permissionError:
       KarabinerJsonPermissionErrorView()
+    case .fileNotWritable:
+      KarabinerJsonWriteErrorView(error: krbn_configuration_file_access_file_not_writable)
+    case .directoryNotWritable:
+      KarabinerJsonWriteErrorView(error: krbn_configuration_file_access_directory_not_writable)
+    case .permissionsUnsupported:
+      KarabinerJsonWriteErrorView(error: krbn_configuration_file_access_permissions_unsupported)
+    case .ownershipIgnored:
+      KarabinerJsonWriteErrorView(error: krbn_configuration_file_access_ownership_ignored)
+    case .coreLoadError:
+      UnexpectedSettingsLoadErrorView(message: "")
+    case .snapshotProcessingError:
+      UnexpectedSettingsLoadErrorView(
+        message: "The data couldn’t be read because it isn’t in the correct format.")
     case .keyboardType:
       SettingsAlertView()
     case .servicesStopped, .agentsStopped, .daemonsStopped:
@@ -411,6 +440,12 @@ struct DebugAlertsView: View {
       .profileChangedToast, .rulesChangedToast:
       EmptyView()  // Setup and toast previews use their normal presentation instead.
     }
+  }
+}
+
+extension DebugAlertsView.PreviewAlert {
+  fileprivate var usesFullScreenPresentation: Bool {
+    category == .configuration && self != .keyboardType
   }
 }
 

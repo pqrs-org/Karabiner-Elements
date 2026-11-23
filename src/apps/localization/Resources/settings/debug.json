@@ -39,6 +39,36 @@
         ,"ja": "セットアップ"
         ,"zh-Hans": "设置向导"
     },
+    "settings.debug.configuration.core_load_error": {
+        "en": "Configuration load: core error"
+        ,"ja": "設定の読み込み: コア側のエラー"
+        ,"zh-Hans": "配置加载：核心端错误"
+    },
+    "settings.debug.configuration.directory_not_writable": {
+        "en": "karabiner.json write access: directory not writable"
+        ,"ja": "karabiner.jsonへの書き込み: ディレクトリが書き込み不可"
+        ,"zh-Hans": "karabiner.json 写入权限：目录不可写"
+    },
+    "settings.debug.configuration.file_not_writable": {
+        "en": "karabiner.json write access: file not writable"
+        ,"ja": "karabiner.jsonへの書き込み: ファイルが書き込み不可"
+        ,"zh-Hans": "karabiner.json 写入权限：文件不可写"
+    },
+    "settings.debug.configuration.ownership_ignored": {
+        "en": "karabiner.json write access: ownership ignored"
+        ,"ja": "karabiner.jsonへの書き込み: 所有者情報が無視されている"
+        ,"zh-Hans": "karabiner.json 写入权限：所有权被忽略"
+    },
+    "settings.debug.configuration.permissions_unsupported": {
+        "en": "karabiner.json write access: permissions unsupported"
+        ,"ja": "karabiner.jsonへの書き込み: アクセス権に未対応"
+        ,"zh-Hans": "karabiner.json 写入权限：不支持权限设置"
+    },
+    "settings.debug.configuration.snapshot_processing_error": {
+        "en": "Configuration load: snapshot processing error"
+        ,"ja": "設定の読み込み: スナップショット処理エラー"
+        ,"zh-Hans": "配置加载：快照处理错误"
+    },
     "settings.debug.daemons_stopped": {
         "en": "Services stopped: daemons only"
         ,"ja": "サービス停止: デーモンのみ"

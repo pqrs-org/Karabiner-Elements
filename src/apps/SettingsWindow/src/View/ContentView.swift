@@ -133,7 +133,7 @@ struct ContentView: View {
   }
 }
 
-private struct UnexpectedSettingsLoadErrorView: View {
+struct UnexpectedSettingsLoadErrorView: View {
   let message: String
 
   var body: some View {
