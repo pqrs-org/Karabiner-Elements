@@ -43,8 +43,7 @@ RunLoop.main.perform {
       exit(ServiceManagementHelper.register(services: coreAgents) ? 0 : 1)
 
     case .unregisterCoreAgents:
-      ServiceManagementHelper.unregister(services: coreAgents)
-      exit(0)
+      exit(ServiceManagementHelper.unregister(services: coreAgents) ? 0 : 1)
 
     case .coreAgentsEnabled:
       if ServiceManagementHelper.enabled(services: coreAgents) {
@@ -56,12 +55,10 @@ RunLoop.main.perform {
       }
 
     case .registerMultitouchExtensionAgent:
-      exit(
-        ServiceManagementHelper.register(services: [multitouchExtensionAgentService]) ? 0 : 1)
+      exit(ServiceManagementHelper.register(services: [multitouchExtensionAgentService]) ? 0 : 1)
 
     case .unregisterMultitouchExtensionAgent:
-      ServiceManagementHelper.unregister(services: [multitouchExtensionAgentService])
-      exit(0)
+      exit(ServiceManagementHelper.unregister(services: [multitouchExtensionAgentService]) ? 0 : 1)
 
     case .status:
       ServiceManagementHelper.printStatuses(services: allServices)

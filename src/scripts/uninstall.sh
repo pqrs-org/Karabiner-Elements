@@ -3,7 +3,9 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
-'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3' unregister-core-daemons
+if ! '/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3' unregister-core-daemons; then
+    exit 1
+fi
 
 bash '/Applications/Karabiner-Elements.app/Contents/Resources/uninstall_core.sh'
 bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/remove_files.sh'

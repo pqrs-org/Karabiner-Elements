@@ -33,8 +33,7 @@ RunLoop.main.perform {
       exit(ServiceManagementHelper.register(services: coreDaemons) ? 0 : 1)
 
     case .unregisterCoreDaemons:
-      ServiceManagementHelper.unregister(services: coreDaemons)
-      exit(0)
+      exit(ServiceManagementHelper.unregister(services: coreDaemons) ? 0 : 1)
 
     case .coreDaemonsEnabled:
       if ServiceManagementHelper.enabled(services: coreDaemons) {

@@ -30,8 +30,8 @@ for service_name in \
 done
 
 # On macOS 13, SIGTERM may leave some processes running.
+# Karabiner-VirtualHIDDevice-Daemon is restarted by the DriverKit package's postinstall.
 killall -KILL Karabiner-Core-Service
-killall -KILL Karabiner-VirtualHIDDevice-Daemon
 killall -KILL Karabiner-Console-User-Server
 killall -KILL Karabiner-Elements
 killall -KILL Karabiner-EventViewer

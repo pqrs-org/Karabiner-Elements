@@ -62,7 +62,7 @@ struct ServiceManagementHelper {
         // Even in this case, calling unregister will not have any negative impact.
 
         if firstAttempt && notFound {
-          unregister(services: [s])
+          _ = unregister(services: [s])
         }
 
         do {
@@ -98,15 +98,20 @@ struct ServiceManagementHelper {
     service.status == .enabled || service.status == .requiresApproval
   }
 
-  static func unregister(services: [SMAppService]) {
+  static func unregister(services: [SMAppService]) -> Bool {
+    var succeeded = true
+
     for s in services {
       do {
         try s.unregister()
         print("Successfully unregistered \(s)")
       } catch {
         print("Unable to unregister \(error)")
+        succeeded = false
       }
     }
+
+    return succeeded
   }
 
   static func enabled(services: [SMAppService]) -> Bool {
