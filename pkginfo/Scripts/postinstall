@@ -45,22 +45,50 @@ killall -KILL Karabiner-Menu
 killall -KILL Karabiner-NotificationWindow
 
 #
-# Register launchd services from the newly installed application.
+# Register services from the logged-in user's context.
 #
 
-# PackageKit registers application bundles after postinstall finishes.
-# Register the service manager bundles explicitly so SMAppService can find
-# their embedded launchd property lists during postinstall.
-privileged_daemons_service_manager='/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3'
-non_privileged_agents_service_manager='/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3'
+# Package scripts run as root, but SMAppService LaunchAgents must be registered
+# from the logged-in user's context. The behavior differs depending on whether
+# the installer is launched from Installer.app or through Sparkle:
+#
+# - When the pkg was opened in Installer.app, PackageKit reported Installer.app
+#   as responsible_path, and direct registration from postinstall happened to
+#   succeed with "Successfully registered LaunchAgent(...)".
+# - During a Sparkle update, PackageKit reported Sparkle's Autoupdate as
+#   responsible_path. Launch Services registration and LaunchDaemon registration
+#   succeeded. For LaunchAgents, unregister returned `Code=1 "Operation not
+#   permitted"`, and every registration attempt returned `Code=3 "No such
+#   process"`, including all retries.
+#
+# Therefore, do not register services directly from this root process. Instead,
+# run the service managers in the console user's launchd bootstrap and with that
+# user's uid. This registers the service manager bundles, LaunchDaemons, and
+# LaunchAgents from a consistent user context.
+#
+# The commands are executed synchronously so their output is included in
+# install.log. Their absolute paths point to the payload that was just installed,
+# so this also works when Sparkle's older updater initiated the update. If there
+# is no logged-in GUI user, skip this step; the normal Settings Window startup
+# path will register the services when a user launches Karabiner-Elements later.
+console_user=$(stat -f '%Su' /dev/console)
+if [ "$console_user" != 'root' ] && [ "$console_user" != 'loginwindow' ]; then
+    console_uid=$(id -u "$console_user")
+    privileged_daemons_service_manager='/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3'
+    non_privileged_agents_service_manager='/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3'
 
-"$privileged_daemons_service_manager" register-bundle
-"$non_privileged_agents_service_manager" register-bundle
+    echo "Registering services in console user context (uid: $console_uid)"
 
-# SMAppService registration makes the services visible to launchd. The
-# privileged daemons still require approval in System Settings before launchd
-# can start them.
-"$privileged_daemons_service_manager" register-core-daemons
-"$non_privileged_agents_service_manager" register-core-agents
+    launchctl asuser "$console_uid" sudo -u "$console_user" \
+        "$privileged_daemons_service_manager" register-bundle
+    launchctl asuser "$console_uid" sudo -u "$console_user" \
+        "$non_privileged_agents_service_manager" register-bundle
+    launchctl asuser "$console_uid" sudo -u "$console_user" \
+        "$privileged_daemons_service_manager" register-core-daemons
+    launchctl asuser "$console_uid" sudo -u "$console_user" \
+        "$non_privileged_agents_service_manager" register-core-agents
+else
+    echo 'Skipping service registration because no logged-in GUI user was found'
+fi
 
 exit 0
