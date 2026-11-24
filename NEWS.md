@@ -4,6 +4,7 @@
 
 - 🔔 Important Notes
     - After upgrading, enable `Karabiner-Elements Privileged Daemons v3` under Background App Activity in System Settings.
+    - When upgrading, a one-time `Karabiner-Updater.app can't be opened` error may appear after the update. This error can be safely ignored.
 - 💥 Breaking Changes
     - Moved `karabiner_cli` from `/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli` to `/Applications/Karabiner-Elements.app/Contents/Helpers/karabiner_cli`.
     - Moved bundled helper apps into `/Applications/Karabiner-Elements.app/Contents/Helpers`.
