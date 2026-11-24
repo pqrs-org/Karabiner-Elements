@@ -2,6 +2,8 @@ import Foundation
 import ServiceManagement
 
 enum Subcommand: String {
+  case registerBundle = "register-bundle"
+
   case registerCoreAgents = "register-core-agents"
   case unregisterCoreAgents = "unregister-core-agents"
   case coreAgentsEnabled = "core-agents-enabled"
@@ -39,6 +41,9 @@ RunLoop.main.perform {
     let subcommand = CommandLine.arguments[1]
 
     switch Subcommand(rawValue: subcommand) {
+    case .registerBundle:
+      exit(ServiceManagementHelper.registerMainBundleInLaunchServices() ? 0 : 1)
+
     case .registerCoreAgents:
       exit(ServiceManagementHelper.register(services: coreAgents) ? 0 : 1)
 
@@ -96,6 +101,8 @@ RunLoop.main.perform {
   print("    'Karabiner-Elements Non-Privileged Agents v3' subcommand")
   print("")
   print("Subcommands:")
+  print("    \(Subcommand.registerBundle.rawValue)")
+
   print("    \(Subcommand.registerCoreAgents.rawValue)")
   print("    \(Subcommand.unregisterCoreAgents.rawValue)")
   print("    \(Subcommand.coreAgentsEnabled.rawValue)")

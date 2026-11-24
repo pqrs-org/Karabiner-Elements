@@ -1,7 +1,20 @@
+import CoreServices
 import Foundation
 import ServiceManagement
 
 struct ServiceManagementHelper {
+  static func registerMainBundleInLaunchServices() -> Bool {
+    let status = LSRegisterURL(Bundle.main.bundleURL as CFURL, true)
+
+    if status == noErr {
+      print("Successfully registered \(Bundle.main.bundleURL.path) in Launch Services")
+      return true
+    } else {
+      print("Unable to register \(Bundle.main.bundleURL.path) in Launch Services: \(status)")
+      return false
+    }
+  }
+
   static func launchdLabel(
     plistName: String,
     directoryName: String

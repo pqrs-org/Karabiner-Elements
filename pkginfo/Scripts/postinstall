@@ -48,10 +48,19 @@ killall -KILL Karabiner-NotificationWindow
 # Register launchd services from the newly installed application.
 #
 
+# PackageKit registers application bundles after postinstall finishes.
+# Register the service manager bundles explicitly so SMAppService can find
+# their embedded launchd property lists during postinstall.
+privileged_daemons_service_manager='/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3'
+non_privileged_agents_service_manager='/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3'
+
+"$privileged_daemons_service_manager" register-bundle
+"$non_privileged_agents_service_manager" register-bundle
+
 # SMAppService registration makes the services visible to launchd. The
 # privileged daemons still require approval in System Settings before launchd
 # can start them.
-'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3' register-core-daemons
-'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3' register-core-agents
+"$privileged_daemons_service_manager" register-core-daemons
+"$non_privileged_agents_service_manager" register-core-agents
 
 exit 0

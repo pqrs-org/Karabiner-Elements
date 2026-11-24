@@ -2,6 +2,8 @@ import Foundation
 import ServiceManagement
 
 enum Subcommand: String {
+  case registerBundle = "register-bundle"
+
   case registerCoreDaemons = "register-core-daemons"
   case unregisterCoreDaemons = "unregister-core-daemons"
   case coreDaemonsEnabled = "core-daemons-enabled"
@@ -29,6 +31,9 @@ RunLoop.main.perform {
     let subcommand = CommandLine.arguments[1]
 
     switch Subcommand(rawValue: subcommand) {
+    case .registerBundle:
+      exit(ServiceManagementHelper.registerMainBundleInLaunchServices() ? 0 : 1)
+
     case .registerCoreDaemons:
       exit(ServiceManagementHelper.register(services: coreDaemons) ? 0 : 1)
 
@@ -80,6 +85,8 @@ RunLoop.main.perform {
   print("    'Karabiner-Elements Privileged Daemons v3' subcommand")
   print("")
   print("Subcommands:")
+  print("    \(Subcommand.registerBundle.rawValue)")
+
   print("    \(Subcommand.registerCoreDaemons.rawValue)")
   print("    \(Subcommand.unregisterCoreDaemons.rawValue)")
   print("    \(Subcommand.coreDaemonsEnabled.rawValue)")
