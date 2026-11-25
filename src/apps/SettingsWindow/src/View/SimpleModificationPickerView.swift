@@ -57,25 +57,12 @@ struct SimpleModificationPickerView: View {
         arrowEdge: .bottom
       ) {
         VStack(spacing: 0) {
-          HStack {
-            TextField(
-              localized("settings.key_picker.search"),
-              text: $searchText
-            )
-            .textFieldStyle(.roundedBorder)
-
-            if !searchText.isEmpty {
-              Button {
-                searchText = ""
-              } label: {
-                Image(systemName: "xmark.circle.fill")
-                  .foregroundStyle(.secondary)
-              }
-              .buttonStyle(.plain)
-              .help(localized("shared.action.clear"))
-              .accessibilityLabel(localized("shared.action.clear"))
-            }
-          }
+          SearchField(
+            text: $searchText,
+            placeholderKey: "settings.key_picker.search",
+            debounceInterval: 0
+          )
+          .frame(maxWidth: .infinity)
           .padding(10)
           .onChange(of: searchText) { _ in
             updateSearchResults()
