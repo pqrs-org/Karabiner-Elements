@@ -19,14 +19,20 @@
   </choices-outline>
 
   <choice id="default" visible="false">
-    <pkg-ref id="org.pqrs.Karabiner-Elements" />
+    <!--
+        As a precaution, run the DriverKit postinstall before Elements registers
+        its LaunchDaemons. During a normal upgrade, the daemon is already running
+        or awaiting approval. If registration starts it during a migration, this
+        order keeps the DriverKit postinstall from killing it just after startup.
+    -->
     <pkg-ref id="org.pqrs.Karabiner-DriverKit-VirtualHIDDevice" />
+    <pkg-ref id="org.pqrs.Karabiner-Elements" />
   </choice>
 
-  <pkg-ref id="org.pqrs.Karabiner-Elements">
-    Installer.pkg
-  </pkg-ref>
   <pkg-ref id="org.pqrs.Karabiner-DriverKit-VirtualHIDDevice">
     Karabiner-DriverKit-VirtualHIDDevice.pkg
+  </pkg-ref>
+  <pkg-ref id="org.pqrs.Karabiner-Elements">
+    Installer.pkg
   </pkg-ref>
 </installer-gui-script>

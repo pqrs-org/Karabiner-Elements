@@ -20,17 +20,9 @@ fi
 # Relaunch launchd-managed processes after all files have been updated
 #
 
-# The v3 daemons use new labels. Stop and disable the old jobs so registrations
-# owned by an older service manager cannot keep running after its app is removed.
-for service_name in \
-    org.pqrs.service.daemon.Karabiner-Core-Service \
-    org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon; do
-    launchctl bootout "system/$service_name"
-    launchctl disable "system/$service_name"
-done
-
 # On macOS 13, SIGTERM may leave some processes running.
-# Karabiner-VirtualHIDDevice-Daemon is restarted by the DriverKit package's postinstall.
+# Karabiner-VirtualHIDDevice-Daemon is handled by the DriverKit package's
+# postinstall, which runs before this script.
 killall -KILL Karabiner-Core-Service
 killall -KILL Karabiner-Console-User-Server
 killall -KILL Karabiner-Elements
