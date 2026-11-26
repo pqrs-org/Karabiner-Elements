@@ -889,10 +889,20 @@
         ,"ja": "system_app_menu"
         ,"zh-Hans": "系统应用菜单（system_app_menu）"
     },
+    "settings.key_picker.generic_desktop.system_power_down": {
+        "en": "system_power_down"
+        ,"ja": "system_power_down"
+        ,"zh-Hans": "系统关机（system_power_down）"
+    },
     "settings.key_picker.generic_desktop.system_sleep": {
         "en": "system_sleep"
         ,"ja": "system_sleep"
         ,"zh-Hans": "系统睡眠（system_sleep）"
+    },
+    "settings.key_picker.generic_desktop.system_wake_up": {
+        "en": "system_wake_up"
+        ,"ja": "system_wake_up"
+        ,"zh-Hans": "系统唤醒（system_wake_up）"
     },
     "settings.key_picker.gui": {
         "en": "Generic GUI application control keys"

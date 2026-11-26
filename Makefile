@@ -1,4 +1,5 @@
 VERSION = `head -n 1 version`
+SIMPLE_MODIFICATIONS_JSON = src/apps/SettingsWindow/Resources/simple_modifications.json
 
 CLANG_FORMAT_FILES = \
 	'*.h' \
@@ -46,7 +47,7 @@ notarize:
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
 
-format: clang-format swift-format shell-format ruff-format prettier-format test-json-format localization-format
+format: clang-format swift-format shell-format ruff-format prettier-format test-json-format simple-modifications-format localization-format
 
 clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
@@ -72,6 +73,7 @@ prettier-format:
 		':(exclude)**/*.icon/icon.json' \
 		':(exclude)**/Assets.xcassets/**' \
 		':(exclude)src/apps/localization/Resources/**' \
+		':(exclude)$(SIMPLE_MODIFICATIONS_JSON)' \
 		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/broken.json' \
 		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/broken_link.json' \
 		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/link.json' \
@@ -88,6 +90,10 @@ test-json-format: ruff-format prettier-format
 	/usr/bin/python3 tests/scripts/format_test_json.py \
 		tests/src/manipulator/json/manipulator_manager/test_cases \
 		tests/src/post_event_to_virtual_devices/json/test_cases
+
+.PHONY: simple-modifications-format
+simple-modifications-format:
+	/usr/bin/python3 scripts/format_simple_modifications.py "$(SIMPLE_MODIFICATIONS_JSON)"
 
 localization-format:
 	$(MAKE) -C src/apps/localization format
