@@ -43,6 +43,9 @@
     - Migrated the app icons to the Icon Composer format, and removed the app icon selection setting.
     - Added a "Capture macOS Key Events" to EventViewer.
     - Added a "Capture mouse wheels" option to EventViewer.
+    - Supported the following keys:
+        - generic_desktop::system_power_down
+        - generic_desktop::system_wake_up
 
 ## Karabiner-Elements 16.3.0
 
