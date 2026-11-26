@@ -110,7 +110,10 @@ final class CaptureCoordinator: ObservableObject {
       eventHistory.startPointingButtonModifierFlagsMonitoring()
       eventHistory.clear()
 
-    case .macOSKeyEvents, .rawInputRecords:
+    case .macOSKeyEvents:
+      startCapture()
+
+    case .rawInputRecords:
       break
     }
 
