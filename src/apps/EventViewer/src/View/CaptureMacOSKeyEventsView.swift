@@ -11,6 +11,14 @@ struct CaptureMacOSKeyEventsView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       VStack(alignment: .leading, spacing: 12) {
+        Label {
+          AppLocalizedText("event_viewer.macos_key_events.description")
+        } icon: {
+          Image(systemName: InfoBorder.icon)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .modifier(InfoBorder())
+
         HStack(spacing: 12) {
           if coordinator.capturing {
             Button(role: .destructive) {

@@ -191,6 +191,11 @@
         ,"ja": "macOS キーイベントを取得中"
         ,"zh-Hans": "正在捕获 macOS 键盘事件"
     },
+    "event_viewer.macos_key_events.description": {
+        "en": "Shows the key events macOS sends to apps after Karabiner-Elements applies any remapping."
+        ,"ja": "Karabiner-Elements による変換が適用されたあと、macOS がアプリに渡すキーイベントを表示します。"
+        ,"zh-Hans": "显示经过 Karabiner-Elements 重映射后，macOS 发送给应用的键盘事件。"
+    },
     "event_viewer.macos_key_events.failed": {
         "en": "Could not start capturing macOS key events."
         ,"ja": "macOS キーイベントの取得を開始できませんでした。"
@@ -227,9 +232,9 @@
         ,"zh-Hans": "重复"
     },
     "event_viewer.macos_key_events.start_hint": {
-        "en": "Start capture to see the key events delivered by macOS."
-        ,"ja": "macOS が送出するキーイベントを確認するには「取得を開始」を押してください。"
-        ,"zh-Hans": "点击“开始捕获”，即可查看 macOS 发出的键盘事件。"
+        "en": "Press Start capture to begin."
+        ,"ja": "「取得を開始」を押してください。"
+        ,"zh-Hans": "点击“开始捕获”以开始。"
     },
     "event_viewer.macos_key_events.timestamp": {
         "en": "Timestamp (ns)"
