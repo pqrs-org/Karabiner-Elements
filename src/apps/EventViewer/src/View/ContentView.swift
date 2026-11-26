@@ -122,7 +122,7 @@ struct ContentView: View {
     // the warning visible while a device is selected also prevents Start capture from
     // being pressed while Secure Keyboard Entry is enabled.
     switch captureCoordinator.currentMode {
-    case .inputEvents:
+    case .inputEvents, .macOSKeyEvents:
       return true
 
     case .rawInputEvents:
@@ -146,7 +146,7 @@ struct ContentView: View {
     case .rawInputEvents, .rawInputRecords:
       captureCoordinator.stopCapture()
 
-    case .inputEvents, nil:
+    case .inputEvents, .macOSKeyEvents, nil:
       break
     }
   }

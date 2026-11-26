@@ -71,6 +71,7 @@ final class CaptureEventValidator: Sendable {
 final class CaptureCoordinator: ObservableObject {
   enum Mode: Equatable {
     case inputEvents
+    case macOSKeyEvents
     case rawInputEvents
     case rawInputRecords
   }
@@ -109,7 +110,7 @@ final class CaptureCoordinator: ObservableObject {
       eventHistory.startPointingButtonModifierFlagsMonitoring()
       eventHistory.clear()
 
-    case .rawInputRecords:
+    case .macOSKeyEvents, .rawInputRecords:
       break
     }
 
@@ -140,6 +141,9 @@ final class CaptureCoordinator: ObservableObject {
       TemporarilyIgnoredDeviceManager.shared.activate(
         owner: .inputEvents,
         deviceId: nil)
+
+    case .macOSKeyEvents:
+      capturing = MacOSKeyEventCapture.shared.start()
 
     case .rawInputEvents:
       guard let rawInputEventsSelectedDeviceId else {
@@ -182,6 +186,9 @@ final class CaptureCoordinator: ObservableObject {
     switch currentMode {
     case .inputEvents:
       TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .inputEvents)
+
+    case .macOSKeyEvents:
+      MacOSKeyEventCapture.shared.stop()
 
     case .rawInputEvents:
       stopEmergencyStopMonitor()
@@ -236,7 +243,7 @@ final class CaptureCoordinator: ObservableObject {
     switch currentMode {
     case .rawInputEvents, .rawInputRecords:
       stopCapture()
-    case .inputEvents, nil:
+    case .inputEvents, .macOSKeyEvents, nil:
       break
     }
   }
@@ -252,7 +259,7 @@ final class CaptureCoordinator: ObservableObject {
     case .inputEvents, .rawInputEvents:
       EventHistory.shared.stopPointingButtonModifierFlagsMonitoring()
 
-    case .rawInputRecords:
+    case .macOSKeyEvents, .rawInputRecords:
       break
     }
 

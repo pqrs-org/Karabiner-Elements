@@ -2,6 +2,7 @@ import SwiftUI
 
 enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case inputEvents
+  case macOSKeyEvents
   case rawInputEvents
   case rawInputRecords
   case frontmostApplication
@@ -14,6 +15,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   var title: String {
     switch self {
     case .inputEvents: return "event_viewer.sidebar.input_events"
+    case .macOSKeyEvents: return "event_viewer.sidebar.macos_key_events"
     case .rawInputEvents: return "event_viewer.sidebar.raw_input_events"
     case .rawInputRecords: return "event_viewer.sidebar.raw_input_records"
     case .frontmostApplication: return "event_viewer.sidebar.frontmost_application"
@@ -26,6 +28,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   var systemImage: String {
     switch self {
     case .inputEvents: return "magnifyingglass"
+    case .macOSKeyEvents: return "keyboard"
     case .rawInputEvents: return "keyboard.badge.ellipsis"
     case .rawInputRecords: return "waveform.path.ecg"
     case .frontmostApplication: return "triangle.circle"
@@ -49,7 +52,7 @@ struct ContentMainView: View {
   private let sections: [SidebarSection] = [
     SidebarSection(
       title: "event_viewer.sidebar.section.capture",
-      items: [.inputEvents, .rawInputEvents, .rawInputRecords]
+      items: [.inputEvents, .rawInputEvents, .rawInputRecords, .macOSKeyEvents]
     ),
     SidebarSection(
       title: "event_viewer.sidebar.section.state",
@@ -91,6 +94,8 @@ struct ContentMainView: View {
           switch selection {
           case .inputEvents:
             CaptureInputEventsView()
+          case .macOSKeyEvents:
+            CaptureMacOSKeyEventsView()
           case .rawInputEvents:
             CaptureRawInputEventsView()
           case .rawInputRecords:

@@ -13,6 +13,10 @@ final class SecureEventInputState: ObservableObject {
   @Published private(set) var enabled = false
 
   func update(_ enabled: Bool) {
+    guard self.enabled != enabled else { return }
     self.enabled = enabled
+    if enabled {
+      MacOSKeyEventCapture.shared.recordInterruption(.secureKeyboardEntryEnabled)
+    }
   }
 }

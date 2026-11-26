@@ -186,6 +186,61 @@
         ,"ja": "イベントビューアによる入力イベントの監視を許可してください"
         ,"zh-Hans": "请允许 Karabiner-EventViewer 监控输入事件"
     },
+    "event_viewer.macos_key_events.active": {
+        "en": "Capturing macOS key events"
+        ,"ja": "macOS キーイベントを取得中"
+        ,"zh-Hans": "正在捕获 macOS 键盘事件"
+    },
+    "event_viewer.macos_key_events.failed": {
+        "en": "Could not start capturing macOS key events."
+        ,"ja": "macOS キーイベントの取得を開始できませんでした。"
+        ,"zh-Hans": "无法开始捕获 macOS 键盘事件。"
+    },
+    "event_viewer.macos_key_events.flags": {
+        "en": "Modifier Flags"
+        ,"ja": "修飾フラグ"
+        ,"zh-Hans": "修饰键标志"
+    },
+    "event_viewer.macos_key_events.interrupted_secure_input": {
+        "en": "Secure Keyboard Entry was enabled. Some key events may be missing."
+        ,"ja": "キーボード入力の保護が有効になりました。一部のキーイベントが記録されていない可能性があります。"
+        ,"zh-Hans": "安全键盘输入已启用，可能遗漏了部分键盘事件。"
+    },
+    "event_viewer.macos_key_events.interrupted_timeout": {
+        "en": "The event tap timed out. Some key events may be missing."
+        ,"ja": "イベントタップがタイムアウトしました。一部のキーイベントが記録されていない可能性があります。"
+        ,"zh-Hans": "事件监听超时，可能遗漏了部分键盘事件。"
+    },
+    "event_viewer.macos_key_events.interrupted_user_input": {
+        "en": "User input disabled the event tap. Some key events may be missing."
+        ,"ja": "ユーザー入力によりイベントタップが無効になりました。一部のキーイベントが記録されていない可能性があります。"
+        ,"zh-Hans": "用户输入停用了事件监听，可能遗漏了部分键盘事件。"
+    },
+    "event_viewer.macos_key_events.key_code": {
+        "en": "Key Code"
+        ,"ja": "キーコード"
+        ,"zh-Hans": "键码"
+    },
+    "event_viewer.macos_key_events.repeat": {
+        "en": "Repeat"
+        ,"ja": "リピート"
+        ,"zh-Hans": "重复"
+    },
+    "event_viewer.macos_key_events.start_hint": {
+        "en": "Start capture to see the key events delivered by macOS."
+        ,"ja": "macOS が送出するキーイベントを確認するには「取得を開始」を押してください。"
+        ,"zh-Hans": "点击“开始捕获”，即可查看 macOS 发出的键盘事件。"
+    },
+    "event_viewer.macos_key_events.timestamp": {
+        "en": "Timestamp (ns)"
+        ,"ja": "タイムスタンプ（ns）"
+        ,"zh-Hans": "时间戳（纳秒）"
+    },
+    "event_viewer.macos_key_events.type": {
+        "en": "Event Type"
+        ,"ja": "イベント種別"
+        ,"zh-Hans": "事件类型"
+    },
     "event_viewer.records.data": {
         "en": "Data"
         ,"ja": "データ"
@@ -239,6 +294,11 @@
         "en": "Capture Input Events"
         ,"ja": "入力イベントの取得"
         ,"zh-Hans": "捕获输入事件"
+    },
+    "event_viewer.sidebar.macos_key_events": {
+        "en": "Capture macOS Key Events"
+        ,"ja": "macOS キーイベントの取得"
+        ,"zh-Hans": "捕获 macOS 键盘事件"
     },
     "event_viewer.sidebar.raw_input_events": {
         "en": "Capture Raw Input Events"

@@ -1,5 +1,28 @@
 import SwiftUI
 
+struct CaptureHistoryActions: View {
+  let isEmpty: Bool
+  let copyJSON: () -> Void
+  let copyTSV: () -> Void
+  let clear: () -> Void
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 12) {
+      Menu {
+        Button("JSON", action: copyJSON)
+        Button("TSV", action: copyTSV)
+      } label: {
+        AppLocalizedConstrainedLabel(
+          "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+      }
+      Button(action: clear) {
+        AppLocalizedConstrainedLabel("shared.action.clear", systemImage: "clear")
+      }
+    }
+    .disabled(isEmpty)
+  }
+}
+
 struct InputEventHistoryActions: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var eventHistory = EventHistory.shared
@@ -7,26 +30,11 @@ struct InputEventHistoryActions: View {
 
   var body: some View {
     HStack(alignment: .center, spacing: 12) {
-      Menu {
-        Button("JSON") {
-          eventHistory.copyToPasteboardJSON()
-        }
-
-        Button("TSV") {
-          eventHistory.copyToPasteboardTSV()
-        }
-      } label: {
-        AppLocalizedConstrainedLabel(
-          "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-      }
-      .disabled(eventHistory.entries.isEmpty)
-
-      Button {
-        eventHistory.clear()
-      } label: {
-        AppLocalizedConstrainedLabel("shared.action.clear", systemImage: "clear")
-      }
-      .disabled(eventHistory.entries.isEmpty)
+      CaptureHistoryActions(
+        isEmpty: eventHistory.entries.isEmpty,
+        copyJSON: eventHistory.copyToPasteboardJSON,
+        copyTSV: eventHistory.copyToPasteboardTSV,
+        clear: eventHistory.clear)
 
       Spacer()
 

@@ -4,28 +4,11 @@ struct InputReportHistoryActions: View {
   @ObservedObject private var history = InputReportHistory.shared
 
   var body: some View {
-    HStack(alignment: .center, spacing: 12) {
-      Menu {
-        Button("JSON") {
-          history.copyToPasteboardJSON()
-        }
-
-        Button("TSV") {
-          history.copyToPasteboardTSV()
-        }
-      } label: {
-        AppLocalizedConstrainedLabel(
-          "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-      }
-      .disabled(history.entries.isEmpty)
-
-      Button {
-        history.clear()
-      } label: {
-        AppLocalizedConstrainedLabel("shared.action.clear", systemImage: "clear")
-      }
-      .disabled(history.entries.isEmpty)
-    }
+    CaptureHistoryActions(
+      isEmpty: history.entries.isEmpty,
+      copyJSON: history.copyToPasteboardJSON,
+      copyTSV: history.copyToPasteboardTSV,
+      clear: history.clear)
   }
 }
 
