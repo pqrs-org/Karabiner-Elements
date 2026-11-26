@@ -4,6 +4,7 @@ struct CaptureMacOSKeyEventsView: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var coordinator = CaptureCoordinator.shared
   @ObservedObject private var capture = MacOSKeyEventCapture.shared
+  @EnvironmentObject private var captureSettings: CaptureSettings
   @State private var session: CaptureCoordinator.Session?
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
@@ -40,11 +41,21 @@ struct CaptureMacOSKeyEventsView: View {
         }
 
         CaptureTestInputField(text: $testInput, focus: $testInputFocused)
-        CaptureHistoryActions(
-          isEmpty: capture.entries.isEmpty,
-          copyJSON: capture.copyToPasteboardJSON,
-          copyTSV: capture.copyToPasteboardTSV,
-          clear: capture.clear)
+        HStack(spacing: 12) {
+          CaptureHistoryActions(
+            isEmpty: capture.entries.isEmpty,
+            copyJSON: capture.copyToPasteboardJSON,
+            copyTSV: capture.copyToPasteboardTSV,
+            clear: capture.clear)
+
+          Spacer()
+
+          Toggle(
+            localized("event_viewer.macos_key_events.capture_repeats"),
+            isOn: $captureSettings.captureMacOSKeyRepeats
+          )
+          .toggleStyle(.checkbox)
+        }
 
         if capture.failedToStart {
           AppLocalizedText("event_viewer.macos_key_events.failed")
@@ -68,6 +79,11 @@ struct CaptureMacOSKeyEventsView: View {
     }
   }
 
+  private var emptyMessageKey: String {
+    coordinator.capturing
+      ? "event_viewer.capture.input_hint" : "event_viewer.macos_key_events.start_hint"
+  }
+
   private var eventList: some View {
     VStack(alignment: .leading, spacing: 0) {
       eventRow(
@@ -84,12 +100,9 @@ struct CaptureMacOSKeyEventsView: View {
       ScrollViewReader { proxy in
         ScrollView {
           if capture.entries.isEmpty {
-            AppLocalizedText(
-              coordinator.capturing
-                ? "event_viewer.capture.input_hint" : "event_viewer.macos_key_events.start_hint"
-            )
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            AppLocalizedText(emptyMessageKey)
+              .padding(12)
+              .frame(maxWidth: .infinity, alignment: .leading)
           } else {
             LazyVStack(alignment: .leading, spacing: 0) {
               ForEach(capture.entries) { entry in

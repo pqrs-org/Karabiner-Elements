@@ -191,6 +191,11 @@
         ,"ja": "macOS キーイベントを取得中"
         ,"zh-Hans": "正在捕获 macOS 键盘事件"
     },
+    "event_viewer.macos_key_events.capture_repeats": {
+        "en": "Capture key repeats"
+        ,"ja": "キーリピートをキャプチャする"
+        ,"zh-Hans": "捕获按键重复事件"
+    },
     "event_viewer.macos_key_events.description": {
         "en": "Shows the key events macOS sends to apps after Karabiner-Elements applies any remapping."
         ,"ja": "Karabiner-Elements による変換が適用されたあと、macOS がアプリに渡すキーイベントを表示します。"

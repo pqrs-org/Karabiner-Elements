@@ -169,6 +169,9 @@ final class MacOSKeyEventCapture: ObservableObject {
   private func receive(type: CGEventType, event: CGEvent) {
     guard tap != nil else { return }
 
+    let isRepeat = type == .keyDown && event.getIntegerValueField(.keyboardEventAutorepeat) != 0
+    guard !isRepeat || CaptureSettings.shared.captureMacOSKeyRepeats else { return }
+
     let name: String
     switch type {
     case .keyDown: name = "keyDown"
@@ -189,7 +192,7 @@ final class MacOSKeyEventCapture: ObservableObject {
         type: name,
         keyCode: event.getIntegerValueField(.keyboardEventKeycode),
         flags: ([rawFlags] + flagNames).joined(separator: " "),
-        isRepeat: type == .keyDown && event.getIntegerValueField(.keyboardEventAutorepeat) != 0))
+        isRepeat: isRepeat))
   }
 
   private func append(timestamp: UInt64, payload: Entry.Payload) {

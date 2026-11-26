@@ -10,6 +10,7 @@ final class CaptureSettings: ObservableObject {
     }
   }
   @Published var captureUnknownEvents = true
+  @Published var captureMacOSKeyRepeats = false
 
   private init() {
     krbn_set_hid_capture_mouse_wheels(captureMouseWheels)
