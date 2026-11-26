@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 17.0.0
 
+- [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v17.0.0/Karabiner-Elements-17.0.0.dmg)
+- 📅 Release date
+    - Nov 27, 2026
 - 🔔 Important Notes
     - After upgrading, enable `Karabiner-Elements Privileged Daemons v3` under Background App Activity in System Settings.
     - When upgrading, a one-time `Karabiner-Updater.app can't be opened` error may appear after the update. This error can be safely ignored.
@@ -9,6 +12,9 @@
     - Moved `karabiner_cli` from `/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli` to `/Applications/Karabiner-Elements.app/Contents/Helpers/karabiner_cli`.
     - Moved bundled helper apps into `/Applications/Karabiner-Elements.app/Contents/Helpers`.
     - Moved maintenance scripts into `/Applications/Karabiner-Elements.app/Contents/Resources`.
+- 🔒 Security
+    - Fixed a race in configuration file ownership checks. On Karabiner-Elements 16.3.0 and earlier, a local attacker on a Mac with multiple user accounts could infer limited information about another user's configuration, such as custom key mappings. [Security advisory GHSA-3xf6-mj44-3q6g](https://github.com/pqrs-org/Karabiner-Elements/security/advisories/GHSA-3xf6-mj44-3q6g)
+    - Fixed a race in local IPC authentication. On Karabiner-Elements 16.0.0 through 16.3.0, malware already running on the Mac could obtain focused UI element titles and, where collected, focused window titles if Karabiner-Elements had Accessibility permission. [Security advisory GHSA-rj4j-2pp3-m4ww](https://github.com/pqrs-org/Karabiner-Elements/security/advisories/GHSA-rj4j-2pp3-m4ww)
 - ✨ New Features
     - Added Japanese localization.
     - Add Simplified Chinese (zh-Hans) translations (Thanks to @maodun96 and @msuadOf)
