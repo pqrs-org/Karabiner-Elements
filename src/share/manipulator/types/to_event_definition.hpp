@@ -99,6 +99,7 @@ public:
 
     result->event_definition_ = event_definition::make_from_momentary_switch_event(value);
     result->set_modifiers(base.get_modifiers());
+    result->set_preserve_fn_until_key_up(base.get_preserve_fn_until_key_up());
     result->set_lazy(base.get_lazy());
     result->set_repeat(base.get_repeat());
     result->set_halt(base.get_halt());
@@ -125,6 +126,14 @@ public:
 
   void set_modifiers(const std::set<modifier_definition::modifier>& value) {
     modifiers_ = value;
+  }
+
+  [[nodiscard]] bool get_preserve_fn_until_key_up() const {
+    return preserve_fn_until_key_up_;
+  }
+
+  void set_preserve_fn_until_key_up(bool value) {
+    preserve_fn_until_key_up_ = value;
   }
 
   [[nodiscard]] bool get_lazy() const {
@@ -208,6 +217,8 @@ public:
 private:
   event_definition event_definition_;
   std::set<modifier_definition::modifier> modifiers_;
+  // Internal policy for fn added to send a standard function key.
+  bool preserve_fn_until_key_up_{false};
   bool lazy_{false};
   bool repeat_{true};
   bool halt_{false};

@@ -14,6 +14,8 @@ int main() {
     auto state_original = krbn::event_queue::state::original;
     auto state_virtual = krbn::event_queue::state::virtual_event;
 
+    auto b = krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
     auto f1 = krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_f1));
     auto f2 = krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
@@ -105,8 +107,21 @@ int main() {
                        krbn::event_integer_value::value_t(1),
                        state_original);
 
+    // Press and release b while f2 is still held.
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    emplace_back_entry(b,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    emplace_back_entry(b,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
+
     // f2 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    const auto f2_key_up_time = t;
     emplace_back_entry(f2,
                        krbn::event_type::key_up,
                        krbn::event_integer_value::value_t(0),
@@ -212,6 +227,14 @@ int main() {
         input_event_queue_copy->push_back_entry(e);
         connector->manipulate(e.get_event_time_stamp().get_time_stamp(),
                               core_configuration);
+        if (e.get_event() == b && e.get_event_type() == krbn::event_type::key_down) {
+          expect(output_event_queue->get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::fn));
+          expect(!output_event_queue->make_modifier_flags_for_matching(e).contains(krbn::modifier_flag::fn));
+        }
+        if (e.get_event_time_stamp().get_time_stamp() == f2_key_up_time) {
+          // Both f3 and fn release reports must be queued before another input arrives.
+          expect(post_event_to_virtual_devices_manipulator->get_queue().get_events().size() == 8_u);
+        }
       }
 
       auto events = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
@@ -230,6 +253,15 @@ int main() {
       ++index;
       expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
       expect(R"( [{ "apple_vendor_top_case_key_code": "keyboard_fn" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f3" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // b goes down and up while both f3 and the injected fn are held.
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f3" }, { "key_code": "b" }] )"_json == events[index][events[index]["type"]]["keys"]);
 
       ++index;
       expect("keyboard_input"sv == events[index]["type"].get<std::string>());
@@ -341,6 +373,14 @@ int main() {
       expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
 
       // f2 -> f2
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f2" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f2" }, { "key_code": "b" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
       ++index;
       expect("keyboard_input"sv == events[index]["type"].get<std::string>());
       expect(R"( [{ "key_code": "f2" }] )"_json == events[index][events[index]["type"]]["keys"]);

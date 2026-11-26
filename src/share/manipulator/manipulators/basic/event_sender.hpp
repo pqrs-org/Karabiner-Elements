@@ -344,12 +344,15 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
             .output_only_modifier = output_event_is_output_only_modifier,
         });
       } else {
-        current_manipulated_original_event.get_events_at_key_up().emplace_back_event(device_id,
-                                                                                     *event,
-                                                                                     event_type::key_up,
-                                                                                     original_event,
-                                                                                     to->get_lazy(),
-                                                                                     output_event_is_output_only_modifier);
+        current_manipulated_original_event.get_events_at_key_up().emplace_back_event({
+            .device_id = device_id,
+            .event = *event,
+            .event_type = event_type::key_up,
+            .original_event = original_event,
+            .lazy = to->get_lazy(),
+            .output_only_modifier = output_event_is_output_only_modifier,
+            .release_when_other_key_is_pressed = output_event_is_output_only_modifier,
+        });
       }
 
       {
@@ -358,13 +361,19 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
               (is_modifier_key_event ||
                (is_repeatable_key_event && to->get_repeat()))) {
             auto pair = base::make_lazy_modifier_key_event(e, event_type::key_up);
+            const bool preserve_until_key_up = to->get_preserve_fn_until_key_up() &&
+                                               e.make_modifier_flag() == modifier_flag::fn;
 
-            current_manipulated_original_event.get_events_at_key_up().emplace_back_event(device_id,
-                                                                                         pair.first,
-                                                                                         pair.second,
-                                                                                         original_event,
-                                                                                         true,
-                                                                                         output_only_modifier);
+            // For an injected fn, post the release immediately after the F key's key_up.
+            current_manipulated_original_event.get_events_at_key_up().emplace_back_event({
+                .device_id = device_id,
+                .event = pair.first,
+                .event_type = pair.second,
+                .original_event = original_event,
+                .lazy = !preserve_until_key_up,
+                .output_only_modifier = output_only_modifier,
+                .release_when_other_key_is_pressed = output_only_modifier && !preserve_until_key_up,
+            });
           } else {
             base::post_lazy_modifier_key_event({
                 .momentary_switch_event = e,

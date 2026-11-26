@@ -258,15 +258,7 @@ private:
         //     - Use all F1, F2, etc. keys as standard function keys: Off
         //     - In this case, fn+f1 is interpreted as a regular f1 key.
 
-        if (j.contains("key_code")) {
-          if (f1_f12_key(j["key_code"])) {
-            if (!from_mandatory_modifiers_fn) {
-              if (!j["modifiers"].contains("fn")) {
-                j["modifiers"].push_back("fn");
-              }
-            }
-          }
-        }
+        const bool standard_function_key = j.contains("key_code") && f1_f12_key(j["key_code"]);
 
         // When we change fn+f10 to mute, directly mapping fn+f10 to mute will result in the following events being sent:
         //
@@ -288,8 +280,7 @@ private:
         // For f1–f12 specifically, fn should not be added.
 
         if (from_mandatory_modifiers_fn) {
-          if (j.contains("key_code") &&
-              f1_f12_key(j["key_code"])) {
+          if (standard_function_key) {
             // Do not append fn modifier
           } else {
             if (!j["modifiers"].contains("fn")) {
@@ -298,7 +289,15 @@ private:
           }
         }
 
-        to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(j));
+        auto to = std::make_shared<manipulator::to_event_definition>(j);
+        if (!from_mandatory_modifiers_fn && standard_function_key) {
+          auto modifiers = to->get_modifiers();
+          if (modifiers.insert(manipulator::modifier_definition::modifier::fn).second) {
+            to->set_modifiers(modifiers);
+            to->set_preserve_fn_until_key_up(true);
+          }
+        }
+        to_event_definitions.push_back(to);
       }
 
       return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
