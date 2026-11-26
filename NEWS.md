@@ -41,6 +41,7 @@
     - Improved key repeat for mappings with modifiers so that the modifiers remain active while the key is repeating.
     - Improved `to_if_alone` handling so that actual remapped output cancels it, while keys disabled with `vk_none` do not.
     - Migrated the app icons to the Icon Composer format, and removed the app icon selection setting.
+    - Added a "Capture macOS Key Events" to EventViewer.
     - Added a "Capture mouse wheels" option to EventViewer.
 
 ## Karabiner-Elements 16.3.0
