@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::bundle v2.3.0
+// pqrs::cf::bundle v2.4.0
 
 // (C) Copyright Takayama Fumihiko 2025.
 // Distributed under the Boost Software License, Version 1.0.
@@ -62,6 +62,22 @@ constexpr std::string_view package_type_finder{"FNDR"};
                                        true);
   return package_type == package_type_application ||
          package_type == package_type_finder;
+}
+
+[[nodiscard]] inline std::optional<std::string> get_short_version_string(CFBundleRef bundle = CFBundleGetMainBundle()) {
+  if (bundle) {
+    return make_string(CFBundleGetValueForInfoDictionaryKey(bundle, CFSTR("CFBundleShortVersionString")));
+  }
+  return std::nullopt;
+}
+
+[[nodiscard]] inline std::optional<std::string> get_short_version_string(const std::filesystem::path& bundle_path) {
+  if (auto url = make_file_path_url(bundle_path.string(), true)) {
+    if (auto bundle = adopt_cf_ptr(CFBundleCreate(nullptr, *url))) {
+      return get_short_version_string(*bundle);
+    }
+  }
+  return std::nullopt;
 }
 
 } // namespace pqrs::cf::bundle
